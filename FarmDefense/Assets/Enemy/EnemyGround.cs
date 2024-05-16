@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyGround : EnemyBase
 {
 
+
     /// <summary>
     /// 更新処理
     /// </summary>
@@ -28,14 +29,15 @@ public class EnemyGround : EnemyBase
     {
         base.FixedUpdate();
 
-        Transform transform = this.transform; //オブジェクトを取得
-
-        Vector3 pos = transform.position;  //Transformの情報からVector3の位置情報を取得
-
-        pos.x += m_enemySpeed;  //X座標にスピードを加算する
-        pos.z += m_enemySpeed;  //Z座標にスピードを加算する
-
-        transform.position = pos;  //自分の座標に値を設定
+       
     }
 
+    /// <summary>
+    /// 農場との当たり判定
+    /// </summary>
+    /// <param name="collision"></param>
+    public override void OnCollisionStay(Collision collision)
+    {
+        base.OnCollisionStay(collision);
+    }
 }

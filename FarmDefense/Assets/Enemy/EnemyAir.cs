@@ -5,6 +5,9 @@ using UnityEngine;
 public class EnemyAir : EnemyBase
 {
     public int m_enemyAirPosY;  //空のエネミーのY座標のポジション
+    private int m_enemyRadius;  //旋回の円運動の半径
+    private float _x;  //エネミーのX座標移動変数
+    private float _z;  //エネミーのZ座標移動変数
 
     /// <summary>
     /// 更新処理
@@ -22,6 +25,9 @@ public class EnemyAir : EnemyBase
         base.Init();
 
         m_enemyAirPosY = 0;
+        m_enemyRadius = 5;
+        _x = 0.0f;
+        _z = 0.0f;
     }
 
     /// <summary>
@@ -31,15 +37,25 @@ public class EnemyAir : EnemyBase
     {
         base.FixedUpdate();
 
-        Transform transform = this.transform; //オブジェクトを取得
-
         Vector3 pos = transform.position;  //Transformの情報からVector3の位置情報を取得
-
-        pos.x += m_enemySpeed;  //X座標にスピードを加算する
-        pos.z += m_enemySpeed;  //Z座標にスピードを加算する
+       
         pos.y = m_enemyAirPosY;  //Y座標を設定
 
         transform.position = pos;  //自分の座標に値を設定
+
+        if(pos.x == farm.posFarm.x && pos.z == farm.posFarm.z)  //農場と同じX座標とZ座標になったら
+        {
+            
+        }
+    }
+
+    /// <summary>
+    /// 農場の当たり判定
+    /// </summary>
+    /// <param name="collision"></param>
+    public override void OnCollisionStay(Collision collision)
+    {
+        base.OnCollisionStay(collision);
     }
 
 }
