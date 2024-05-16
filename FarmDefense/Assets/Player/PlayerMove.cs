@@ -8,21 +8,16 @@ using UnityEngine.InputSystem;
 
 public class PlayerMove
 {
-    void Init()
+
+    public void Init()
     {
 
     }
 
-    void Update()
+    public void Update()
     {
-        if(0 < 1)
-        {
+        
 
-        }
     }
 
-    void Draw()
-    {
-
-    }
 }
