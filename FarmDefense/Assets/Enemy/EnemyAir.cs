@@ -1,21 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class EnemyAir : EnemyBase
 {
     public int m_enemyAirPosY;  //空のエネミーのY座標のポジション
     private int m_enemyRadius;  //旋回の円運動の半径
-    private float _x;  //エネミーのX座標移動変数
-    private float _z;  //エネミーのZ座標移動変数
+    private bool _circularmotion;  //円運動をするフラグ
+    float x;  //X軸
+    float z;  //Z軸
+    private Vector3 defPosition;  //Vector3で位置情報を取得
+
+    /// <summary>
+    /// スタート関数
+    /// </summary>
+    private void Start()
+    {
+        m_enemyRadius = 2;
+
+        defPosition = transform.position;
+    }
 
     /// <summary>
     /// 更新処理
     /// </summary>
-    public override void Update()
+    private new void Update()
     {
-        base.Update();
+        x = m_enemyRadius * Mathf.Sin(Time.time * m_enemySpeed);
+        z = m_enemyRadius * Mathf.Cos(Time.time * m_enemySpeed);
+
+        transform.position = new Vector3(x + defPosition.x, defPosition.y, z + defPosition.z);
     }
+
+    /// <summary>
+    /// 更新処理
+    /// </summary>
+    //public override void Update()
+    //{
+    //   //if(_circularmotion == true)
+    //   // {
+    //   //     x = m_enemyRadius * Mathf.Sin(Time.time * m_enemySpeed);
+    //   //     z = m_enemyRadius * Mathf.Cos(Time.time * m_enemySpeed);
+
+    //   //     transform.position = new Vector3(x + defPosition.x, defPosition.y, z + defPosition.z);
+    //   // }
+    //}
 
     /// <summary>
     /// 初期化処理
@@ -24,10 +54,11 @@ public class EnemyAir : EnemyBase
     {
         base.Init();
 
-        m_enemyAirPosY = 0;
-        m_enemyRadius = 5;
-        _x = 0.0f;
-        _z = 0.0f;
+        m_enemyAirPosY = 5;
+        //m_enemyRadius = 3;
+        //_circularmotion = true;
+
+        //defPosition = transform.position;
     }
 
     /// <summary>
@@ -35,18 +66,24 @@ public class EnemyAir : EnemyBase
     /// </summary>
     public override void FixedUpdate()
     {
-        base.FixedUpdate();
+        //Transform transform = this.transform;
 
-        Vector3 pos = transform.position;  //Transformの情報からVector3の位置情報を取得
-       
-        pos.y = m_enemyAirPosY;  //Y座標を設定
+        //x = m_enemyRadius * Mathf.Sin(Time.time * m_enemySpeed);
+        //z = m_enemyRadius * Mathf.Cos(Time.time * m_enemySpeed);
 
-        transform.position = pos;  //自分の座標に値を設定
+        //transform.position = new Vector3(x + defPosition.x, defPosition.y, z + defPosition.z);
+        //Vector3 pos = transform.position;  //ポジションをVector3で定義する
 
-        if(pos.x == farm.posFarm.x && pos.z == farm.posFarm.z)  //農場と同じX座標とZ座標になったら
-        {
-            
-        }
+        //pos.y = m_enemyAirPosY;  //Y座標を設定
+
+        //transform.position = pos;
+
+        
+        //if(_circularmotion == false)  //円運動するフラグがfalseなら
+        //{
+        //    base.FixedUpdate();
+        //}
+        
     }
 
     /// <summary>
