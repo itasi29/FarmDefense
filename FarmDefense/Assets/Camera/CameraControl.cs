@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class CameraControl : MonoBehaviour
 {
@@ -16,7 +18,8 @@ public class CameraControl : MonoBehaviour
     private GameObject _target;     // ターゲットのオブジェクト情報
     private Transform _targetTrs;   // ターゲットのTransform情報
     private Vector3 _pos;           // カメラの中心座標
-    private float _rot;
+    private Vector3 _lookPos;       // カメラの見る座標
+    private float _rot;             // カメラの回転量
 
     void Start()
     {
@@ -25,8 +28,10 @@ public class CameraControl : MonoBehaviour
         _targetTrs = _target.transform;
 
         /* 初期設定 */
-        _pos = _targetTrs.position;   // 座標
-        _rot = 0.0f;
+        _pos = _targetTrs.position;   // 中心座標
+        _lookPos = _pos;              // 見る座標
+        _lookPos.y += kShiftPosY;     // Y軸を中心から上にずらす
+        _rot = 0.0f;                  // 回転量無しに
     }
 
     private void Update()
@@ -56,7 +61,7 @@ public class CameraControl : MonoBehaviour
     private void FixedUpdate()
     {
         /* 位置更新 */
-        _pos = Vector3.Lerp(_pos, _targetTrs.position, 0.25f);
+        _pos = Vector3.Lerp(_pos, _targetTrs.position, 0.5f);
 
         /* 距離の反映 */
         Vector3 pos = _pos;
@@ -66,5 +71,10 @@ public class CameraControl : MonoBehaviour
 
         /* 位置の代入 */
         transform.position = pos;
+
+        /* 向きの変更 */
+        _lookPos = _pos;
+        _lookPos.y += kShiftPosY;
+        transform.LookAt(_lookPos);
     }
 }
