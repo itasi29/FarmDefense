@@ -6,20 +6,26 @@ using static UnityEditor.PlayerSettings;
 public class EnemyAir : EnemyBase
 {
     public int m_enemyAirPosY;  //空のエネミーのY座標のポジション
-    private int m_enemyRadius;  //旋回の円運動の半径
+    private float m_enemyRadius;  //旋回の円運動の半径
+    private float m_enemyRadiusSpeed; //旋回するときの速さ
+    private float m_enemyRadiusTime;  //旋回する時間
     private bool _circularmotion;  //円運動をするフラグ
     float x;  //X軸
     float z;  //Z軸
-    private Vector3 defPosition;  //Vector3で位置情報を取得
+    //private Vector3 defPosition;  //Vector3で位置情報を取得
+    Transform trans;
+    private Vector3 pos;
 
     /// <summary>
     /// スタート関数
     /// </summary>
     private void Start()
     {
-        m_enemyRadius = 2;
+        m_enemyRadius = 1.2f;
+        m_enemyRadiusSpeed = 1.0f;
+        m_enemyRadiusTime = 0.0f;
 
-        defPosition = transform.position;
+        _circularmotion = false;
     }
 
     /// <summary>
@@ -27,25 +33,21 @@ public class EnemyAir : EnemyBase
     /// </summary>
     private new void Update()
     {
-        x = m_enemyRadius * Mathf.Sin(Time.time * m_enemySpeed);
-        z = m_enemyRadius * Mathf.Cos(Time.time * m_enemySpeed);
+        
 
-        transform.position = new Vector3(x + defPosition.x, defPosition.y, z + defPosition.z);
+        if (_circularmotion == true)   //_circularmotionがtrueなら旋回行動
+        {
+            m_enemyRadiusTime = Time.time;
+
+            x = m_enemyRadius * Mathf.Sin(m_enemyRadiusTime * m_enemyRadiusSpeed);
+            z = m_enemyRadius * Mathf.Cos(m_enemyRadiusTime * m_enemyRadiusSpeed);
+
+            m_enemyAirPosY = 5;
+
+            transform.position = new Vector3(x + pos.x, pos.y + m_enemyAirPosY, z + pos.z);
+        }
+
     }
-
-    /// <summary>
-    /// 更新処理
-    /// </summary>
-    //public override void Update()
-    //{
-    //   //if(_circularmotion == true)
-    //   // {
-    //   //     x = m_enemyRadius * Mathf.Sin(Time.time * m_enemySpeed);
-    //   //     z = m_enemyRadius * Mathf.Cos(Time.time * m_enemySpeed);
-
-    //   //     transform.position = new Vector3(x + defPosition.x, defPosition.y, z + defPosition.z);
-    //   // }
-    //}
 
     /// <summary>
     /// 初期化処理
@@ -53,12 +55,6 @@ public class EnemyAir : EnemyBase
     public override void Init()
     {
         base.Init();
-
-        m_enemyAirPosY = 5;
-        //m_enemyRadius = 3;
-        //_circularmotion = true;
-
-        //defPosition = transform.position;
     }
 
     /// <summary>
@@ -66,23 +62,18 @@ public class EnemyAir : EnemyBase
     /// </summary>
     public override void FixedUpdate()
     {
-        //Transform transform = this.transform;
+        trans = this.transform;
 
-        //x = m_enemyRadius * Mathf.Sin(Time.time * m_enemySpeed);
-        //z = m_enemyRadius * Mathf.Cos(Time.time * m_enemySpeed);
+        pos = transform.position;  //ポジションをVector3で定義する
 
-        //transform.position = new Vector3(x + defPosition.x, defPosition.y, z + defPosition.z);
-        //Vector3 pos = transform.position;  //ポジションをVector3で定義する
+        pos.y = m_enemyAirPosY;   //Y座標を設定
 
-        //pos.y = m_enemyAirPosY;  //Y座標を設定
+        transform.position = pos;
 
-        //transform.position = pos;
-
-        
-        //if(_circularmotion == false)  //円運動するフラグがfalseなら
-        //{
-        //    base.FixedUpdate();
-        //}
+        if (_circularmotion == false)    //_circularmotionがfalseなら農場へ向かう行動
+        {
+            base.FixedUpdate();   
+        }
         
     }
 
@@ -93,6 +84,20 @@ public class EnemyAir : EnemyBase
     public override void OnCollisionStay(Collision collision)
     {
         base.OnCollisionStay(collision);
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if(collision.gameObject.name == "Farm")  //物体に当たったら
+        {
+            if(_circularmotion == false) //_circularmotionがfalseなら
+            {
+
+                m_enemyRadiusTime = m_enemyRadiusTime - Time.time;
+
+                _circularmotion = true;  //_circularmotionをtrueにする
+            }
+        }
     }
 
 }
