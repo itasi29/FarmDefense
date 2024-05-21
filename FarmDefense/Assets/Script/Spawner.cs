@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    struct SpawnerData
-    { 
-        private int _no;
-        private int _createFrame;
-        private int _spawnerNo;
-    }
-
     /* 変数 */
     // ステージ名
     [SerializeField] private string _stageName;
