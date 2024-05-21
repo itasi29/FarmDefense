@@ -1,7 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.InputSystem.LowLevel;
 
 public class CameraControl : MonoBehaviour
 {
@@ -10,13 +14,19 @@ public class CameraControl : MonoBehaviour
     private const float kShiftPosY   = 1.2f;   // ターゲット中心から上にずらす量
     private const float kAxisMinThershold = 0.2f; // 入力情報の最小のしきい値:無視する割合
     private const float kAxisMaxThershold = 0.8f; // 入力情報の最大のしきい値:1.0とみなす割合
-    private const float kSpeedRotation = 0.25f * Mathf.Deg2Rad;  // 回転スピード(ラジアン)
+    private const float kRotLimitUpdownSwing = 30.0f * Mathf.Deg2Rad;   // 上下の回転制限
+    private const float kRotSpeedLeftright = 0.4f  * Mathf.Deg2Rad;  // 左右の回転スピード(ラジアン)
+    private const float kRotSpeedUpdown    = 0.25f * Mathf.Deg2Rad;  // 上下の回転スピード(ラジアン)
 
     /* 変数 */
-    private GameObject _target;     // ターゲットのオブジェクト情報
-    private Transform _targetTrs;   // ターゲットのTransform情報
-    private Vector3 _pos;           // カメラの中心座標
-    private float _rot;
+    private GameObject _target;         // ターゲットのオブジェクト情報
+    private Transform _targetTrs;       // ターゲットのTransform情報
+    private Vector3 _pos;               // カメラの中心座標
+    private Vector3 _lookPos;           // カメラの見る座標
+    private float _rotLeftrightSwing;   // 左右のカメラの回転量
+    private float _rotUpdownSwing;      // 上下のカメラの回転量
+    private bool _isUpdownSwing;        // 上下にカメラを揺らしているか
+    private bool _isUpdownInput;        // 上下に入力したか
 
     void Start()
     {
@@ -25,46 +35,171 @@ public class CameraControl : MonoBehaviour
         _targetTrs = _target.transform;
 
         /* 初期設定 */
-        _pos = _targetTrs.position;   // 座標
-        _rot = 0.0f;
+        // 中心座標
+        _pos = _targetTrs.position;
+        // 見る座標
+        _lookPos = _pos;           
+        _lookPos.y += kShiftPosY;
+        // 回転量無しに
+        _rotLeftrightSwing = 0.0f;
+        _rotUpdownSwing = 0.0f;
+        // 回転していないに
+        _isUpdownSwing = false;
+        // 入力していないに
+        _isUpdownInput = false;
+
     }
 
     private void Update()
     {
-        /* 回転 */
-        // 入力値の取得 
-        float inputRate = Input.GetAxis("HorizontalRight");  
-
-        // 入力値の制限
-        if (inputRate > 0.0f)
-        {
-            // 正の場合
-            inputRate = (inputRate - kAxisMinThershold) / (kAxisMaxThershold - kAxisMinThershold);
-            inputRate = Mathf.Min(1.0f, Mathf.Max(0.0f, inputRate));
-        }
-        else
-        {
-            // 負の場合
-            inputRate = (inputRate + kAxisMinThershold) / (kAxisMaxThershold - kAxisMinThershold);
-            inputRate = Mathf.Min(0.0f, Mathf.Max(-1.0f, inputRate));
-        }
-
-        // 代入
-        _rot += inputRate * kSpeedRotation;
+        RotLeftright();
+        RotUpdown();
+        ResetDirection();
     }
 
     private void FixedUpdate()
     {
-        /* 位置更新 */
-        _pos = Vector3.Lerp(_pos, _targetTrs.position, 0.25f);
+        ReturnRotUpdown();
+
+        Move();
+
+        /* 向きの変更 */
+        _lookPos = _pos;
+        _lookPos.y += kShiftPosY;
+        transform.LookAt(_lookPos);
+    }
+
+    /// <summary>
+    /// 左右の回転
+    /// </summary>
+    private void RotLeftright()
+    {
+        // 入力値の取得 
+        float inputRate = Input.GetAxis("HorizontalRight");
+
+        inputRate = LimitValue(inputRate, kAxisMinThershold, kAxisMaxThershold);
+
+        // 代入
+        _rotLeftrightSwing += inputRate * kRotSpeedLeftright;
+    }
+
+    /// <summary>
+    /// 上下の回転
+    /// </summary>
+    private void RotUpdown()
+    {
+        // 入力値の取得
+        float inputRate = Input.GetAxis("VerticalRight");
+
+        // 入力されていないなら終了
+        if (-kAxisMinThershold < inputRate && inputRate < kAxisMinThershold)
+        {
+            _isUpdownInput = false;
+            return;
+        }
+
+        inputRate = LimitValue(inputRate, kAxisMinThershold, kAxisMaxThershold);
+
+        // 上下の回転地に代入
+        _rotUpdownSwing += inputRate * kRotSpeedUpdown;
+        // 回転の制限
+        _rotUpdownSwing = Mathf.Max(Mathf.Min(_rotUpdownSwing, kRotLimitUpdownSwing), -kRotLimitUpdownSwing);
+        // 動かしていることに
+        _isUpdownSwing = true;
+        // 入力したことに
+        _isUpdownInput = true;
+    }
+
+    /// <summary>
+    /// 向いている方向をプレイヤーの向いている方向に戻す
+    /// </summary>
+    private void ResetDirection()
+    {
+        // MEMO:ボタン間違えている可能性あり
+        // Yボタンを押すと方向リセット
+        if (Input.GetKeyDown("joystick button 3"))
+        {
+            // TODO:現状Leftrightの回転を0にしているだけなのでプレイヤーの向いている方向を向くように
+            _rotLeftrightSwing = 0.0f;
+        }
+    }
+
+    /// <summary>
+    /// 上下方向の回転量を元に戻す
+    /// </summary>
+    private void ReturnRotUpdown()
+    {
+        // 入力していれば戻さない
+        if (_isUpdownInput) return;
+
+        // 0に近づける
+        _rotUpdownSwing = Mathf.Lerp(_rotUpdownSwing, 0.0f, 0.05f);
+
+        // 限りなく0に近づいたら戻したことにする
+        if (-0.001f < _rotUpdownSwing && _rotUpdownSwing < 0.001f)
+        {
+            _rotUpdownSwing = 0.0f;
+            _isUpdownSwing = false;
+        }
+    }
+
+    /// <summary>
+    /// 位置の更新
+    /// </summary>
+    private void Move()
+    {
+        // 中心位置の更新
+        _pos = Vector3.Lerp(_pos, _targetTrs.position, 0.5f);
 
         /* 距離の反映 */
         Vector3 pos = _pos;
-        pos.x += Mathf.Sin(_rot) * kDistance;
-        pos.y += kShiftPosY;
-        pos.z += Mathf.Cos(_rot) * kDistance * -1.0f;
+        float sinLeftright = Mathf.Sin(_rotLeftrightSwing);
+        float cosLeftright = Mathf.Cos(_rotLeftrightSwing);
+        // 上下に回転していないければ
+        if (!_isUpdownSwing)
+        {
+            pos.x += sinLeftright * kDistance;
+            pos.y += kShiftPosY;
+            pos.z += cosLeftright * kDistance * -1.0f;
+        }
+        // 上下に回転していれば
+        else
+        {
+            float sinUpdown = Mathf.Sin(_rotUpdownSwing);
+            float cosUpdown = Mathf.Cos(_rotUpdownSwing);
 
-        /* 位置の代入 */
+            pos.x += sinLeftright * (kDistance * cosUpdown);
+            pos.y += kShiftPosY + kDistance * sinUpdown * -1.0f;
+            pos.z += cosLeftright * (kDistance * cosUpdown) * -1.0f;
+        }
+
+        // 位置の代入 
         transform.position = pos;
+    }
+
+
+    /// <summary>
+    /// 値を制限する関数
+    /// </summary>
+    /// <param name="val">制限したい値</param>
+    /// <param name="min">最小値</param>
+    /// <param name="max">最大値</param>
+    /// <returns>制限した値</returns>
+    float LimitValue(float val, float min, float max)
+    {
+        if (val > 0.0f)
+        {
+            // 正の場合
+            val = (val - min) / (max - min);
+            val = Mathf.Min(1.0f, Mathf.Max(0.0f, val));
+        }
+        else
+        {
+            // 負の場合
+            val = (val + min) / (max - min);
+            val = Mathf.Min(0.0f, Mathf.Max(-1.0f, val));
+        }
+
+        return val;
     }
 }
