@@ -6,6 +6,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.Timeline;
+using static UnityEditor.PlayerSettings;
 
 public class CameraControl : MonoBehaviour
 {
@@ -21,14 +23,16 @@ public class CameraControl : MonoBehaviour
     /* 変数 */
     private GameObject _target;         // ターゲットのオブジェクト情報
     private Transform _targetTrs;       // ターゲットのTransform情報
-    private Vector3 _pos;               // カメラの中心座標
-    private Vector3 _lookPos;           // カメラの見る座標
+    private Vector3 _centerPos;         // 中心座標
+    private Vector2 _frontDir;          // カメラの正面方向(Y軸は無視)
     private float _rotLeftrightSwing;   // 左右のカメラの回転量
     private float _rotUpdownSwing;      // 上下のカメラの回転量
     private bool _isUpdownSwing;        // 上下にカメラを揺らしているか
+    private bool _isLeftrightSwing;     // 左右に入力したか
     private bool _isUpdownInput;        // 上下に入力したか
+    private bool _isReset;              // リセットしたか
 
-    void Start()
+    private void Start()
     {
         // ターゲット(プレイヤー)から情報取得
         _target = GameObject.Find("Player");
@@ -36,24 +40,27 @@ public class CameraControl : MonoBehaviour
 
         /* 初期設定 */
         // 中心座標
-        _pos = _targetTrs.position;
-        // 見る座標
-        _lookPos = _pos;           
-        _lookPos.y += kShiftPosY;
+        _centerPos = _targetTrs.position;
+        // 正面方向
+        _frontDir.y = 1;
+        _frontDir.Normalize();
         // 回転量無しに
         _rotLeftrightSwing = 0.0f;
         _rotUpdownSwing = 0.0f;
         // 回転していないに
         _isUpdownSwing = false;
+        _isLeftrightSwing = false;
         // 入力していないに
         _isUpdownInput = false;
-
+        // リセットしていないに
+        _isReset = false;
     }
 
     private void Update()
     {
         RotLeftright();
         RotUpdown();
+
         ResetDirection();
     }
 
@@ -63,10 +70,16 @@ public class CameraControl : MonoBehaviour
 
         Move();
 
-        /* 向きの変更 */
-        _lookPos = _pos;
-        _lookPos.y += kShiftPosY;
-        transform.LookAt(_lookPos);
+        Debug.Log("Camera : Dir = " + _frontDir);
+    }
+
+    /// <summary>
+    /// カメラの正面方向を取得(Y軸は無視)
+    /// </summary>
+    /// <returns>正面方向</returns>
+    public Vector2 GetFrontDir()
+    {
+        return _frontDir;
     }
 
     /// <summary>
@@ -77,10 +90,19 @@ public class CameraControl : MonoBehaviour
         // 入力値の取得 
         float inputRate = Input.GetAxis("HorizontalRight");
 
+        // 入力されていないなら終了
+        if (-kAxisMinThershold < inputRate && inputRate < kAxisMinThershold)
+        {
+            _isLeftrightSwing = false;
+            return;
+        }
+
         inputRate = LimitValue(inputRate, kAxisMinThershold, kAxisMaxThershold);
 
         // 代入
         _rotLeftrightSwing += inputRate * kRotSpeedLeftright;
+        // 入力していることに
+        _isLeftrightSwing = true;
     }
 
     /// <summary>
@@ -117,10 +139,15 @@ public class CameraControl : MonoBehaviour
     {
         // MEMO:ボタン間違えている可能性あり
         // Yボタンを押すと方向リセット
-        if (Input.GetKeyDown("joystick button 3"))
+        if (Input.GetButtonDown("StickPushRight"))
         {
             // TODO:現状Leftrightの回転を0にしているだけなのでプレイヤーの向いている方向を向くように
             _rotLeftrightSwing = 0.0f;
+            _rotUpdownSwing = 0.0f;
+            _isLeftrightSwing = false;
+            _isUpdownSwing = false;
+
+            _isReset = true;
         }
     }
 
@@ -129,7 +156,7 @@ public class CameraControl : MonoBehaviour
     /// </summary>
     private void ReturnRotUpdown()
     {
-        // 入力していれば戻さない
+        // 上下方向の入力をしていれば戻さない
         if (_isUpdownInput) return;
 
         // 0に近づける
@@ -148,33 +175,70 @@ public class CameraControl : MonoBehaviour
     /// </summary>
     private void Move()
     {
-        // 中心位置の更新
-        _pos = Vector3.Lerp(_pos, _targetTrs.position, 0.5f);
+        // 中心を更新するか
+        bool isUpdateCenter = (_centerPos != _targetTrs.position);
+        // リセットしてないかつどこも更新がなければ変更をしない
+        if (!_isReset && !_isLeftrightSwing && !_isUpdownSwing && !isUpdateCenter) return;
 
-        /* 距離の反映 */
-        Vector3 pos = _pos;
+        // 中心位置の更新
+        if (isUpdateCenter)
+        {
+            _centerPos = Vector3.Lerp(_centerPos, _targetTrs.position, 0.5f);
+
+            // 限りなく0に近づいたらもう重なっていることに
+            if ((_centerPos - _targetTrs.position).sqrMagnitude < 0.001f)
+            {
+                _centerPos = _targetTrs.position;
+            }
+        }
+
+        Vector3 pos = _centerPos;
+
+        // 左右の回転量
         float sinLeftright = Mathf.Sin(_rotLeftrightSwing);
         float cosLeftright = Mathf.Cos(_rotLeftrightSwing);
-        // 上下に回転していないければ
-        if (!_isUpdownSwing)
+
+        // 上下回転のみor左右+上下回転
+        if (_isUpdownSwing)
         {
-            pos.x += sinLeftright * kDistance;
-            pos.y += kShiftPosY;
-            pos.z += cosLeftright * kDistance * -1.0f;
-        }
-        // 上下に回転していれば
-        else
-        {
+            // 上下の回転量
             float sinUpdown = Mathf.Sin(_rotUpdownSwing);
             float cosUpdown = Mathf.Cos(_rotUpdownSwing);
 
+            // 回転した位置の適用
             pos.x += sinLeftright * (kDistance * cosUpdown);
             pos.y += kShiftPosY + kDistance * sinUpdown * -1.0f;
             pos.z += cosLeftright * (kDistance * cosUpdown) * -1.0f;
         }
+        // 左右回転のみ
+        else
+        {
+            // 回転した位置の適用
+            pos.x += sinLeftright * kDistance;
+            pos.y += kShiftPosY;
+            pos.z += cosLeftright * kDistance * -1.0f;
+        }
 
         // 位置の代入 
         transform.position = pos;
+
+        // リセットまたは回転していれば方向の更新
+        if (_isReset || _isLeftrightSwing || _isUpdownSwing)
+        {
+            // 正面方向変更
+            _frontDir.x = -pos.x;
+            _frontDir.y = -pos.z;
+            // 正規化
+            _frontDir.Normalize();
+
+            // オブジェクトの向き変更
+            Vector3 lookPos = _centerPos;
+            lookPos.y += kShiftPosY;
+            transform.LookAt(lookPos);
+        }
+
+        // リセットしていないに
+        _isReset = false;
     }
 
 
@@ -185,7 +249,7 @@ public class CameraControl : MonoBehaviour
     /// <param name="min">最小値</param>
     /// <param name="max">最大値</param>
     /// <returns>制限した値</returns>
-    float LimitValue(float val, float min, float max)
+    private float LimitValue(float val, float min, float max)
     {
         if (val > 0.0f)
         {
