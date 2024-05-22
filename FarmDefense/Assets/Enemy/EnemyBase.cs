@@ -14,11 +14,11 @@ public class EnemyBase : MonoBehaviour
 
     public int m_enemyAttack;  //敵の攻撃力
 
-    private float m_attackTime;  //敵の攻撃時間間隔
+    public float m_attackTime;  //敵の攻撃時間間隔
 
-    private bool m_attackinterval;  //攻撃したかのフラグ
+    public bool m_attackinterval;  //攻撃したかのフラグ
 
-    [SerializeField] GameObject target; //ターゲットのオブジェクト獲得
+    [SerializeField] protected GameObject target; //ターゲットのオブジェクト獲得
 
     public FarmBase farm;  //農場のスクリプト呼び出し
 

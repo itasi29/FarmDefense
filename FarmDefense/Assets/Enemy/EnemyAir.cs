@@ -6,45 +6,77 @@ using static UnityEditor.PlayerSettings;
 public class EnemyAir : EnemyBase
 {
     public int m_enemyAirPosY;  //空のエネミーのY座標のポジション
-    private float m_enemyRadius;  //旋回の円運動の半径
-    private float m_enemyRadiusSpeed; //旋回するときの速さ
-    private float m_enemyRadiusTime;  //旋回する時間
+    private int m_enemyRadius;  //旋回の円運動の半径
+    private int m_enemyRadiusSpeed; //旋回するときの速さ
+    private bool _enemyAirMove;  //農場にむかう行動フラグ
     private bool _circularmotion;  //円運動をするフラグ
+    private bool _airAttak;  //敵が攻撃するフラグ
+    private float _airAttakTime; //敵が攻撃するまでの間隔
+    private float _airMoveX;  //敵のX軸行動
+    private float _airMoveY;  //敵のY軸行動
+    private float _airMoveZ;  //敵のZ軸行動
     float x;  //X軸
     float z;  //Z軸
     //private Vector3 defPosition;  //Vector3で位置情報を取得
-    Transform trans;
     private Vector3 pos;
 
     /// <summary>
     /// スタート関数
     /// </summary>
-    private void Start()
+    void Start()
     {
-        m_enemyRadius = 1.2f;
-        m_enemyRadiusSpeed = 1.0f;
-        m_enemyRadiusTime = 0.0f;
-
+        m_enemyRadius = 3;
+        m_enemyRadiusSpeed = 1;
+        _airAttakTime = 0.0f;
+        _enemyAirMove = false;
+        _airAttak = false;
         _circularmotion = false;
+        m_enemyAirPosY = 4;
+
+        _airMoveX = 0.0f;
+        _airMoveY = 0.0f;
+        _airMoveZ = 0.0f;
     }
 
     /// <summary>
     /// 更新処理
     /// </summary>
-    private new void Update()
+    new void Update()
     {
-        
-
         if (_circularmotion == true)   //_circularmotionがtrueなら旋回行動
         {
-            m_enemyRadiusTime = Time.time;
 
-            x = m_enemyRadius * Mathf.Sin(m_enemyRadiusTime * m_enemyRadiusSpeed);
-            z = m_enemyRadius * Mathf.Cos(m_enemyRadiusTime * m_enemyRadiusSpeed);
+            _airAttakTime = Time.time;  //攻撃までの間隔を進める
 
-            m_enemyAirPosY = 5;
+            x = m_enemyRadius * Mathf.Sin(Time.time * m_enemyRadiusSpeed);
+            z = m_enemyRadius * Mathf.Cos(Time.time * m_enemyRadiusSpeed);
 
             transform.position = new Vector3(x + pos.x, pos.y + m_enemyAirPosY, z + pos.z);
+
+            if (_airAttakTime >= 10.0f)
+            {
+                _airAttak = true;  //攻撃フラグを可能にする
+
+                _circularmotion = false;  //旋回行動をやめる
+
+            }
+        }
+        else if(_airAttak == true) //攻撃フラグがtrueなら
+        {
+            float sb,sbx, sby, sbz; //敵の移動速度を設定する
+
+            sbx = base.target.transform.position.x - pos.x;
+            sby = base.target.transform.position.y - pos.y;
+            sbz = base.target.transform.position.z - pos.z;
+
+            sb = Mathf.Sqrt(sbx * sbx + sby * sby + sbz * sbz);
+
+            _airMoveX = sbx / sb * m_enemySpeed;
+            _airMoveY = sby / sb * m_enemySpeed;
+            _airMoveZ = sbz / sb * m_enemySpeed;
+
+            transform.position = new Vector3(pos.x + _airMoveX, pos.y + _airMoveY, pos.z + _airMoveZ);
+            
         }
 
     }
@@ -62,19 +94,19 @@ public class EnemyAir : EnemyBase
     /// </summary>
     public override void FixedUpdate()
     {
-        trans = this.transform;
-
-        pos = transform.position;  //ポジションをVector3で定義する
-
-        pos.y = m_enemyAirPosY;   //Y座標を設定
-
-        transform.position = pos;
-
-        if (_circularmotion == false)    //_circularmotionがfalseなら農場へ向かう行動
+        if (_circularmotion == false && _enemyAirMove == false)    //_circularmotionがfalseなら農場へ向かう行動(最初だけ)
         {
-            base.FixedUpdate();   
+            Transform trans = this.transform;
+
+            pos = transform.position;  //ポジションをVector3で定義する
+
+            pos.y = m_enemyAirPosY;   //Y座標を設定
+
+            transform.position = pos;
+
+            base.FixedUpdate();
         }
-        
+
     }
 
     /// <summary>
@@ -83,19 +115,25 @@ public class EnemyAir : EnemyBase
     /// <param name="collision"></param>
     public override void OnCollisionStay(Collision collision)
     {
-        base.OnCollisionStay(collision);
+        if(collision.gameObject.name == "Farm")
+        {
+            base.OnCollisionStay(collision);
+
+            _airAttak = false;  //攻撃をしたらfalseに戻す
+
+            _airAttakTime = _airAttakTime - Time.time;  //初期に戻す
+        }
     }
 
     private void OnTriggerEnter(Collider collision)
     {
         if(collision.gameObject.name == "Farm")  //物体に当たったら
         {
-            if(_circularmotion == false) //_circularmotionがfalseなら
+            if(_circularmotion == false　&& _airAttak == false) //_circularmotionがfalseで_airAttackがfalseなら
             {
-
-                m_enemyRadiusTime = m_enemyRadiusTime - Time.time;
-
                 _circularmotion = true;  //_circularmotionをtrueにする
+
+                _enemyAirMove = true;  //農場に到達した
             }
         }
     }
