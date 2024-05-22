@@ -66,13 +66,14 @@ public class Player : MonoBehaviour
     {
         Move();
         //ジャンプボタンを押したとき
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("A"))
         {
             Jump();
         }
     }
     private void Move()
     {
+
 
         _moveVec = new Vector3(0, 0, 0);
         Vector3 dirVec = new Vector3(0, 0, 0);
@@ -84,7 +85,7 @@ public class Player : MonoBehaviour
         dirVec.Normalize();
 
         //ダッシュボタンを押していたら
-        if (Input.GetButton("Fire1"))
+        if (Input.GetButton("X"))
         {
             //スタミナがあって移動入力がされていたら
             if (_stamina > 0 && dirVec != Vector3.zero)
