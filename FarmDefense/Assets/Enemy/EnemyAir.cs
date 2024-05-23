@@ -11,10 +11,8 @@ public class EnemyAir : EnemyBase
     private bool _enemyAirMove;  //”_ê‚É‚Ş‚©‚¤s“®ƒtƒ‰ƒO
     private bool _circularmotion;  //‰~‰^“®‚ğ‚·‚éƒtƒ‰ƒO
     private bool _airAttak;  //“G‚ªUŒ‚‚·‚éƒtƒ‰ƒO
+    private bool _airRetrun;  //“G‚ªã‹ó‚É–ß‚éƒtƒ‰ƒO
     private float _airAttakTime; //“G‚ªUŒ‚‚·‚é‚Ü‚Å‚ÌŠÔŠu
-    private float _airMoveX;  //“G‚ÌX²s“®
-    private float _airMoveY;  //“G‚ÌY²s“®
-    private float _airMoveZ;  //“G‚ÌZ²s“®
     float x;  //X²
     float z;  //Z²
     //private Vector3 defPosition;  //Vector3‚ÅˆÊ’uî•ñ‚ğæ“¾
@@ -25,17 +23,14 @@ public class EnemyAir : EnemyBase
     /// </summary>
     void Start()
     {
-        m_enemyRadius = 3;
-        m_enemyRadiusSpeed = 1;
+        m_enemyRadius = 4;
+        m_enemyRadiusSpeed = 2;
         _airAttakTime = 0.0f;
         _enemyAirMove = false;
         _airAttak = false;
         _circularmotion = false;
-        m_enemyAirPosY = 4;
-
-        _airMoveX = 0.0f;
-        _airMoveY = 0.0f;
-        _airMoveZ = 0.0f;
+        m_enemyAirPosY = 9;
+        _airRetrun = false;
     }
 
     /// <summary>
@@ -43,41 +38,6 @@ public class EnemyAir : EnemyBase
     /// </summary>
     new void Update()
     {
-        if (_circularmotion == true)   //_circularmotion‚ªtrue‚È‚çù‰ñs“®
-        {
-
-            _airAttakTime = Time.time;  //UŒ‚‚Ü‚Å‚ÌŠÔŠu‚ği‚ß‚é
-
-            x = m_enemyRadius * Mathf.Sin(Time.time * m_enemyRadiusSpeed);
-            z = m_enemyRadius * Mathf.Cos(Time.time * m_enemyRadiusSpeed);
-
-            transform.position = new Vector3(x + pos.x, pos.y + m_enemyAirPosY, z + pos.z);
-
-            if (_airAttakTime >= 10.0f)
-            {
-                _airAttak = true;  //UŒ‚ƒtƒ‰ƒO‚ğ‰Â”\‚É‚·‚é
-
-                _circularmotion = false;  //ù‰ñs“®‚ğ‚â‚ß‚é
-
-            }
-        }
-        else if(_airAttak == true) //UŒ‚ƒtƒ‰ƒO‚ªtrue‚È‚ç
-        {
-            float sb,sbx, sby, sbz; //“G‚ÌˆÚ“®‘¬“x‚ğİ’è‚·‚é
-
-            sbx = base.target.transform.position.x - pos.x;
-            sby = base.target.transform.position.y - pos.y;
-            sbz = base.target.transform.position.z - pos.z;
-
-            sb = Mathf.Sqrt(sbx * sbx + sby * sby + sbz * sbz);
-
-            _airMoveX = sbx / sb * m_enemySpeed;
-            _airMoveY = sby / sb * m_enemySpeed;
-            _airMoveZ = sbz / sb * m_enemySpeed;
-
-            transform.position = new Vector3(pos.x + _airMoveX, pos.y + _airMoveY, pos.z + _airMoveZ);
-            
-        }
 
     }
 
@@ -94,6 +54,11 @@ public class EnemyAir : EnemyBase
     /// </summary>
     public override void FixedUpdate()
     {
+        Vector3 start = transform.position;
+        Vector3 air = new Vector3(target.transform.position.x, m_enemyAirPosY, target.transform.position.z);
+        float timer = 0;
+        timer += Time.deltaTime;
+
         if (_circularmotion == false && _enemyAirMove == false)    //_circularmotion‚ªfalse‚È‚ç”_ê‚ÖŒü‚©‚¤s“®(Å‰‚¾‚¯)
         {
             Transform trans = this.transform;
@@ -104,7 +69,46 @@ public class EnemyAir : EnemyBase
 
             transform.position = pos;
 
-            base.FixedUpdate();
+            transform.position = Vector3.Lerp(start, air, timer);  //”_ê‚Ìã‹ó‚És‚­
+        }
+
+        if (_circularmotion == true)   //_circularmotion‚ªtrue‚È‚çù‰ñs“®
+        {
+
+            _airAttakTime += Time.deltaTime;  //UŒ‚‚Ü‚Å‚ÌŠÔŠu‚ği‚ß‚é
+
+            x = m_enemyRadius * Mathf.Sin(_airAttakTime * m_enemyRadiusSpeed);
+            z = m_enemyRadius * Mathf.Cos(_airAttakTime * m_enemyRadiusSpeed);
+
+            transform.position = new Vector3(x, pos.y, z);
+
+            if (_airAttakTime >= 15.0f)
+            {
+                _airAttak = true;  //UŒ‚ƒtƒ‰ƒO‚ğ‰Â”\‚É‚·‚é
+
+                _circularmotion = false;  //ù‰ñs“®‚ğ‚â‚ß‚é
+
+                _airAttakTime = 0.0f;  //‰Šú‰»‚·‚é
+
+            }
+        }
+
+        if (_airAttak == true) //UŒ‚ƒtƒ‰ƒO‚ªtrue‚È‚ç
+        {
+            base.FixedUpdate();  //”_ê‚É‚Ş‚©‚¤s“®
+        }
+
+        if (_airRetrun == true)  //_airRetrun‚ªtrue‚È‚ç
+        {
+            
+            transform.position = Vector3.Lerp(start, air, timer);  //”_ê‚Ìã‹ó‚És‚­
+
+            if (start.y >= 8.8f)  //ˆê’è‚Ì‚‚³‚É“’B‚µ‚½‚ç
+            {
+                _circularmotion = true;  //_circularmotion‚ğtrue‚É‚·‚é
+
+                _airRetrun = false;  //_airRetrun‚ğfalse‚É‚·‚é
+            }
         }
 
     }
@@ -115,13 +119,19 @@ public class EnemyAir : EnemyBase
     /// <param name="collision"></param>
     public override void OnCollisionStay(Collision collision)
     {
-        if(collision.gameObject.name == "Farm")
+        if(_airAttak == true)  //UŒ‚ƒtƒ‰ƒO‚ªtrue‚È‚ç
         {
             base.OnCollisionStay(collision);
+        }
+    }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.name == "Farm")  //Farm‚ÉG‚ê‚½‚ç
+        {
             _airAttak = false;  //UŒ‚‚ğ‚µ‚½‚çfalse‚É–ß‚·
 
-            _airAttakTime = _airAttakTime - Time.time;  //‰Šú‚É–ß‚·
+            _airRetrun = true; //_airRetrun‚ğtrue‚É‚·‚é
         }
     }
 
