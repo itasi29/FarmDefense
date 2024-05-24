@@ -16,7 +16,6 @@ struct PatternData
 [System.Serializable]
 struct WaveData
 {
-    public int waveNo;
     public int createNum;
     public List<PatternData> patternDatas;
 }
@@ -94,7 +93,7 @@ public class SpawnerManager : MonoBehaviour
     private List<WaveData> LoadPatter(string stageName)
     {
         // 返す用のデータ
-        List<WaveData> waveData = new List<WaveData>();
+        List<WaveData> result = new List<WaveData>();
 
         // csvファイルの読み込み
         TextAsset patternCsv = Resources.Load(stageName) as TextAsset;
@@ -109,6 +108,16 @@ public class SpawnerManager : MonoBehaviour
         int idxCreateSec = 2;
         int idxCreatePosNo = 3;
 
+        // 現在確認中のwaveNo
+        int nowCheckWaveNo = 1;
+        // 敵生成数
+        int createNum = 0;
+        // データ一時保存用
+        WaveData itemWave = new WaveData();
+        List<PatternData> itemPattern = new List<PatternData>();
+
+        int num = 0;
+
         // 全データ読み込み
         while (reader.Peek() != -1) 
         {
@@ -122,15 +131,40 @@ public class SpawnerManager : MonoBehaviour
             int createPosNo = int.Parse(lineSplit[idxCreatePosNo]);
 
             /* パターンデータに代入 */
-            PatternData patternData;
-            patternData.enemyNo = enemyNo;
-            patternData.createFrame = (int)(50.0f * createSec); // 時間からフレームに変換
-            patternData.createPosNo = createPosNo;
+            PatternData data;
+            data.enemyNo = enemyNo;
+            data.createFrame = (int)(50.0f * createSec); // 時間からフレームに変換
+            data.createPosNo = createPosNo;
 
-            /* ウェーブデータに代入 */
-            waveData[waveNo - 1].patternDatas.Add(patternData);
+            // ウェーブ数が増加したら
+            if (nowCheckWaveNo < waveNo)
+            {
+                Debug.Log("本データ追加");
+                // 本体データに追加
+                itemWave.patternDatas = itemPattern;
+                itemWave.createNum = createNum;
+                result.Add(itemWave);
+                // 一時データの初期化
+                itemPattern = new List<PatternData>();
+                createNum = 0;
+                // 現在ウェーブ数の増加
+                nowCheckWaveNo++;
+            }
+
+            Debug.Log("追加 : " + num);
+            // データ追加
+            itemPattern.Add(data);
+            // 生成数増加
+            createNum++;
+
+            num++;
         }
 
-        return waveData;
+        // 最後のウェーブデータを追加
+        itemWave.patternDatas = itemPattern;
+        itemWave.createNum = createNum;
+        result.Add(itemWave);
+
+        return result;
     }
 }
