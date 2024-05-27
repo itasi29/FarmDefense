@@ -1,170 +1,124 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
-
-// パターンデータ
-[System.Serializable]
-struct PatternData
-{
-    public int enemyNo;
-    public int createFrame;
-    public int createPosNo;
-};
-
-[System.Serializable]
-struct WaveData
-{
-    public int createNum;
-    public List<PatternData> patternDatas;
-}
-
-// ステージデータ
-[System.Serializable]
-struct StageData
-{
-    public int no;
-    public float enemyBoostRate;
-    public int staticMoney;
-    public int dynamicMoney;
-    public List<WaveData> waveDatas;
-};
 
 public class SpawnerManager : MonoBehaviour
 {
-    // ステージデータ
-    [SerializeField] private List<StageData> _stageData;
+    /* 変数 */
+    // ステージ名
+    [SerializeField] private int _stageNo;
+    // ステージ生成データ
+    private List<WaveData> _waveData;
+    // 現在のwave番号
+    private int _nowWaveNo;
+    // 生成番号
+    private int _createNo;
+    // wave開始からの経過フレーム
+    private int _elapsFrame;
+    // 倒した敵の数
+    private int _killedEnemyNum;
+    // 生成を停止するか
+    private bool _isStopCreate;
+    // 全waveの敵を生成したか
+    private bool _isAllCreate;
 
-    // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("ロード!");
-        LoadStage();
+        // ステージデータの取得
+        _waveData = GameObject.Find("DataManager").GetComponent<SpawnerData>().GetWaveData(_stageNo);
+
+        // 各パラメータの初期化
+        _nowWaveNo = 1;
+        _elapsFrame = 0;
+        _createNo = 0;
+        _killedEnemyNum = 0;
+        _isStopCreate = false;
+        _isAllCreate = false;
+    }
+
+    
+    void FixedUpdate()
+    {
+        if (_isAllCreate) return;
+
+        IsKillAllEnemys();
+        Create();
     }
 
     /// <summary>
-    /// ステージデータの読み込み
+    /// 殺した敵の数を増やす
     /// </summary>
-    private void LoadStage()
+    public void AddKilledEnemy()
     {
-        // csvファイルの読み込み
-        TextAsset stageCsv = Resources.Load("StageManager") as TextAsset;
-        // 変換
-        StringReader reader = new StringReader(stageCsv.text);
-
-        // TODO:一番上のデータから要素番号を取得
-        // 一行読み込んで、','で区切る
-        var lineSplit = reader.ReadLine().Split(',');
-        int idxStageNo = 0;
-        int idxStageName = 1;
-        int idxEnemyBoostRate = 2;
-        int idxStaticMoney = 3;
-        int idxDynamicMoney = 4;
-
-        // 全データ読み込み
-        while (reader.Peek() != -1)
-        {
-            // 一行読み込んで、','で区切る
-            lineSplit = reader.ReadLine().Split(',');
-
-            /* 各種データ取得 */
-            int no               = int.Parse(lineSplit[idxStageNo]);
-            string name          = lineSplit[idxStageName];
-            float enemyBoostRate = float.Parse(lineSplit[idxEnemyBoostRate]);
-            int staticMoney      = int.Parse(lineSplit[idxStaticMoney]);
-            int dynamicMoeny     = int.Parse(lineSplit[idxDynamicMoney]);
-
-            /* 各種データの代入 */
-            StageData data;
-            data.no = no;
-            data.enemyBoostRate = enemyBoostRate;
-            data.staticMoney = staticMoney;
-            data.dynamicMoney = dynamicMoeny;
-            data.waveDatas = LoadPatter(name);
-
-            _stageData.Add(data);
-        }
+        ++_killedEnemyNum;
     }
 
-    /// <summary>
-    /// パターンデータの読み込み
-    /// </summary>
-    private List<WaveData> LoadPatter(string stageName)
+    private void Create()
     {
-        // 返す用のデータ
-        List<WaveData> result = new List<WaveData>();
+        // 生成終了していれば何もしない
+        if (_isStopCreate) return;
 
-        // csvファイルの読み込み
-        TextAsset patternCsv = Resources.Load(stageName) as TextAsset;
-        // 変換
-        StringReader reader = new StringReader(patternCsv.text);
+        // 生成フレームの増加
+        ++_elapsFrame;
 
-        // TODO:一番上のデータから要素番号を取得
-        // 一行読み込んで、','で区切る
-        var lineSplit = reader.ReadLine().Split(',');
-        int idxWaveNo = 0;
-        int idxEnemyNo = 1;
-        int idxCreateSec = 2;
-        int idxCreatePosNo = 3;
+        // 一時変数
+        WaveData wave = _waveData[_nowWaveNo];
+        PatternData pattern = wave.patternDatas[_createNo];
 
-        // 現在確認中のwaveNo
-        int nowCheckWaveNo = 1;
-        // 敵生成数
-        int createNum = 0;
-        // データ一時保存用
-        WaveData itemWave = new WaveData();
-        List<PatternData> itemPattern = new List<PatternData>();
+        // 生成フレームを超えていなければ終了
+        if (_elapsFrame < pattern.createFrame) return;
+        
+        // TODD:敵の種類に合わせての生成
 
-        int num = 0;
-
-        // 全データ読み込み
-        while (reader.Peek() != -1) 
+        // 生成した数の増加
+        ++_createNo;
+        // そのwaveの生成数を超えていれば
+        if (_createNo >= wave.createNum)
         {
-            // 一行読み込んで、','で区切る
-            lineSplit = reader.ReadLine().Split(',');
+            // 生成停止
+            _isStopCreate = true;
 
-            /* 各種データ取得 */
-            int waveNo      = int.Parse(lineSplit[idxWaveNo]);
-            int enemyNo     = int.Parse(lineSplit[idxEnemyNo]);
-            float createSec = float.Parse(lineSplit[idxCreateSec]);
-            int createPosNo = int.Parse(lineSplit[idxCreatePosNo]);
-
-            /* パターンデータに代入 */
-            PatternData data;
-            data.enemyNo = enemyNo;
-            data.createFrame = (int)(50.0f * createSec); // 時間からフレームに変換
-            data.createPosNo = createPosNo;
-
-            // ウェーブ数が増加したら
-            if (nowCheckWaveNo < waveNo)
+            // 現在のwaveが3になっていれば
+            if (_nowWaveNo == 3)
             {
-                Debug.Log("本データ追加");
-                // 本体データに追加
-                itemWave.patternDatas = itemPattern;
-                itemWave.createNum = createNum;
-                result.Add(itemWave);
-                // 一時データの初期化
-                itemPattern = new List<PatternData>();
-                createNum = 0;
-                // 現在ウェーブ数の増加
-                nowCheckWaveNo++;
+                // 全て生成したことに
+                _isAllCreate = true;
             }
 
-            Debug.Log("追加 : " + num);
-            // データ追加
-            itemPattern.Add(data);
-            // 生成数増加
-            createNum++;
-
-            num++;
+            // この時点で関数は終了させる
+            return;
         }
 
-        // 最後のウェーブデータを追加
-        itemWave.patternDatas = itemPattern;
-        itemWave.createNum = createNum;
-        result.Add(itemWave);
-
-        return result;
+        // 同時タイミングでの生成ようにフレームを減らして再帰する
+        --_elapsFrame;
+        Create();
     }
+
+    /// <summary>
+    /// 現在のwaveの敵を全て倒した
+    /// </summary>
+    /// <returns>true : 倒した / false : 倒していない</returns>
+    private bool IsKillAllEnemys()
+    {
+        bool isAllKill = false;
+
+        // そのwaveの全ての敵を倒したら
+        if (_killedEnemyNum >= _waveData[_nowWaveNo].createNum)
+        {
+            // 現在のwave数を増やす
+            ++_nowWaveNo;
+            // 各生成用変数の初期化
+            _createNo = 0;
+            _elapsFrame = 0;
+            _killedEnemyNum = 0;
+            _isStopCreate = false;
+
+            // 倒したことに
+            isAllKill = true;
+        }
+
+        return isAllKill;
+    }
+
 }
