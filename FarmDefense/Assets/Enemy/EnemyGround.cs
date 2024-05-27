@@ -40,4 +40,22 @@ public class EnemyGround : EnemyBase
     {
         base.OnCollisionStay(collision);
     }
+
+    /// <summary>
+    /// プレイヤーが索敵範囲に入ったら
+    /// </summary>
+    /// <param name="collision"></param>
+    public override void OnTriggerEnter(Collider collision)
+    {
+        base.OnTriggerEnter(collision);
+    }
+
+    /// <summary>
+    /// プレイヤーが索敵範囲を出たら
+    /// </summary>
+    /// <param name="collision"></param>
+    public override void OnTriggerExit(Collider collision)
+    {
+        base.OnTriggerExit(collision);
+    }
 }

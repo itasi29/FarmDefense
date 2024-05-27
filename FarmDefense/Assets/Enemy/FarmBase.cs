@@ -8,6 +8,8 @@ public class FarmBase : MonoBehaviour
 
     public Vector3 posFarm;
 
+    public EnemyBase enemy;  //enemyのクラス呼び出し
+
     /// <summary>
     /// 更新処理
     /// </summary>
@@ -30,5 +32,23 @@ public class FarmBase : MonoBehaviour
     public virtual void FixedUpdate()
     {
 
+    }
+
+    /// <summary>
+    /// EnemyAirの索敵範囲実装
+    /// </summary>
+    /// <param name="collision"></param>
+    public void OnTriggerEnter(Collider collision)
+    {
+        enemy.OnTriggerEnter(collision);
+    }
+
+    /// <summary>
+    /// EnemyAirの索敵範囲実装
+    /// </summary>
+    /// <param name="collision"></param>
+    public void OnTriggerExit(Collider collision)
+    {
+        enemy.OnTriggerExit(collision);
     }
 }
