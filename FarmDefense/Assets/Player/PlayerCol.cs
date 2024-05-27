@@ -2,17 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 //‚ ‚½‚Á‚½‚Æ‚«‚Ì‚µ‚å‚è‚Â‚­‚é‚æ
-public class PlayerCol : MonoBehaviour
+public class PlayerCol
 {
-    // Start is called before the first frame update
-    void Start()
+    private BoxCollider _GroundCheckCollider;
+
+    public void SetGroundCheckCollision(BoxCollider col)
     {
-        
+        _GroundCheckCollider = col;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
