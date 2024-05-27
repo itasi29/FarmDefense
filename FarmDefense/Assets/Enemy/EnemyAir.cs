@@ -31,7 +31,7 @@ public class EnemyAir : EnemyBase
         _enemyAirMove = false;
         _airAttak = false;
         _circularmotion = false;
-        m_enemyAirPosY = 4;
+        m_enemyAirPosY = 5;
 
         _airMoveX = 0.0f;
         _airMoveY = 0.0f;
@@ -125,7 +125,7 @@ public class EnemyAir : EnemyBase
         }
     }
 
-    private void OnTriggerEnter(Collider collision)
+    private new void OnTriggerEnter(Collider collision)
     {
         if(collision.gameObject.name == "Farm")  //•¨‘Ì‚É“–‚½‚Á‚½‚ç
         {
@@ -136,6 +136,17 @@ public class EnemyAir : EnemyBase
                 _enemyAirMove = true;  //”_ê‚É“’B‚µ‚½
             }
         }
+
+        farm.OnTriggerEnter(collision);  //”_ê‚Ìõ“G”ÍˆÍ
+    }
+
+    /// <summary>
+    /// ”_ê‚Ìõ“G”ÍˆÍ
+    /// </summary>
+    /// <param name="collision"></param>
+    private new void OnTriggerExit(Collider collision)
+    {
+        farm.OnTriggerExit(collision);  //”_ê‚Ìõ“G”ÍˆÍ
     }
 
 }
