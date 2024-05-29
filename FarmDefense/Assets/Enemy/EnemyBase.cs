@@ -54,14 +54,7 @@ public class EnemyBase : MonoBehaviour
     {
         Transform transform = this.transform; //オブジェクトを取得
 
-        if(m_player == false)  //Playerが発見してなかったら農場に向かう
-        {
-            transform.position = Vector3.MoveTowards(transform.position, target.transform.position, m_enemySpeed * Time.deltaTime);  //ターゲットのオブジェクトに向かう
-        }
-        else if(m_player == true)  //Playerが発見できたらPlayerに向かう
-        {
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, m_enemySpeed * Time.deltaTime);  //Playerのオブジェクトに向かう
-        }
+        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, m_enemySpeed * Time.deltaTime);  //ターゲットのオブジェクトに向かう
     }
 
     /// <summary>
@@ -96,9 +89,9 @@ public class EnemyBase : MonoBehaviour
         {
             if (m_attackinterval == false)    //フラグがfalseなら攻撃開始
             {
-                farm.m_farmHp -= m_enemyAttack; //当たってるときHPを減らす
+                //farm.m_farmHp -= m_enemyAttack; //当たってるときHPを減らす
 
-                Debug.Log(farm.m_farmHp -= (int)m_enemyAttack);
+                //Debug.Log(farm.m_farmHp -= (int)m_enemyAttack);
 
                 m_attackinterval = true;  //1回だけ攻撃可能
             }

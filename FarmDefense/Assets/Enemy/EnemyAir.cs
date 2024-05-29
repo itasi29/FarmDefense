@@ -11,13 +11,10 @@ public class EnemyAir : EnemyBase
     private bool _enemyAirMove;  //農場にむかう行動フラグ
     private bool _circularmotion;  //円運動をするフラグ
     private bool _airAttak;  //敵が攻撃するフラグ
+    private bool _airReturn;  //敵が空中に戻るフラグ
     private float _airAttakTime; //敵が攻撃するまでの間隔
-    private float _airMoveX;  //敵のX軸行動
-    private float _airMoveY;  //敵のY軸行動
-    private float _airMoveZ;  //敵のZ軸行動
     float x;  //X軸
     float z;  //Z軸
-    //private Vector3 defPosition;  //Vector3で位置情報を取得
     private Vector3 pos;
 
     /// <summary>
@@ -33,9 +30,7 @@ public class EnemyAir : EnemyBase
         _circularmotion = false;
         m_enemyAirPosY = 5;
 
-        _airMoveX = 0.0f;
-        _airMoveY = 0.0f;
-        _airMoveZ = 0.0f;
+        _airReturn = false;
     }
 
     /// <summary>
@@ -43,42 +38,6 @@ public class EnemyAir : EnemyBase
     /// </summary>
     new void Update()
     {
-        if (_circularmotion == true)   //_circularmotionがtrueなら旋回行動
-        {
-
-            _airAttakTime = Time.time;  //攻撃までの間隔を進める
-
-            x = m_enemyRadius * Mathf.Sin(Time.time * m_enemyRadiusSpeed);
-            z = m_enemyRadius * Mathf.Cos(Time.time * m_enemyRadiusSpeed);
-
-            transform.position = new Vector3(x + pos.x, pos.y + m_enemyAirPosY, z + pos.z);
-
-            if (_airAttakTime >= 10.0f)
-            {
-                _airAttak = true;  //攻撃フラグを可能にする
-
-                _circularmotion = false;  //旋回行動をやめる
-
-            }
-        }
-        else if(_airAttak == true) //攻撃フラグがtrueなら
-        {
-            float sb,sbx, sby, sbz; //敵の移動速度を設定する
-
-            sbx = base.target.transform.position.x - pos.x;
-            sby = base.target.transform.position.y - pos.y;
-            sbz = base.target.transform.position.z - pos.z;
-
-            sb = Mathf.Sqrt(sbx * sbx + sby * sby + sbz * sbz);
-
-            _airMoveX = sbx / sb * m_enemySpeed;
-            _airMoveY = sby / sb * m_enemySpeed;
-            _airMoveZ = sbz / sb * m_enemySpeed;
-
-            transform.position = new Vector3(pos.x + _airMoveX, pos.y + _airMoveY, pos.z + _airMoveZ);
-            
-        }
-
     }
 
     /// <summary>
@@ -94,19 +53,62 @@ public class EnemyAir : EnemyBase
     /// </summary>
     public override void FixedUpdate()
     {
-        if (_circularmotion == false && _enemyAirMove == false)    //_circularmotionがfalseなら農場へ向かう行動(最初だけ)
+        if (_circularmotion == false && _enemyAirMove == false && m_player == false)    //_circularmotionがfalse、_enemyAirMoveもfalse、m_playerもfalseなら農場へ向かう行動(最初だけ)
         {
-            Transform trans = this.transform;
+            pos = transform.position;
 
-            pos = transform.position;  //ポジションをVector3で定義する
+            Vector3 farm = new Vector3(target.transform.position.x, m_enemyAirPosY, target.transform.position.z);
 
             pos.y = m_enemyAirPosY;   //Y座標を設定
 
-            transform.position = pos;
+            float timer = 0;
 
-            base.FixedUpdate();
+            timer += Time.deltaTime;
+
+            transform.position = Vector3.Lerp(pos, farm, timer);
+         
         }
 
+        if (_circularmotion == true && m_player == false)   //_circularmotionがtrue、m_playerがfalseなら旋回行動
+        {
+
+            _airAttakTime += Time.deltaTime;  //攻撃までの間隔を進める
+
+            x = m_enemyRadius * Mathf.Sin(_airAttakTime * m_enemyRadiusSpeed);
+            z = m_enemyRadius * Mathf.Cos(_airAttakTime * m_enemyRadiusSpeed);
+
+            transform.position = new Vector3(x + pos.x, pos.y, z + pos.z);
+
+            if (_airAttakTime >= 10.0f)
+            {
+                _airAttak = true;  //攻撃フラグを可能にする
+
+                _circularmotion = false;  //旋回行動をやめる
+
+            }
+        }
+        else if (_airAttak == true && m_player == false) //攻撃フラグがtrue、m_playerがfalseなら
+        {
+            base.FixedUpdate();   //農場に攻撃する
+        }
+        else if(_airReturn == true && m_player == false)  //空中に戻るフラグがtrue、m_playerがfalseなら
+        {
+            pos = transform.position;
+
+            Vector3 farm = new Vector3(target.transform.position.x, m_enemyAirPosY, target.transform.position.z);
+
+            float timer = 0;
+
+            timer += Time.deltaTime;
+
+            transform.position = Vector3.Lerp(pos, farm, timer);
+
+            if(pos.y >= 4.9f)
+            {
+                _circularmotion = true;  //旋回行動をさせる
+            }
+        }
+        
     }
 
     /// <summary>
@@ -121,7 +123,9 @@ public class EnemyAir : EnemyBase
 
             _airAttak = false;  //攻撃をしたらfalseに戻す
 
-            _airAttakTime = _airAttakTime - Time.time;  //初期に戻す
+            _airReturn = true;  //空中に戻す
+
+            _airAttakTime = 0;  //初期に戻す
         }
     }
 
