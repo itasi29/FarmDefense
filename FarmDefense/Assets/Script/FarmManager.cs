@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEngine;
 
+
 public class FarmManager : MonoBehaviour
 {
     /* 定数 */
-    const int kFarmNum = 6; // 農場の数
+    public const int kFarmNum = 6; // 農場の数
 
     /* 変数 */
     private GameObject[] _farmList = new GameObject[kFarmNum];   // 農場のオブジェクト情報

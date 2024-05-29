@@ -32,6 +32,9 @@ public class CameraControl : MonoBehaviour
     private bool _isUpdownInput;        // 上下に入力したか
     private bool _isReset;              // リセットしたか
 
+    // FIXME: なんかいい感じの変数名に変更
+    private List<GameObject> _cursorObjs;    // カーソルとあうオブジェクトの情報たち
+
     private void Start()
     {
         // ターゲット(プレイヤー)から情報取得
@@ -54,6 +57,12 @@ public class CameraControl : MonoBehaviour
         _isUpdownInput = false;
         // リセットしていないに
         _isReset = false;
+
+        // カーソルに当たる情報に農場を追加
+        for (int i = 0; i < FarmManager.kFarmNum; ++i)
+        {
+            _cursorObjs.Add(GameObject.Find("Farm" + i));
+        }
     }
 
     private void Update()
@@ -240,6 +249,28 @@ public class CameraControl : MonoBehaviour
         // リセットしていないに
         _isReset = false;
     }
+
+    // FIXME: いい感じの変数名に
+    /// <summary>
+    /// 正面にあるオブジェクトのHP情報を表示する
+    /// </summary>
+    private void Cursor()
+    {
+        foreach (var item in _cursorObjs)
+        {
+            // そのオブジェクトが破壊or死亡していれば無視
+            // TODO: 関数作成
+            if (true) continue;
+
+            // 自身からオブジェクトまでのベクトル(x・ｚ方向のみ)を生成
+
+            // TODO: 正面ベクトルと上のベクトルの内積で範囲ないなら情報描画させる
+
+            // TODO: スクリプトに合わせて現在ＨＰと最大ＨＰを取得する関数作成
+        }
+    }
+
+
 
 
     /// <summary>
