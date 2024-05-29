@@ -56,6 +56,10 @@ public class Player : MonoBehaviour
 
     private GameObject _ground;
 
+    private int _nearAtk = 0;
+
+    private int _farAtk = 0;
+
     // Start is called before the first frame update
     void Start()
     {
