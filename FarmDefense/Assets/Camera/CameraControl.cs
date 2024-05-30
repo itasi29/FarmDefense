@@ -1,13 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.Timeline;
-using static UnityEditor.PlayerSettings;
 
 public class CameraControl : MonoBehaviour
 {
@@ -34,6 +27,8 @@ public class CameraControl : MonoBehaviour
 
     // FIXME: なんかいい感じの変数名に変更
     private List<GameObject> _cursorObjs;    // カーソルとあうオブジェクトの情報たち
+    private GameObject _hpBarObj;            // HPバーの対象となるオブジェクト
+    private GameObject _hpBar;               // HPバー自体のオブジェクト
 
     private void Start()
     {
@@ -260,18 +255,77 @@ public class CameraControl : MonoBehaviour
         {
             // そのオブジェクトが破壊or死亡していれば無視
             // TODO: 関数作成
-            if (true) continue;
+            if (!IsExist(item)) continue;
 
             // 自身からオブジェクトまでのベクトル(x・ｚ方向のみ)を生成
 
             // TODO: 正面ベクトルと上のベクトルの内積で範囲ないなら情報描画させる
 
             // TODO: スクリプトに合わせて現在ＨＰと最大ＨＰを取得する関数作成
+
+            return;
+        }
+
+        // ここまでくればどこにもカーソルがあってないから削除する
+        if (_hpBar)
+        {
+            Destroy(_hpBar);
+        }
+        // 何も入っていないとする
+        _hpBarObj = null;
+        _hpBar = null;
+    }
+
+    private bool IsExist(GameObject item)
+    {
+        bool isExist = true;
+
+        return isExist;
+    }
+
+    private void CreateHpBar(GameObject item)
+    {
+        // オブジェクトが違う場合は変更
+        if (_hpBarObj != item)
+        {
+            _hpBarObj = item;
+        }
+        
+        // HPバーが生成されていなければ作成
+        if (_hpBar)
+        {
+            // TODO: 作成
+            // _hpBar = ;
         }
     }
 
+    /// <summary>
+    /// Hpバーの情報を変更
+    /// </summary>
+    private void ChangeHpBarInfo()
+    {
+        int nowHp = 0;
+        int maxHp = 100;
 
+        // 農場の場合
+        if (_hpBarObj.tag == "farm")
+        {
+            Farm script = _hpBarObj.GetComponent<Farm>();
+            nowHp = script.Hp;
+            maxHp = script.MaxHp;
+        }
+        // 敵の場合
+        else if (_hpBarObj.tag == "enemy")
+        {
+            // TODO: 敵の場合も上と同じ処理になるようにする
+        }
 
+        // テキストの変更
+        // 描画時→情報名：●●●/▲▲▲
+        // ●：nowHp, ▲：maxHp
+
+        // バーの変更
+    }
 
     /// <summary>
     /// 値を制限する関数
