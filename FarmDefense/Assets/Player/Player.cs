@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
 
     private const float kJumpPower = 30.0f;//ジャンプ力
 
-    private const int kStaminaMax = 1200;//スタミナの最大値
+    private const int kStaminaMax = 500;//スタミナの最大値
 
     private const int kHpMax = 100;//体力の最大値
 
@@ -31,7 +31,9 @@ public class Player : MonoBehaviour
 
     private const int kReviveSafeTime = 60;//エネミーにぶつかったときの無敵時間
 
-    private Vector3 kInitPos = new Vector3(0,0,0);
+    private const int kHeavyAttackNeedStamina = 100;//強攻撃時に必要になるスタミナ
+
+    private Vector3 kInitPos = new Vector3(0, 0, 0);
 
     private Vector3 _moveVec;
     private Rigidbody _rigidBody;
@@ -54,11 +56,12 @@ public class Player : MonoBehaviour
 
     private int _safeTime;
 
-    private GameObject _ground;
+    private bool _isUseNearWeapon;
 
-    private int _nearAtk = 0;
+    private bool _isTired;
 
-    private int _farAtk = 0;
+    private NearWeapon _nearWeapon;
+    private FarWeapon _farWeapon;
 
     // Start is called before the first frame update
     void Start()
@@ -72,11 +75,25 @@ public class Player : MonoBehaviour
 
         _isStan = false;
 
-        _ground = GameObject.Find("Ground");
+        _isTired = false;
+
+        //TODO:ほかのいい感じの処理に変えたい.取得はできてた
+        GameObject weapon = GameObject.Find("scop");
+
+        _nearWeapon = weapon.GetComponent<NearWeapon>();
+
+        weapon = null;
+
+        weapon = GameObject.Find("gun");
+
+        _farWeapon = weapon.GetComponent<FarWeapon>();
+
+
     }
 
     void FixedUpdate()
     {
+        Debug.Log(_stamina);
         //スタンしていないときの処理
         if (!_isStan)
         {
@@ -94,10 +111,23 @@ public class Player : MonoBehaviour
                 }
             }
             //スタミナが最大値よりも少なかったら
-            else if (_stamina < kStaminaMax)
+            if (_stamina < kStaminaMax && !_isDash)
             {
                 //スタミナを回復する
                 _stamina++;
+            }
+            //スタミナが最大値になったら
+            if (_stamina >= kStaminaMax)
+            {
+                _stamina = kStaminaMax;
+                _isTired = false;
+            }
+            //スタミナが0以下になったときの処理
+            else if (_stamina < 0)
+            {
+                _stamina = 0;
+                _isDash = false;
+                _isTired = true;
             }
 
         }
@@ -112,7 +142,7 @@ public class Player : MonoBehaviour
             }
         }
         //無敵時間があるとき
-        if(_safeTime >= 0)
+        if (_safeTime >= 0)
         {
             Debug.Log("むてきだよ");
             _isSafe = true;
@@ -127,6 +157,32 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        //攻撃ボタンを押したとき
+        if (Input.GetButtonDown("LB"))
+        {
+            //近距離武器を持っているかどうか
+            if (_isUseNearWeapon)
+            {
+                _nearWeapon.Attack();
+            }
+            else
+            {
+                _farWeapon.Attack();
+            }
+        }
+        //強攻撃を使ったとき(ボタンわかんない)
+        if (Input.GetButtonDown("RB") && !_isTired)
+        {
+            _nearWeapon.HeavyAttack();
+            _stamina -= kHeavyAttackNeedStamina;
+        }
+        //武器切り替え
+        if (Input.GetButtonDown("Y"))
+        {
+            _isUseNearWeapon = !_isUseNearWeapon;
+        }
+        //移動処理(仮)
         Move();
         if (!_isStan)
         {
@@ -145,7 +201,8 @@ public class Player : MonoBehaviour
             }
         }
         //ダメージを食らったとき
-        if (Input.GetButtonDown("Y") && !_isSafe)
+        //if文はデバッグ用
+        if (Input.GetButtonDown("StickPushRight") && !_isSafe)
         {
             OnDamage(10);
             Debug.Log(_hp);
@@ -164,8 +221,8 @@ public class Player : MonoBehaviour
 
         dirVec.Normalize();
 
-        //ダッシュボタンを押していたら
-        if (Input.GetButton("X"))
+        //ダッシュボタンを押していて疲れ状態じゃなかったら
+        if (Input.GetButton("X") && !_isTired)
         {
             //スタミナがあって移動入力がされていたら
             if (_stamina > 0 && dirVec != Vector3.zero)
@@ -173,13 +230,6 @@ public class Player : MonoBehaviour
                 //ダッシュフラグを立てる
                 _isDash = true;
             }
-            //スタミナがない状態だったら
-            else
-            {
-                //通常より少し遅いスピード
-                _speed = kDownSpeed;
-            }
-
         }
         //押していない場合
         else
@@ -188,6 +238,11 @@ public class Player : MonoBehaviour
             _isDash = false;
             //通常のスピード
             _speed = kSpeed;
+        }
+        //疲れ状態だった場合
+        if (_isTired)
+        {
+            _speed = kDownSpeed;
         }
         _moveVec = dirVec * _speed;
     }

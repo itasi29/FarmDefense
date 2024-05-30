@@ -4,19 +4,19 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 //武器の処理作るよ
-public abstract class Weapon
+public abstract class Weapon : MonoBehaviour
 {
-    enum WeaponStatus
+    public enum WeaponStatus 
     {
         kAtk,
         kSpeed,
-        kLange,
+        kRange,
         kStatusNum
     };
 
 
     //武器のステータスの情報をまとめる
-    private struct StatusInfo
+    protected struct StatusInfo
     {
         public int point;//ステータスの値
 
@@ -24,14 +24,14 @@ public abstract class Weapon
     }
 
     //ステータスの情報を保存する配列
-    private StatusInfo[] statusInfo = new StatusInfo[(int)WeaponStatus.kStatusNum];
+    protected StatusInfo[] statusInfo = new StatusInfo[(int)WeaponStatus.kStatusNum];
 
     /// <summary>
     /// 武器のステータスのレベルを設定する
     /// </summary>
     /// <param name="status">どのステータスのレベルを変更するか</param>
     /// <param name="level">変更後のレベル</param>
-    void SetLevel(WeaponStatus status,int level)
+    public void SetLevel(WeaponStatus status,int level)
     {
         statusInfo[(int)status].level = level;
         statusInfo[(int)status].point = level;//TODO 外部ファイル化して値を変化できるようにする
@@ -41,11 +41,11 @@ public abstract class Weapon
     /// </summary>
     /// <param name="status">取得したいステータス</param>
     /// <returns></returns>
-    int GetLevel(WeaponStatus status)
+    public int GetLevel(WeaponStatus status)
     {
         return statusInfo[(int)status].level;
     }
-    int GetStatusPoint(WeaponStatus status)
+    public int GetStatusPoint(WeaponStatus status)
     {
         return statusInfo[(int)status].point;
     }
