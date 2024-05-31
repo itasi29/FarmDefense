@@ -21,7 +21,7 @@ public class EnemyAir : EnemyBase
 
     private Vector3 _axis = Vector3.up;   //‰ñ“]Ž²
 
-    private float _period = 10; //‰~‰^“®ŽüŠú
+    private float _period = 5; //‰~‰^“®ŽüŠú
 
     private bool _updateRotation = true;  //Œü‚«‚ðXV
 
@@ -86,7 +86,7 @@ public class EnemyAir : EnemyBase
             {
                 pos = transform.position;
 
-                Vector3 farm = new Vector3(target.transform.position.x, m_enemyAirPosY, target.transform.position.z);
+                Vector3 farm = new Vector3(target.transform.position.x - 2.0f, m_enemyAirPosY, target.transform.position.z);
 
                 float timer = 0;
 
@@ -120,12 +120,6 @@ public class EnemyAir : EnemyBase
                 circlepos += _center;
 
                 tr.position = circlepos;
-
-                //x = m_enemyRadius * Mathf.Sin(_airAttakTime * m_enemyRadiusSpeed);
-                //z = m_enemyRadius * Mathf.Cos(_airAttakTime * m_enemyRadiusSpeed);
-
-                //transform.position = new Vector3(x + pos.x, pos.y, z + pos.z);
-
 
 
                 if (_airAttakTime >= 10.0f)
