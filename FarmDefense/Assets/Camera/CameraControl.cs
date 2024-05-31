@@ -1,23 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraControl : MonoBehaviour
 {
     /* 定数 */
     private const float kDistance = 2.2f;   // ターゲットとカメラとの距離
-    private const float kShiftPosY   = 1.2f;   // ターゲット中心から上にずらす量
+    private const float kShiftPosY = 1.2f;   // ターゲット中心から上にずらす量
     private const float kAxisMinThershold = 0.2f; // 入力情報の最小のしきい値:無視する割合
     private const float kAxisMaxThershold = 0.8f; // 入力情報の最大のしきい値:1.0とみなす割合
     private const float kRotLimitUpdownSwing = 30.0f * Mathf.Deg2Rad;   // 上下の回転制限
-    private const float kRotSpeedLeftright = 0.4f  * Mathf.Deg2Rad;  // 左右の回転スピード(ラジアン)
-    private const float kRotSpeedUpdown    = 0.25f * Mathf.Deg2Rad;  // 上下の回転スピード(ラジアン)
+    private const float kRotSpeedLeftright = 0.4f * Mathf.Deg2Rad;  // 左右の回転スピード(ラジアン)
+    private const float kRotSpeedUpdown = 0.25f * Mathf.Deg2Rad;  // 上下の回転スピード(ラジアン)
+    // FIXME: 名前いい感じに変更
+    private float kRangeCursorDot = Mathf.Cos(10 * Mathf.Deg2Rad);   // カーソル内とする内積の範囲
+    private const float kCursorLimitDistance = 30.0f;
+    private const float kCursorLimitSqrDistance = kCursorLimitDistance * kCursorLimitDistance;
 
     /* 変数 */
     private GameObject _target;         // ターゲットのオブジェクト情報
     private Transform _targetTrs;       // ターゲットのTransform情報
     private Vector3 _centerPos;         // 中心座標
-    private Vector2 _frontDir;          // カメラの正面方向(Y軸は無視)
     private float _rotLeftrightSwing;   // 左右のカメラの回転量
     private float _rotUpdownSwing;      // 上下のカメラの回転量
     private bool _isUpdownSwing;        // 上下にカメラを揺らしているか
@@ -26,6 +30,8 @@ public class CameraControl : MonoBehaviour
     private bool _isReset;              // リセットしたか
 
     // FIXME: なんかいい感じの変数名に変更
+    [SerializeField] private GameObject _canvas;    // キャンバス
+    [SerializeField] private GameObject _barPrefab; // 元オブジェクト
     private List<GameObject> _cursorObjs;    // カーソルとあうオブジェクトの情報たち
     private GameObject _hpBarObj;            // HPバーの対象となるオブジェクト
     private GameObject _hpBar;               // HPバー自体のオブジェクト
@@ -39,9 +45,6 @@ public class CameraControl : MonoBehaviour
         /* 初期設定 */
         // 中心座標
         _centerPos = _targetTrs.position;
-        // 正面方向
-        _frontDir.y = 1;
-        _frontDir.Normalize();
         // 回転量無しに
         _rotLeftrightSwing = 0.0f;
         _rotUpdownSwing = 0.0f;
@@ -53,6 +56,7 @@ public class CameraControl : MonoBehaviour
         // リセットしていないに
         _isReset = false;
 
+        _cursorObjs = new List<GameObject>();
         // カーソルに当たる情報に農場を追加
         for (int i = 0; i < FarmManager.kFarmNum; ++i)
         {
@@ -74,16 +78,16 @@ public class CameraControl : MonoBehaviour
 
         Move();
 
-        Debug.Log("Camera : Dir = " + _frontDir);
+        Cursor();
     }
 
     /// <summary>
     /// カメラの正面方向を取得(Y軸は無視)
     /// </summary>
     /// <returns>正面方向</returns>
-    public Vector2 GetFrontDir()
+    public Vector3 GetForward()
     {
-        return _frontDir;
+        return transform.forward;
     }
 
     /// <summary>
@@ -229,12 +233,6 @@ public class CameraControl : MonoBehaviour
         // リセットまたは回転していれば方向の更新
         if (_isReset || _isLeftrightSwing || _isUpdownSwing)
         {
-            // 正面方向変更
-            _frontDir.x = -pos.x;
-            _frontDir.y = -pos.z;
-            // 正規化
-            _frontDir.Normalize();
-
             // オブジェクトの向き変更
             Vector3 lookPos = _centerPos;
             lookPos.y += kShiftPosY;
@@ -247,33 +245,74 @@ public class CameraControl : MonoBehaviour
 
     // FIXME: いい感じの変数名に
     /// <summary>
-    /// 正面にあるオブジェクトのHP情報を表示する
+    /// 一番近くにある正面にあるオブジェクトのHP情報を表示する
     /// </summary>
     private void Cursor()
     {
+        GameObject drawingObj = null;
+        float nowSqrDist = 0.0f;
+
         foreach (var item in _cursorObjs)
         {
-            // そのオブジェクトが破壊or死亡していれば無視
+            // そのオブジェクトが破壊or死亡していれば次へ
             // TODO: 関数作成
             if (!IsExist(item)) continue;
 
-            // 自身からオブジェクトまでのベクトル(x・ｚ方向のみ)を生成
+            // 自身からオブジェクトまでのベクトルを生成
+            Vector3 cameraToitemVec = item.transform.position - transform.position;
 
-            // TODO: 正面ベクトルと上のベクトルの内積で範囲ないなら情報描画させる
+            // もし距離が離れすぎていたら次へ
+            float sqrDist = cameraToitemVec.sqrMagnitude;
+            if (sqrDist > kCursorLimitSqrDistance) continue;
 
-            // TODO: スクリプトに合わせて現在ＨＰと最大ＨＰを取得する関数作成
+            // 正規化
+            cameraToitemVec.Normalize();
+            // 内積
+            float dot = Vector3.Dot(cameraToitemVec, transform.forward);
+
+            // 設定範囲内かの判定
+            if (dot > kRangeCursorDot)
+            {
+                // 1回目のヒット
+                if (!drawingObj)
+                {
+                    // そのまま代入
+                    drawingObj = item;
+                    nowSqrDist = sqrDist;
+                }
+                // 2回目以降のヒット
+                else
+                {
+                    // 現在の距離より小さいなら代入
+                    if (sqrDist < nowSqrDist)
+                    {
+                        drawingObj = item;
+                        nowSqrDist = sqrDist;
+                    }
+                }
+            }
+        }
+
+        // 誰にもヒットしなかったら終了
+        if (!drawingObj)
+        {
+            // もしHPバーを描画していれば消す
+            if (_hpBar)
+            {
+                Destroy(_hpBar);
+                // 何も入っていないとする
+                _hpBarObj = null;
+                _hpBar = null;
+            }
 
             return;
         }
 
-        // ここまでくればどこにもカーソルがあってないから削除する
-        if (_hpBar)
-        {
-            Destroy(_hpBar);
-        }
-        // 何も入っていないとする
-        _hpBarObj = null;
-        _hpBar = null;
+        // HPバーの生成
+        CreateHpBar(drawingObj);
+
+        // HPバーの情報更新
+        ChangeHpBarInfo();
     }
 
     private bool IsExist(GameObject item)
@@ -292,10 +331,10 @@ public class CameraControl : MonoBehaviour
         }
         
         // HPバーが生成されていなければ作成
-        if (_hpBar)
+        if (!_hpBar)
         {
             // TODO: 作成
-            // _hpBar = ;
+            _hpBar = Instantiate(_barPrefab, _canvas.transform);
         }
     }
 
@@ -305,6 +344,7 @@ public class CameraControl : MonoBehaviour
     private void ChangeHpBarInfo()
     {
         int nowHp = 0;
+        int deltaHp = 50;
         int maxHp = 100;
 
         // 農場の場合
@@ -312,19 +352,34 @@ public class CameraControl : MonoBehaviour
         {
             Farm script = _hpBarObj.GetComponent<Farm>();
             nowHp = script.Hp;
+            deltaHp = script.DeltaHp;
             maxHp = script.MaxHp;
         }
         // 敵の場合
         else if (_hpBarObj.tag == "enemy")
         {
             // TODO: 敵の場合も上と同じ処理になるようにする
+            return;
         }
 
-        // テキストの変更
-        // 描画時→情報名：●●●/▲▲▲
-        // ●：nowHp, ▲：maxHp
+        // FIXME: 要素をenumで定義するように
+        /* テキストの変更 */
+        Text text = _hpBar.transform.GetChild(2).GetComponent<Text>();
+        // 描画時 → 情報名：●●●/▲▲▲
+        text.text = _hpBarObj.name + ":" + nowHp + " / " + maxHp;
 
-        // バーの変更
+        // ここからやるためのワザとのエラー
+        int ;
+
+        /* スライダーの変更 */
+        Slider hpSlider = _hpBar.transform.GetChild(1).GetComponent<Slider>();
+        Slider deltahpSlider = _hpBar.transform.GetChild(0).GetComponent<Slider>();
+        // 最大値設定
+        hpSlider.maxValue = maxHp;
+        deltahpSlider.maxValue = maxHp;
+        // 現在値設定
+        hpSlider.value = nowHp;
+        deltahpSlider.value = deltaHp;
     }
 
     /// <summary>
