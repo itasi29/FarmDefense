@@ -344,11 +344,11 @@ public class CameraControl : MonoBehaviour
     private void ChangeHpBarInfo()
     {
         int nowHp = 0;
-        int deltaHp = 50;
+        int deltaHp = 0;
         int maxHp = 100;
 
         // 農場の場合
-        if (_hpBarObj.tag == "farm")
+        if (_hpBarObj.tag == "Farm")
         {
             Farm script = _hpBarObj.GetComponent<Farm>();
             nowHp = script.Hp;
@@ -356,10 +356,10 @@ public class CameraControl : MonoBehaviour
             maxHp = script.MaxHp;
         }
         // 敵の場合
-        else if (_hpBarObj.tag == "enemy")
+        else if (_hpBarObj.tag == "Enemy")
         {
             // TODO: 敵の場合も上と同じ処理になるようにする
-            return;
+            
         }
 
         // FIXME: 要素をenumで定義するように
@@ -368,18 +368,15 @@ public class CameraControl : MonoBehaviour
         // 描画時 → 情報名：●●●/▲▲▲
         text.text = _hpBarObj.name + ":" + nowHp + " / " + maxHp;
 
-        // ここからやるためのワザとのエラー
-        int ;
-
         /* スライダーの変更 */
         Slider hpSlider = _hpBar.transform.GetChild(1).GetComponent<Slider>();
         Slider deltahpSlider = _hpBar.transform.GetChild(0).GetComponent<Slider>();
-        // 最大値設定
-        hpSlider.maxValue = maxHp;
-        deltahpSlider.maxValue = maxHp;
-        // 現在値設定
-        hpSlider.value = nowHp;
-        deltahpSlider.value = deltaHp;
+        // 割合
+        float nowRate = (float)nowHp / (float)maxHp;
+        float deltaRate = (float)deltaHp / (float)maxHp;
+        // 変更
+        hpSlider.value = nowRate;
+        deltahpSlider.value = deltaRate;
     }
 
     /// <summary>
