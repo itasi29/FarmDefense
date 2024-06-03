@@ -6,8 +6,6 @@ using static UnityEditor.PlayerSettings;
 public class EnemyAir : EnemyBase
 {
     public int m_enemyAirPosY;  //空のエネミーのY座標のポジション
-    private int m_enemyRadius;  //旋回の円運動の半径
-    private int m_enemyRadiusSpeed; //旋回するときの速さ
     private bool _enemyAirMove;  //農場にむかう行動フラグ
     private bool _circularmotion;  //円運動をするフラグ
     private bool _airAttak;  //敵が攻撃するフラグ
@@ -23,15 +21,11 @@ public class EnemyAir : EnemyBase
 
     private float _period = 5; //円運動周期
 
-    private bool _updateRotation = true;  //向きを更新
-
     /// <summary>
     /// スタート関数
     /// </summary>
     void Start()
     {
-        m_enemyRadius = 3;
-        m_enemyRadiusSpeed = 1;
         _airAttakTime = 0.0f;
         _enemyAirMove = false;
         _airAttak = false;
@@ -51,9 +45,9 @@ public class EnemyAir : EnemyBase
     /// <summary>
     /// 初期化処理
     /// </summary>
-    public override void Init()
+    public override void Init(Vector3 pos)
     {
-        base.Init();
+        base.Init(pos);
     }
 
     /// <summary>
