@@ -4,38 +4,85 @@ using UnityEngine;
 
 public class FarmBase : MonoBehaviour
 {
-    public int m_farmHp = 100;  //農場の体力
+    [SerializeField] EnemyBase enemy;  //enemyの宣言
 
-    public Vector3 posFarm;
+    /* 定数 */
+    private const int kMaxHp = 100;    // 最大HP
+    private const int kDecreaseSpeed = 1;
 
-    public EnemyBase enemy;  //enemyのクラス呼び出し
+    /* 変数 */
+    [SerializeField] private int _hp;        // 現在のHP
+    [SerializeField] private int _deltaHp;   // 減少HP
+    private bool _isBreak;  // 壊れているか
+    private bool _isDelta;  // 現在のHPと減少HPの差があるか
 
-    /// <summary>
-    /// 更新処理
-    /// </summary>
-    public virtual void Update()
+    /* プロパティ */
+    public int Hp { get { return _hp; } }
+    public int DeltaHp { get { return _deltaHp; } }
+    public int MaxHp { get { return kMaxHp; } }
+    public bool IsBreak { get { return _isBreak; } }
+
+
+    private void Start()
     {
+        /* 初期化 */
+        _hp = kMaxHp;
+        _deltaHp = kMaxHp;
+        _isBreak = false;
+        _isDelta = false;
+    }
 
+    private void FixedUpdate()
+    {
+        if (_isDelta)
+        {
+            _deltaHp -= kDecreaseSpeed;
+
+            // 減少HPが現在のHPまで減ったら終了
+            if (_deltaHp < _hp)
+            {
+                _deltaHp = _hp;
+                _isDelta = false;
+            }
+        }
     }
 
     /// <summary>
-    /// 初期化処理
+    /// ダメージ処理
     /// </summary>
-    public virtual void Init()
+    /// <param name = "damage">ダメージ値</param>
+    public void OnDamage(int damage)
     {
-        posFarm = this.transform.position;
+        _hp -= damage;
+        _isDelta = true;
+
+        // HPが無くなったら
+        if (_hp <= 0)
+        {
+            // 補正
+            _hp = 0;
+            // 壊れていることに
+            _isBreak = true;
+        }
     }
 
     /// <summary>
-    /// 物理挙動の更新処理
+    /// 回復処理
     /// </summary>
-    public virtual void FixedUpdate()
+    /// <param name = "repairVal">回復量</param>
+    public void OnRepair(int repairVal)
     {
+        // 既に破壊されていたら回復しない
+        if (_isBreak) return;
 
+        _hp += repairVal;
+
+        // HP上限を超えないように
+        _hp = Mathf.Min(_hp, kMaxHp);
     }
 
     /// <summary>
-    /// EnemyAirの索敵範囲実装
+    /// プレイヤーが索敵範囲に入ったら
     /// </summary>
     /// <param name="collision"></param>
     public void OnTriggerEnter(Collider collision)
@@ -44,7 +91,7 @@ public class FarmBase : MonoBehaviour
     }
 
     /// <summary>
-    /// EnemyAirの索敵範囲実装
+    /// プレイヤーが索敵範囲を出たら
     /// </summary>
     /// <param name="collision"></param>
     public void OnTriggerExit(Collider collision)
