@@ -17,9 +17,9 @@ public class EnemyGround : EnemyBase
     /// <summary>
     /// ‰Šú‰»ˆ—
     /// </summary>
-    public override void Init()
+    public override void Init(Vector3 pos)
     {
-        base.Init();
+        base.Init(pos);
     }
 
     /// <summary>

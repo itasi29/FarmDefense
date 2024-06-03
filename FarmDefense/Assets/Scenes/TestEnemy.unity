@@ -988,9 +988,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8faadfcf2383584f9537762fc13523e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_farmHp: 100
-  posFarm: {x: 0, y: 0, z: 0}
   enemy: {fileID: 691771801}
+  _hp: 100
+  _deltaHp: 0
 --- !u!54 &1900718108
 Rigidbody:
   m_ObjectHideFlags: 0

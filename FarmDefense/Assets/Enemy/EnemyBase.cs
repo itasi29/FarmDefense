@@ -36,8 +36,10 @@ public class EnemyBase : MonoBehaviour
     /// <summary>
     /// 初期化処理
     /// </summary>
-    public virtual void Init()
+    public virtual void Init(Vector3 pos)
     {
+        transform.position = pos;  //Enemyの初期位置初期化
+
         m_enemyHp = 0;
         m_enemySpeed = 0;
         m_enemyAttack = 0;
@@ -66,9 +68,7 @@ public class EnemyBase : MonoBehaviour
         {
             if(m_attackinterval == false)    //フラグがfalseなら攻撃開始
             {
-                farm.m_farmHp -= m_enemyAttack; //当たってるときHPを減らす
-
-                Debug.Log(farm.m_farmHp -= (int)m_enemyAttack);
+                farm.OnDamage(m_enemyAttack);  //FarmのHpを減らす
 
                 m_attackinterval = true;  //1回だけ攻撃可能
             }
@@ -113,10 +113,10 @@ public class EnemyBase : MonoBehaviour
     /// プレイヤーが攻撃したら
     /// </summary>
     /// <param name="collision"></param>
-    public virtual void OnCollisionEnter(Collider collision)
-    {
-        //プレイヤーに攻撃されたらダメージを受ける
-    }
+    //public virtual void OnCollisionEnter(Collider collision)
+    //{
+    //    //プレイヤーに攻撃されたらダメージを受ける
+    //}
 
     /// <summary>
     /// プレイヤーが索敵範囲に入ったかどうか
