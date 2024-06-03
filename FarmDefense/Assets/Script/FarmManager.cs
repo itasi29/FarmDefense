@@ -1,77 +1,129 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
+
 
 public class FarmManager : MonoBehaviour
 {
     /* 定数 */
-    private const int kMaxHp = 100;    // 最大HP
+    public const int kFarmNum = 6; // 農場の数
 
     /* 変数 */
-    private int _hp;        // HP
-    private bool _isBreak;  // 壊れているか
+    private GameObject[] _farmList = new GameObject[kFarmNum];   // 農場のオブジェクト情報
+    private Farm[] _farmScript = new Farm[kFarmNum];             // 農場のスクリプト情報
+    private int _totalHp;
+    private int _totalMaxHp;
 
-    void Start()
+    public int Hp { get { return _totalHp; } }
+    public int MaxHp {  get { return _totalMaxHp; } }
+
+    private void Start()
     {
-        /* 初期化 */
-        _hp = kMaxHp;
-        _isBreak = false;
+        _totalHp = 0;
+
+        for (int i = 0; i < kFarmNum; ++i)
+        {
+            _farmList[i] = GameObject.Find("Farm" + i);
+            _farmScript[i] = _farmList[i].GetComponent<Farm>();
+            _totalHp += _farmScript[i].Hp;
+        }
+
+        _totalMaxHp = _totalHp;
     }
 
     private void FixedUpdate()
     {
-        // MEMO : Debug用で出しているだけなので後ほど消す
-        Debug.Log("Farm : hp = " + _hp);
-    }
-
-    /// <summary>
-    /// ダメージ処理
-    /// </summary>
-    /// <param name = "damage">ダメージ値</param>
-    public void OnDamage(int damage)
-    {
-        _hp -= damage;
-
-        // HPが無くなったら
-        if (_hp <= 0)
+        // 総HPの更新
+        _totalHp = 0;
+        foreach (var farm in _farmScript)
         {
-            // 補正
-            _hp = 0;
-            // 壊れていることに
-            _isBreak = true;
+            _totalHp += farm.Hp;
+        }
+
+        // 総HPが0になったら終了
+        if (_totalHp <= 0)
+        {
+            // TODO: ゲームオーバーとして、リザルト画面を呼ぶ
+            return;
         }
     }
 
     /// <summary>
-    /// 回復処理
+    /// 渡された場所から近い農場の座標を返す
     /// </summary>
-    /// <param name = "repairVal">回復量</param>
-    public void OnRepair(int repairVal)
+    /// <param name="pos">自身の場所</param>
+    /// <returns>近い農場の座標</returns>
+    public Vector3 GetNearPos(Vector3 pos)
     {
-        // 既に破壊されていたら回復しない
-        if (_isBreak) return;
+        Vector3 nearPos = pos;
+        bool isNeverIn = true;
 
-        _hp += repairVal;
+        for (int i = 0; i < kFarmNum; ++i)
+        {
+            // 破壊されていたら次へ
+            if (_farmScript[i].IsBreak) continue;
 
-        // HP上限を超えないように
-        _hp = Mathf.Min(_hp, kMaxHp);
+            // 一度も入れられていなければそのまま代入
+            if (isNeverIn)
+            {
+                nearPos = _farmList[i].transform.position;
+                isNeverIn = false;
+            }
+            // 入れられたことがあれば計算
+            else
+            {
+                // 現在選んでいる農場までの距離
+                float nowSqLength = (nearPos - pos).sqrMagnitude;
+                // 確認する農場までの距離
+                float checkSqLength = (_farmList[i].transform.position - pos).sqrMagnitude;
+                // 現在保存されている農場までの距離より近ければ変更
+                if (nowSqLength > checkSqLength)
+                {
+                    nearPos = _farmList[i].transform.position;
+                }
+            }
+        }
+
+        return nearPos;
     }
 
     /// <summary>
-    /// 現在のHPを返す
+    /// 渡された場所から遠い農場の座標を返す
     /// </summary>
-    /// <returns>現在のHP</returns>
-    public int NowHp()
+    /// <param name="pos">自身の場所</param>
+    /// <returns>農場の座標</returns>
+    public Vector3 GetFarPos(Vector3 pos)
     {
-        return _hp;
-    }
+        Vector3 farPos = pos;
+        bool isNeverIn = true;
 
-    /// <summary>
-    /// 破壊されているか
-    /// </summary>
-    /// <returns>true : 破壊されている / false : 残っている</returns>
-    public bool IsRepair()
-    {
-        return _isBreak;
+        for (int i = 1; i < kFarmNum; ++i)
+        {
+            // 破壊されていたら次へ
+            if (_farmScript[i].IsBreak) continue;
+
+            // 一度も入れられていなければそのまま代入
+            if (isNeverIn)
+            {
+                farPos = _farmList[i].transform.position;
+                isNeverIn = false;
+            }
+            // 入れられたことがあれば計算
+            else
+            {
+                // 現在選んでいる農場までの距離
+                float nowSqLength = (farPos - pos).sqrMagnitude;
+                // 確認する農場までの距離
+                float checkSqLength = (_farmList[i].transform.position - pos).sqrMagnitude;
+                // 現在保存されている農場までの距離より遠ければ変更
+                if (nowSqLength < checkSqLength)
+                {
+                    farPos = _farmList[i].transform.position;
+                }
+            }
+        }
+
+        return farPos;
     }
 }
