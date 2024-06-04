@@ -29,22 +29,15 @@ public struct StageData
     public List<WaveData> waveDatas;
 };
 
-public class SpawnerData : MonoBehaviour
+public class SpawnerData
 {
     // ステージデータ
-    [SerializeField] private List<StageData> _stageData;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        Debug.Log("ロード!");
-        LoadStage();
-    }
+    [SerializeField] private List<StageData> _stageData = new List<StageData>();
 
     /// <summary>
     /// ステージデータの読み込み
     /// </summary>
-    private void LoadStage()
+    public void Load()
     {
         // csvファイルの読み込み
         TextAsset stageCsv = Resources.Load("Csv/StageManager") as TextAsset;

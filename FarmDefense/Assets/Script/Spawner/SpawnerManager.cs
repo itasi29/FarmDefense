@@ -39,10 +39,11 @@ public class SpawnerManager : MonoBehaviour
 
     void Start()
     {
+        GameObject parent = GameObject.Find("CreatePos");
         // 生成場所の取得
         for (int i = 0; i < kCreatePosNum; ++i)
         {
-            createPos[i] = GameObject.Find("CreatePos" + i);
+            createPos[i] = parent.transform.GetChild(i).gameObject;
         }
         // プレハブデータの取得
         for (int i = 0; i < kEnemyTypeNum; ++i)
@@ -51,7 +52,7 @@ public class SpawnerManager : MonoBehaviour
         }
 
         // ステージデータの取得
-        _waveData = GameObject.Find("DataManager").GetComponent<SpawnerData>().GetWaveData(_stageNo);
+        _waveData = GameObject.Find("DataManager").GetComponent<DataManager>().Spawner.GetWaveData(_stageNo);
 
         // 各パラメータの初期化
         _nowWaveNo = 1;
