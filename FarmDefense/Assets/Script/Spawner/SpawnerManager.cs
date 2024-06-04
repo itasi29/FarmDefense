@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -5,7 +6,20 @@ using UnityEngine;
 
 public class SpawnerManager : MonoBehaviour
 {
+    /* 定数 */
+    // 生成場所の数
+    [SerializeField] private const int kCreatePosNum = 6;
+
+    // 敵の数
+    // FIXME: まだ敵の種類が完成しきっていないため、出来次第増やしていく
+    [SerializeField] private const int kEnemyTypeNum = 2;
+
+
     /* 変数 */
+    // 生成場所の取得
+    [SerializeField] private GameObject[] createPos = new GameObject[kCreatePosNum];
+    // プレハブデータ
+    [SerializeField] private GameObject[] enemyPrefab = new GameObject[kEnemyTypeNum];  
     // ステージ名
     [SerializeField] private int _stageNo;
     // ステージ生成データ
@@ -25,8 +39,20 @@ public class SpawnerManager : MonoBehaviour
 
     void Start()
     {
+        GameObject parent = GameObject.Find("CreatePos");
+        // 生成場所の取得
+        for (int i = 0; i < kCreatePosNum; ++i)
+        {
+            createPos[i] = parent.transform.GetChild(i).gameObject;
+        }
+        // プレハブデータの取得
+        for (int i = 0; i < kEnemyTypeNum; ++i)
+        {
+            enemyPrefab[i] = (GameObject)Resources.Load("Enemy" + i);
+        }
+
         // ステージデータの取得
-        _waveData = GameObject.Find("DataManager").GetComponent<SpawnerData>().GetWaveData(_stageNo);
+        _waveData = GameObject.Find("DataManager").GetComponent<DataManager>().Spawner.GetWaveData(_stageNo);
 
         // 各パラメータの初期化
         _nowWaveNo = 1;
@@ -68,8 +94,9 @@ public class SpawnerManager : MonoBehaviour
 
         // 生成フレームを超えていなければ終了
         if (_elapsFrame < pattern.createFrame) return;
-        
-        // TODD:敵の種類に合わせての生成
+
+        // 種類・場所に合わせて生成
+        CreateEnemy(pattern.enemyNo, pattern.createPosNo);
 
         // 生成した数の増加
         ++_createNo;
@@ -94,6 +121,21 @@ public class SpawnerManager : MonoBehaviour
         --_elapsFrame;
         Create();
     }
+
+    /// <summary>
+    /// 種類と場所に合わせて敵を生成する
+    /// </summary>
+    /// <param name="enemyNo">敵の番号</param>
+    /// <param name="posNo">生成場所の番号</param>
+    private void CreateEnemy(int enemyNo, int posNo)
+    {
+        GameObject enemy;
+        enemy = Instantiate(enemyPrefab[enemyNo]);
+
+        // TODO: 敵の位置初期化できたらそれに変更
+//        enemy.GetComponent<EnemyBase>().Init(createPos[posNo]);
+    }
+
 
     /// <summary>
     /// 現在のwaveの敵を全て倒した

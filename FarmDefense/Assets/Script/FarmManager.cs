@@ -22,9 +22,10 @@ public class FarmManager : MonoBehaviour
     {
         _totalHp = 0;
 
+        GameObject parent = GameObject.Find("Farm");
         for (int i = 0; i < kFarmNum; ++i)
         {
-            _farmList[i] = GameObject.Find("Farm" + i);
+            _farmList[i] = parent.transform.GetChild(i).gameObject;
             _farmScript[i] = _farmList[i].GetComponent<Farm>();
             _totalHp += _farmScript[i].Hp;
         }

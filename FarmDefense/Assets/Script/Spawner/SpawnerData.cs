@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -28,25 +29,36 @@ public struct StageData
     public List<WaveData> waveDatas;
 };
 
-public class SpawnerData : MonoBehaviour
+public class SpawnerData
 {
     // ステージデータ
-    [SerializeField] private List<StageData> _stageData;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        Debug.Log("ロード!");
-        LoadStage();
-    }
+    [SerializeField] private List<StageData> _stageData = new List<StageData>();
 
     /// <summary>
     /// ステージデータの読み込み
     /// </summary>
-    private void LoadStage()
+    public void Load()
     {
         // csvファイルの読み込み
-        TextAsset stageCsv = Resources.Load("StageManager") as TextAsset;
+        TextAsset stageCsv = Resources.Load("Csv/StageManager") as TextAsset;
+#if true
+        // データ読み込み
+        StageCSV[] items = CSVSerializer.Deserialize<StageCSV>(stageCsv.text);
+
+        foreach (var item in items)
+        {
+            /* 各種データ代入 */
+            StageData data;
+            data.no = item.StageNo;
+            data.enemyBoostRate = item.EnemyBoostRate;
+            data.staticMoney = item.StaticMoney;
+            data.dynamicMoney = item.DynamicMoney;
+            data.waveDatas = LoadPatter(item.StageName);
+
+            _stageData.Add(data);
+        }
+
+#else
         // 変換
         StringReader reader = new StringReader(stageCsv.text);
 
@@ -82,6 +94,7 @@ public class SpawnerData : MonoBehaviour
 
             _stageData.Add(data);
         }
+#endif
     }
 
     /// <summary>
@@ -93,7 +106,53 @@ public class SpawnerData : MonoBehaviour
         List<WaveData> result = new List<WaveData>();
 
         // csvファイルの読み込み
-        TextAsset patternCsv = Resources.Load(stageName) as TextAsset;
+        TextAsset patternCsv = Resources.Load("Csv/" + stageName) as TextAsset;
+
+#if true
+        PatternCSV[] items = CSVSerializer.Deserialize<PatternCSV>(patternCsv.text);
+
+        int nowWaveNo = 1;
+        int createNum = 0;
+        WaveData tempWaveData = new WaveData();
+        List<PatternData> tempPatternData = new List<PatternData>();
+        foreach (var item in items) 
+        {
+            /* 各種データ代入 */
+            PatternData data;
+            data.enemyNo = item.EnemyNo;
+            data.createFrame = (int)(item.CreateSec * 50.0f);
+            data.createPosNo = item.CreatePosNo;
+
+            // ウェーブ数が増加していれば
+            if (nowWaveNo < item.WaveNo)
+            {
+                // Waveにデータを追加
+                tempWaveData.createNum = createNum;
+                tempWaveData.patternDatas = tempPatternData;
+                // 本体に追加
+                result.Add(tempWaveData);
+
+                // ウェーブを進める
+                ++nowWaveNo;
+                // 一時データのリセット
+                createNum = 0;
+                tempPatternData.Clear();
+                // 上がバグったら下のに
+//                tempPatternData = new List<PatternData>();
+            }
+
+            // 生成数の増加
+            ++createNum;
+            // Patternデータに追加
+            tempPatternData.Add(data);
+        }
+
+        // 最後のデータを追加
+        tempWaveData.createNum = createNum;
+        tempWaveData.patternDatas = tempPatternData;
+        // 本体に追加
+        result.Add(tempWaveData);
+#else
         // 変換
         StringReader reader = new StringReader(patternCsv.text);
 
@@ -112,8 +171,6 @@ public class SpawnerData : MonoBehaviour
         // データ一時保存用
         WaveData itemWave = new WaveData();
         List<PatternData> itemPattern = new List<PatternData>();
-
-        int num = 0;
 
         // 全データ読み込み
         while (reader.Peek() != -1) 
@@ -148,19 +205,17 @@ public class SpawnerData : MonoBehaviour
                 nowCheckWaveNo++;
             }
 
-            Debug.Log("追加 : " + num);
             // データ追加
             itemPattern.Add(data);
             // 生成数増加
             createNum++;
-
-            num++;
         }
 
         // 最後のウェーブデータを追加
         itemWave.patternDatas = itemPattern;
         itemWave.createNum = createNum;
         result.Add(itemWave);
+#endif
 
         return result;
     }
