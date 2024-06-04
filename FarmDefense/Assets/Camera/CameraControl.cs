@@ -22,6 +22,7 @@ public class CameraControl : MonoBehaviour
     private GameObject _target;         // ターゲットのオブジェクト情報
     private Transform _targetTrs;       // ターゲットのTransform情報
     private Vector3 _centerPos;         // 中心座標
+    private Vector3 _cameraPos;         // 中心座標
     private float _rotLeftrightSwing;   // 左右のカメラの回転量
     private float _rotUpdownSwing;      // 上下のカメラの回転量
     private bool _isUpdownSwing;        // 上下にカメラを揺らしているか
@@ -45,6 +46,8 @@ public class CameraControl : MonoBehaviour
         /* 初期設定 */
         // 中心座標
         _centerPos = _targetTrs.position;
+        // カメラ座標
+        _cameraPos = _centerPos + new Vector3(0, kShiftPosY, -kDistance);
         // 回転量無しに
         _rotLeftrightSwing = 0.0f;
         _rotUpdownSwing = 0.0f;
@@ -185,9 +188,6 @@ public class CameraControl : MonoBehaviour
     {
         // 中心を更新するか
         bool isUpdateCenter = (_centerPos != _targetTrs.position);
-        // リセットしてないかつどこも更新がなければ変更をしない
-        if (!_isReset && !_isLeftrightSwing && !_isUpdownSwing && !isUpdateCenter) return;
-
         // 中心位置の更新
         if (isUpdateCenter)
         {
@@ -200,47 +200,43 @@ public class CameraControl : MonoBehaviour
             }
         }
 
-        Vector3 pos = _centerPos;
-
-        // 左右の回転量
-        float sinLeftright = Mathf.Sin(_rotLeftrightSwing);
-        float cosLeftright = Mathf.Cos(_rotLeftrightSwing);
-
-        // 上下回転のみor左右+上下回転
-        if (_isUpdownSwing)
+        // 回転またはリセットしていれば
+        if (_isReset || _isLeftrightSwing || _isUpdownSwing)
         {
-            // 上下の回転量
-            float sinUpdown = Mathf.Sin(_rotUpdownSwing);
-            float cosUpdown = Mathf.Cos(_rotUpdownSwing);
+            _cameraPos = _centerPos;
 
-            // 回転した位置の適用
-            pos.x += sinLeftright * (kDistance * cosUpdown);
-            pos.y += kShiftPosY + kDistance * sinUpdown * -1.0f;
-            pos.z += cosLeftright * (kDistance * cosUpdown) * -1.0f;
-        }
-        // 左右回転のみ
-        else
-        {
-            // 回転した位置の適用
-            pos.x += sinLeftright * kDistance;
-            pos.y += kShiftPosY;
-            pos.z += cosLeftright * kDistance * -1.0f;
+            // 左右の回転量
+            float sinLeftright = Mathf.Sin(_rotLeftrightSwing);
+            float cosLeftright = Mathf.Cos(_rotLeftrightSwing);
+            // 上下回転のみor左右+上下回転
+            if (_isUpdownSwing)
+            {
+                // 上下の回転量
+                float sinUpdown = Mathf.Sin(_rotUpdownSwing);
+                float cosUpdown = Mathf.Cos(_rotUpdownSwing);
+
+                // 回転した位置の適用
+                _cameraPos.x += sinLeftright * (kDistance * cosUpdown);
+                _cameraPos.y += kShiftPosY + kDistance * sinUpdown * -1.0f;
+                _cameraPos.z += cosLeftright * (kDistance * cosUpdown) * -1.0f;
+            }
+            // 左右回転のみ
+            else
+            {
+                // 回転した位置の適用
+                _cameraPos.x += sinLeftright * kDistance;
+                _cameraPos.y += kShiftPosY;
+                _cameraPos.z += cosLeftright * kDistance * -1.0f;
+            }
         }
 
         // 位置の代入 
-        transform.position = pos;
+        transform.position = _cameraPos;
 
-        // リセットまたは回転していれば方向の更新
-        if (_isReset || _isLeftrightSwing || _isUpdownSwing)
-        {
-            // オブジェクトの向き変更
-            Vector3 lookPos = _centerPos;
-            lookPos.y += kShiftPosY;
-            transform.LookAt(lookPos);
-        }
-
-        // リセットしていないに
-        _isReset = false;
+        // オブジェクトの向き変更
+        Vector3 lookPos = _centerPos;
+        lookPos.y += kShiftPosY;
+        transform.LookAt(lookPos);
     }
 
     // FIXME: いい感じの変数名に
