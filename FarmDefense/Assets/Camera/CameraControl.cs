@@ -251,7 +251,6 @@ public class CameraControl : MonoBehaviour
         foreach (var item in _cursorObjs)
         {
             // そのオブジェクトが破壊or死亡していれば次へ
-            // TODO: 関数作成
             if (!IsExist(item)) continue;
 
             // 自身からオブジェクトまでのベクトルを生成
@@ -313,9 +312,17 @@ public class CameraControl : MonoBehaviour
 
     private bool IsExist(GameObject item)
     {
-        bool isExist = true;
+        if (item.tag == "Farm")
+        {
+            return item.GetComponent<Farm>().IsBreak;
+        }
+        else if (item.tag == "Enemy")
+        {
+            // TODO: Enemy完成したら有効化
+//            return item.GetComponent<EnemyBase>().IsExist;
+        }
 
-        return isExist;
+        return false;
     }
 
     private void CreateHpBar(GameObject item)
@@ -355,7 +362,10 @@ public class CameraControl : MonoBehaviour
         else if (_hpBarObj.tag == "Enemy")
         {
             // TODO: 敵の場合も上と同じ処理になるようにする
-            
+            EnemyBase script = _hpBarObj.GetComponent<EnemyBase>();
+//            nowHp = script.Hp;
+//            deltaHp = script.DeltaHp;
+//            maxHp = script.MaxHp;
         }
 
         // FIXME: 要素をenumで定義するように
