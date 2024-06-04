@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class NearWeapon : Weapon
 {
@@ -12,10 +14,7 @@ public class NearWeapon : Weapon
 
     private int _attackTime;
 
-    private GameObject _weaponCol;
-
-    private SphereCollider _sphereCollider;
-
+    private List<Collider> _attackCollisions;
 
     private void Start()
     {
@@ -25,27 +24,20 @@ public class NearWeapon : Weapon
 
         _attackTime = 0;
 
-        _weaponCol = GameObject.Find("weaponCol");
 
-        _sphereCollider = _weaponCol.GetComponent<SphereCollider>();
+        _attackCollisions = new List<Collider>();
+
     }
 
     public void FixedUpdate()
     {
         _attackTime++;
-        if (_isAttack)
-        {
-            Debug.Log("攻撃");
-            _weaponCol.SetActive(true);
-        }
-        else
-        {
-            _weaponCol.SetActive(false);
-        }
         if (_attackTime > kAttackTime)
         {
+
             _isAttack = false;
             _attackTime = 0;
+            this.gameObject.GetComponent<Renderer>().material.color = Color.white;
         }
     }
 
@@ -56,13 +48,36 @@ public class NearWeapon : Weapon
 
     public void Attack()
     {
+        this.gameObject.GetComponent<Renderer>().material.color = Color.black;
         _isAttack = true;
+        Debug.Log("こうげきいいいいいい");
         _attackTime = 0;
+        _attackCollisions.Clear();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerStay(Collider other)
     {
-        Debug.Log("あたったにょん");
-        collision.gameObject.SetActive(false);
+        Debug.Log("うおおおおおおおおおおおお");
+        //攻撃をしていなかったら下記の処理を行わない
+        if (!_isAttack) return;
+
+        foreach (var enemy in _attackCollisions)
+        {
+            if (enemy == other)
+            {
+                return;
+            }
+        }
+
+        if (_isAttack)
+        {
+            //TODO::enemyのスクリプトを持ってきてダメージを与える
+            other.gameObject.SetActive(false);
+
+            Debug.Log("あたったにょｎ");
+
+            _attackCollisions.Add(other);
+        }
     }
+
 }
