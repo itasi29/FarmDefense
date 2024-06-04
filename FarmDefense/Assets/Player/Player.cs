@@ -77,6 +77,16 @@ public class Player : MonoBehaviour
 
         _isTired = false;
 
+        _isDash = false;
+
+        _nearWeapon = null;
+
+        _farWeapon = null;
+
+        _isSafe = false;
+
+        _isUseNearWeapon = true;
+
         //TODO:ほかのいい感じの処理に変えたい.取得はできてた
         GameObject weapon = GameObject.Find("scop");
 
@@ -93,7 +103,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        Debug.Log(_stamina);
+ //       Debug.Log(_stamina);
         //スタンしていないときの処理
         if (!_isStan)
         {
@@ -159,8 +169,9 @@ public class Player : MonoBehaviour
     {
 
         //攻撃ボタンを押したとき
-        if (Input.GetButtonDown("LB"))
+        if (Input.GetAxis("RT") > 0)
         {
+            Debug.Log("おした");
             //近距離武器を持っているかどうか
             if (_isUseNearWeapon)
             {
@@ -172,9 +183,8 @@ public class Player : MonoBehaviour
             }
         }
         //強攻撃を使ったとき(ボタンわかんない)
-        if (Input.GetButtonDown("RB") && !_isTired)
+        if (Input.GetAxis("LT") > 0 && !_isTired)
         {
-            _nearWeapon.HeavyAttack();
             _stamina -= kHeavyAttackNeedStamina;
         }
         //武器切り替え
