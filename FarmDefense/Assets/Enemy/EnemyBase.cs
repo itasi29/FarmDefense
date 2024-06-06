@@ -1,30 +1,56 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro.EditorUtilities;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 /// <summary>
 /// エネミーの親
 /// </summary>
 public class EnemyBase : MonoBehaviour
-{  
-    public int m_enemyHp;  //敵のHP
+{
+    /* 田代がやったこと */
+    // 定数の追加
+    // 変数の追加
+    // プロパティの追加
+    // 関数二つの追加
+    // コーディング規約に則って変数名の変更
+    // アクセス指定子の変更
+    /* ここまで */
 
-    public float m_enemySpeed;  //敵のスピード
+    [SerializeField] private int _hp;  //敵のHP
 
-    public int m_enemyAttack;  //敵の攻撃力
+    [SerializeField] protected float _speed;  //敵のスピード
 
-    public float m_attackTime;  //敵の攻撃時間間隔
+    [SerializeField] private int _attack;  //敵の攻撃力
 
-    public bool m_attackinterval;  //攻撃したかのフラグ
+    [SerializeField] private float _attackTime;  //敵の攻撃時間間隔
 
-    public bool m_player;  //プレイヤーを発見したかどうかのフラグ
+    [SerializeField] private bool _attackinterval;  //攻撃したかのフラグ
+
+    [SerializeField] protected bool _isFindPlayer;  //プレイヤーを発見したかどうかのフラグ
 
     [SerializeField] protected GameObject target; //ターゲットのオブジェクト獲得
 
     [SerializeField] protected GameObject player; //Playerのオブジェクト獲得
 
-    public FarmBase farm;  //農場のスクリプト呼び出し
+    public Farm farm;  //農場のスクリプト呼び出し
+
+    /* 田代が追加したところ */
+    // 定数の追加
+    private const int kDecreaseSpeed = 1;   // _deltaHpの減らすスピード
+
+    // 変数の追加
+    private int _maxHp;     // 最大HP(各キャラで違ってくるため変数として持っておく)
+    private int _deltaHp;   // HPの赤表記部分
+    private bool _isDelat;  // DeltaHPを減少しているか
+    private bool _isExist;  // 生存しているか
+
+    // プロパティの作成
+    public int Hp { get { return _hp; } }
+    public int DeltaHp { get { return _deltaHp; } }
+    public int MaxHp { get { return _maxHp; } }
+    public bool IsExist { get { return _isExist; } }
+    /* ここまで */
 
     /// <summary>
     /// 更新処理
@@ -40,13 +66,20 @@ public class EnemyBase : MonoBehaviour
     {
         transform.position = pos;  //Enemyの初期位置初期化
 
-        m_enemyHp = 0;
-        m_enemySpeed = 0;
-        m_enemyAttack = 0;
-        m_attackTime = 0;
+        _hp = 0;
+        _speed = 0;
+        _attack = 0;
+        _attackTime = 0;
 
-        m_attackinterval = false;
-        m_player = false;
+        /* 田代が追加しところ */
+        // TODO: 最大ＨＰを取得する関数は後々作るのでそれを使ってやる
+        _deltaHp = _hp;
+        _isDelat = false;
+        _isExist = true;
+        /* ここまで */
+
+        _attackinterval = false;
+        _isFindPlayer = false;
     }
 
     /// <summary>
@@ -56,7 +89,9 @@ public class EnemyBase : MonoBehaviour
     {
         Transform transform = this.transform; //オブジェクトを取得
 
-        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, m_enemySpeed * Time.deltaTime);  //ターゲットのオブジェクトに向かう
+        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, _speed * Time.deltaTime);  //ターゲットのオブジェクトに向かう
+
+        ReduceDeltaHp();
     }
 
     /// <summary>
@@ -66,44 +101,44 @@ public class EnemyBase : MonoBehaviour
     {
         if(collision.gameObject.name == "Farm") //Farmに当たったら攻撃
         {
-            if(m_attackinterval == false)    //フラグがfalseなら攻撃開始
+            if(_attackinterval == false)    //フラグがfalseなら攻撃開始
             {
-                farm.OnDamage(m_enemyAttack);  //FarmのHpを減らす
+                farm.OnDamage(_attack);  //FarmのHpを減らす
 
-                m_attackinterval = true;  //1回だけ攻撃可能
+                _attackinterval = true;  //1回だけ攻撃可能
             }
-            else if(m_attackinterval == true)  //フラグがtrueなら攻撃中止
+            else if(_attackinterval == true)  //フラグがtrueなら攻撃中止
             {
-                m_attackTime++;  //時間経過
+                _attackTime++;  //時間経過
 
-                if(m_attackTime >= 60.0f)  //時間がたてば
+                if(_attackTime >= 60.0f)  //時間がたてば
                 {
-                    m_attackTime = 0;   //0秒に戻す
+                    _attackTime = 0;   //0秒に戻す
 
-                    m_attackinterval = false; //フラグをfalseに戻す
+                    _attackinterval = false; //フラグをfalseに戻す
                 }
             }
 
         }
         else if(collision.gameObject.name == "Player")  //Plyaerに当たったら攻撃
         {
-            if (m_attackinterval == false)    //フラグがfalseなら攻撃開始
+            if (_attackinterval == false)    //フラグがfalseなら攻撃開始
             {
                 //farm.m_farmHp -= m_enemyAttack; //当たってるときHPを減らす
 
                 //Debug.Log(farm.m_farmHp -= (int)m_enemyAttack);
 
-                m_attackinterval = true;  //1回だけ攻撃可能
+                _attackinterval = true;  //1回だけ攻撃可能
             }
-            else if (m_attackinterval == true)  //フラグがtrueなら攻撃中止
+            else if (_attackinterval == true)  //フラグがtrueなら攻撃中止
             {
-                m_attackTime++;  //時間経過
+                _attackTime++;  //時間経過
 
-                if (m_attackTime >= 60.0f)  //時間がたてば
+                if (_attackTime >= 60.0f)  //時間がたてば
                 {
-                    m_attackTime = 0;   //0秒に戻す
+                    _attackTime = 0;   //0秒に戻す
 
-                    m_attackinterval = false; //フラグをfalseに戻す
+                    _attackinterval = false; //フラグをfalseに戻す
                 }
             }
         }
@@ -126,7 +161,7 @@ public class EnemyBase : MonoBehaviour
     {
         if(collision.gameObject.name == "Player")  //Playerが索敵範囲に入ったらPlayerを追いかける
         {
-            m_player = true;  //m_playerをtrueにする
+            _isFindPlayer = true;  //m_playerをtrueにする
 
             Debug.Log("入った");
         }
@@ -140,10 +175,49 @@ public class EnemyBase : MonoBehaviour
     {
         if(collision.gameObject.name == "Player")
         {
-            m_player = false; //m_playerをfalseにする
+            _isFindPlayer = false; //m_playerをfalseにする
 
             Debug.Log("入った");
 
         }
     }
+
+
+
+    /* 田代が追加したところ */
+    /// <summary>
+    /// ダメージ処理
+    /// </summary>
+    /// <param name="damage">ダメージ量</param>
+    public void OnDamage(int damage)
+    {
+        _hp -= damage;
+        _isDelat = true;
+
+        // HPが無くなったら死亡とする
+        if (_hp <= 0)
+        {
+            _hp = 0;
+            _isExist = false;
+        }
+    }
+
+    /// <summary>
+    /// _deltaHpを_hpまで減らす処理
+    /// </summary>
+    private void ReduceDeltaHp()
+    {
+        // 減少中でないなら終了
+        if (!_isDelat) return;
+
+        // 減少
+        _deltaHp -= kDecreaseSpeed;
+        // 現在のHP未満になったら終了
+        if (_deltaHp < _hp)
+        {
+            _deltaHp = _hp;
+            _isDelat = false;
+        }
+    }
+    /* ここまで */
 }

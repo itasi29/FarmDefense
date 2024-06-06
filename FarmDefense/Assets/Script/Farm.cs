@@ -79,4 +79,35 @@ public class Farm : MonoBehaviour
         // HP上限を超えないように
         _hp = Mathf.Min(_hp, kMaxHp);
     }
+
+
+    /* FarmBaseを消す代わりに追加した部分 */
+    // 渕本への質問：なぜわざわざこっちからUnityの機能読んでんの？
+    //              　ここら辺の作り今度聞きます
+
+    /// <summary>
+    /// プレイヤーが索敵範囲に入ったら
+    /// </summary>
+    /// <param name="collision"></param>
+    public void OnTriggerEnter(Collider collision)
+    {
+//        enemy.OnTriggerEnter(collision);
+        if (collision.tag == "Player")
+        {
+            collision.GetComponent<EnemyBase>().OnTriggerEnter(collision);
+        }
+    }
+
+    /// <summary>
+    /// プレイヤーが索敵範囲を出たら
+    /// </summary>
+    /// <param name="collision"></param>
+    public void OnTriggerExit(Collider collision)
+    {
+//        enemy.OnTriggerExit(collision);
+        if (collision.tag == "Player")
+        {
+            collision.GetComponent<EnemyBase>().OnTriggerExit(collision);
+        }
+    }
 }
