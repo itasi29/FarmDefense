@@ -4,17 +4,26 @@ using UnityEngine;
 
 public class FarWeapon : Weapon
 {
+    [SerializeField] private GameObject _bullet;
+
     private void Start()
     {
-        statusInfo[(int)WeaponStatus.kAtk].point = 5;
+        weaponLevel[(int)WeaponStatus.kAtk] = 1;
     }
 
     public override void Update()
     {
 
     }
-    public void Attack()
+    public void Attack(Vector3 dir)
     {
+        GameObject bullet = Instantiate(_bullet, this.transform.position, Quaternion.identity);
+
+        Bullet script = bullet.GetComponent<Bullet>();
+
+        //TODO:UŒ‚—Í‚ğæ“¾‚Å‚«‚é‚æ‚¤‚É‚·‚é
+        script.SetMoveVec(dir, 0.5f);
+
         Debug.Log("‰“‹——£UŒ‚");
     }
 

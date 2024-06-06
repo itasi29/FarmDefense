@@ -19,7 +19,7 @@ public class NearWeapon : Weapon
 
     private void Start()
     {
-        statusInfo[(int)WeaponStatus.kAtk].point = 10;
+        weaponLevel[(int)WeaponStatus.kAtk] = 1;
 
         _isAttack = false;
 

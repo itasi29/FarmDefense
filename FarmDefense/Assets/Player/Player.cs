@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
 
     private Vector3 kInitPos = new Vector3(0, 0, 0);
 
+    private Vector3 _dirVec;
     private Vector3 _moveVec;
     private Rigidbody _rigidBody;
 
@@ -63,10 +64,13 @@ public class Player : MonoBehaviour
     private NearWeapon _nearWeapon;
     private FarWeapon _farWeapon;
 
+    private CameraControl _camera;
+
     // Start is called before the first frame update
     void Start()
     {
         _rigidBody = GetComponent<Rigidbody>();
+        _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         _stamina = kStaminaMax;
         _hp = kHpMax;
         _speed = kSpeed;
@@ -103,7 +107,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
- //       Debug.Log(_stamina);
+        //       Debug.Log(_stamina);
         //スタンしていないときの処理
         if (!_isStan)
         {
@@ -169,7 +173,7 @@ public class Player : MonoBehaviour
     {
 
         //攻撃ボタンを押したとき
-        if (Input.GetAxis("RT") > 0)
+        if (Input.GetButtonDown("X"))
         {
             Debug.Log("おした");
             //近距離武器を持っているかどうか
@@ -179,16 +183,16 @@ public class Player : MonoBehaviour
             }
             else
             {
-                _farWeapon.Attack();
+                _farWeapon.Attack(_dirVec);
             }
         }
         //強攻撃を使ったとき(ボタンわかんない)
-        if (Input.GetAxis("LT") > 0 && !_isTired)
+        if (Input.GetButtonDown("Y") && !_isTired)
         {
             _stamina -= kHeavyAttackNeedStamina;
         }
         //武器切り替え
-        if (Input.GetButtonDown("Y"))
+        if (Input.GetButtonDown("RB"))
         {
             _isUseNearWeapon = !_isUseNearWeapon;
         }
@@ -221,15 +225,38 @@ public class Player : MonoBehaviour
     private void Move()
     {
 
+        Vector3 cameraDir = _camera.GetForward();
 
         _moveVec = new Vector3(0, 0, 0);
         Vector3 dirVec = new Vector3(0, 0, 0);
 
 
-        dirVec.x = Input.GetAxis("Horizontal");
-        dirVec.z = Input.GetAxis("Vertical");
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        if (cameraDir.x == 0)
+        {
+            dirVec.x = Input.GetAxis("Horizontal");
+            dirVec.z = Input.GetAxis("Vertical") * cameraDir.z;
+        }
+        else if (cameraDir.z == 0)
+        {
+            dirVec.x = Input.GetAxis("Horizontal") * cameraDir.x;
+            dirVec.z = Input.GetAxis("Vertical");
+        }
+        else
+        {
+            dirVec.x = Input.GetAxis("Horizontal") * cameraDir.x;
+            dirVec.z = Input.GetAxis("Vertical") * cameraDir.z;
+        }
 
         dirVec.Normalize();
+
+        if (dirVec.sqrMagnitude != 0)
+        {
+            _dirVec = dirVec;
+            this.transform.rotation = Quaternion.LookRotation(dirVec);
+        }
 
         //ダッシュボタンを押していて疲れ状態じゃなかったら
         if (Input.GetButton("X") && !_isTired)
