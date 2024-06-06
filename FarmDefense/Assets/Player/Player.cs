@@ -64,10 +64,13 @@ public class Player : MonoBehaviour
     private NearWeapon _nearWeapon;
     private FarWeapon _farWeapon;
 
+    private CameraControl _camera;
+
     // Start is called before the first frame update
     void Start()
     {
         _rigidBody = GetComponent<Rigidbody>();
+        _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         _stamina = kStaminaMax;
         _hp = kHpMax;
         _speed = kSpeed;
@@ -104,7 +107,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
- //       Debug.Log(_stamina);
+        //       Debug.Log(_stamina);
         //スタンしていないときの処理
         if (!_isStan)
         {
@@ -222,19 +225,37 @@ public class Player : MonoBehaviour
     private void Move()
     {
 
+        Vector3 cameraDir = _camera.GetForward();
 
         _moveVec = new Vector3(0, 0, 0);
         Vector3 dirVec = new Vector3(0, 0, 0);
 
 
-        dirVec.x = Input.GetAxis("Horizontal");
-        dirVec.z = Input.GetAxis("Vertical");
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        if (cameraDir.x == 0)
+        {
+            dirVec.x = Input.GetAxis("Horizontal");
+            dirVec.z = Input.GetAxis("Vertical") * cameraDir.z;
+        }
+        else if (cameraDir.z == 0)
+        {
+            dirVec.x = Input.GetAxis("Horizontal") * cameraDir.x;
+            dirVec.z = Input.GetAxis("Vertical");
+        }
+        else
+        {
+            dirVec.x = Input.GetAxis("Horizontal") * cameraDir.x;
+            dirVec.z = Input.GetAxis("Vertical") * cameraDir.z;
+        }
 
         dirVec.Normalize();
 
-        if(dirVec.sqrMagnitude != 0)
+        if (dirVec.sqrMagnitude != 0)
         {
             _dirVec = dirVec;
+            this.transform.rotation = Quaternion.LookRotation(dirVec);
         }
 
         //ダッシュボタンを押していて疲れ状態じゃなかったら

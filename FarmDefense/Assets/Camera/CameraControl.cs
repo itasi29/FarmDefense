@@ -20,7 +20,6 @@ public class CameraControl : MonoBehaviour
 
     /* 変数 */
     private GameObject _target;         // ターゲットのオブジェクト情報
-    private Transform _targetTrs;       // ターゲットのTransform情報
     private Vector3 _centerPos;         // 中心座標
     private Vector3 _cameraPos;         // 中心座標
     private float _rotLeftrightSwing;   // 左右のカメラの回転量
@@ -41,11 +40,10 @@ public class CameraControl : MonoBehaviour
     {
         // ターゲット(プレイヤー)から情報取得
         _target = GameObject.Find("Player");
-        _targetTrs = _target.transform;
 
         /* 初期設定 */
         // 中心座標
-        _centerPos = _targetTrs.position;
+        _centerPos = _target.transform.position;
         // カメラ座標
         _cameraPos = _centerPos + new Vector3(0, kShiftPosY, -kDistance);
         // 回転量無しに
@@ -186,22 +184,25 @@ public class CameraControl : MonoBehaviour
     /// </summary>
     private void Move()
     {
+        Transform targetTrs = _target.transform;
+
         // 中心を更新するか
-        bool isUpdateCenter = (_centerPos != _targetTrs.position);
+        bool isUpdateCenter = (_centerPos != targetTrs.position);
+        Debug.Log(isUpdateCenter);
         // 中心位置の更新
         if (isUpdateCenter)
         {
-            _centerPos = Vector3.Lerp(_centerPos, _targetTrs.position, 0.5f);
+            _centerPos = Vector3.Lerp(_centerPos, targetTrs.position, 0.5f);
 
             // 限りなく0に近づいたらもう重なっていることに
-            if ((_centerPos - _targetTrs.position).sqrMagnitude < 0.001f)
+            if ((_centerPos - targetTrs.position).sqrMagnitude < 0.001f)
             {
-                _centerPos = _targetTrs.position;
+                _centerPos = targetTrs.position;
             }
         }
 
         // 回転またはリセットしていれば
-        if (_isReset || _isLeftrightSwing || _isUpdownSwing)
+        if (_isReset || _isLeftrightSwing || _isUpdownSwing || isUpdateCenter)
         {
             _cameraPos = _centerPos;
 
@@ -230,6 +231,8 @@ public class CameraControl : MonoBehaviour
             }
         }
 
+        
+
         // 位置の代入 
         transform.position = _cameraPos;
 
@@ -245,6 +248,8 @@ public class CameraControl : MonoBehaviour
     /// </summary>
     private void Cursor()
     {
+        return;
+
         GameObject drawingObj = null;
         float nowSqrDist = 0.0f;
 
