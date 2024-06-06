@@ -48,7 +48,7 @@ public class SpawnerManager : MonoBehaviour
         // プレハブデータの取得
         for (int i = 0; i < kEnemyTypeNum; ++i)
         {
-            enemyPrefab[i] = (GameObject)Resources.Load("Enemy" + i);
+            enemyPrefab[i] = (GameObject)Resources.Load("Enemy/No" + i);
         }
 
         // ステージデータの取得
