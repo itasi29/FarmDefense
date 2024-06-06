@@ -55,13 +55,13 @@ public class EnemyAir : EnemyBase
     /// </summary>
     public override void FixedUpdate()
     {
-        if(m_player == true)   //m_playerがtrueならプレイヤーへ向かう
+        if(_isFindPlayer == true)   //m_playerがtrueならプレイヤーへ向かう
         {
             Transform transform = this.transform;  //オブジェクトを取得
 
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, m_enemySpeed * Time.deltaTime);  //プレイヤーに向かう
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _speed * Time.deltaTime);  //プレイヤーに向かう
         }
-        else if(m_player == false)   //m_playerがfalseなら
+        else if(_isFindPlayer == false)   //m_playerがfalseなら
         {
             if (_circularmotion == false && _enemyAirMove == false)    //_circularmotionがfalse、_enemyAirMoveもfalseなら農場へ向かう行動(最初だけ)
             {

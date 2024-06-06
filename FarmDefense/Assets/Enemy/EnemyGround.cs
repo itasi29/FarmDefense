@@ -27,15 +27,15 @@ public class EnemyGround : EnemyBase
     /// </summary>
     public override void FixedUpdate()
     {
-        if(m_player == false)  //Playerを発見していない状況
+        if(_isFindPlayer == false)  //Playerを発見していない状況
         {
             base.FixedUpdate();
         }
-        else if(m_player == true)  //Playerを発見している状況
+        else if(_isFindPlayer == true)  //Playerを発見している状況
         {
             Transform transform = this.transform;  //オブジェクトを取得
 
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, m_enemySpeed * Time.deltaTime);  //playerへ向かう
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _speed * Time.deltaTime);  //playerへ向かう
         }
        
        

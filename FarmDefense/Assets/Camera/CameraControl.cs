@@ -314,12 +314,12 @@ public class CameraControl : MonoBehaviour
     {
         if (item.tag == "Farm")
         {
-            return item.GetComponent<Farm>().IsBreak;
+            // MEMO: ”_ê‚Í”j‰ó‚³‚ê‚Ä‚¢‚é‚©‚ğŠm”F‚·‚é‚½‚ßŒ‹‰Ê‚ğ”½“]‚µ‚Ä‘—‚é
+            return !item.GetComponent<Farm>().IsBreak;
         }
         else if (item.tag == "Enemy")
         {
-            // TODO: EnemyŠ®¬‚µ‚½‚ç—LŒø‰»
-//            return item.GetComponent<EnemyBase>().IsExist;
+            return item.GetComponent<EnemyBase>().IsExist;
         }
 
         return false;
@@ -363,9 +363,9 @@ public class CameraControl : MonoBehaviour
         {
             // TODO: “G‚Ìê‡‚àã‚Æ“¯‚¶ˆ—‚É‚È‚é‚æ‚¤‚É‚·‚é
             EnemyBase script = _hpBarObj.GetComponent<EnemyBase>();
-//            nowHp = script.Hp;
-//            deltaHp = script.DeltaHp;
-//            maxHp = script.MaxHp;
+            nowHp = script.Hp;
+            deltaHp = script.DeltaHp;
+            maxHp = script.MaxHp;
         }
 
         // FIXME: —v‘f‚ğenum‚Å’è‹`‚·‚é‚æ‚¤‚É
