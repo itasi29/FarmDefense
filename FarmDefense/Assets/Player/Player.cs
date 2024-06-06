@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
 
     private Vector3 kInitPos = new Vector3(0, 0, 0);
 
+    private Vector3 _dirVec;
     private Vector3 _moveVec;
     private Rigidbody _rigidBody;
 
@@ -169,7 +170,7 @@ public class Player : MonoBehaviour
     {
 
         //攻撃ボタンを押したとき
-        if (Input.GetAxis("RT") > 0)
+        if (Input.GetButtonDown("X"))
         {
             Debug.Log("おした");
             //近距離武器を持っているかどうか
@@ -179,16 +180,16 @@ public class Player : MonoBehaviour
             }
             else
             {
-                _farWeapon.Attack();
+                _farWeapon.Attack(_dirVec);
             }
         }
         //強攻撃を使ったとき(ボタンわかんない)
-        if (Input.GetAxis("LT") > 0 && !_isTired)
+        if (Input.GetButtonDown("Y") && !_isTired)
         {
             _stamina -= kHeavyAttackNeedStamina;
         }
         //武器切り替え
-        if (Input.GetButtonDown("Y"))
+        if (Input.GetButtonDown("RB"))
         {
             _isUseNearWeapon = !_isUseNearWeapon;
         }
@@ -230,6 +231,11 @@ public class Player : MonoBehaviour
         dirVec.z = Input.GetAxis("Vertical");
 
         dirVec.Normalize();
+
+        if(dirVec.sqrMagnitude != 0)
+        {
+            _dirVec = dirVec;
+        }
 
         //ダッシュボタンを押していて疲れ状態じゃなかったら
         if (Input.GetButton("X") && !_isTired)
