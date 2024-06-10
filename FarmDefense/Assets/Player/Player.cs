@@ -175,7 +175,6 @@ public class Player : MonoBehaviour
         //UŒ‚ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«
         if (Input.GetButtonDown("X"))
         {
-            Debug.Log("‚¨‚µ‚½");
             //‹ß‹——£•Ší‚ğ‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
             if (_isUseNearWeapon)
             {
@@ -183,6 +182,11 @@ public class Player : MonoBehaviour
             }
             else
             {
+                //ƒJƒƒ‰‚ÌŒü‚¢‚Ä‚¢‚é•ûŒü‚É’e‚ğ”­Ë‚·‚é
+                float cameraAngleY = _camera.GetFront().y;
+
+                _dirVec.y = cameraAngleY;
+
                 _farWeapon.Attack(_dirVec);
             }
         }
