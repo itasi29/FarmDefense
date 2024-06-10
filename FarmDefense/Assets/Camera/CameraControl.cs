@@ -82,7 +82,7 @@ public class CameraControl : MonoBehaviour
     }
 
     /// <summary>
-    /// カメラの正面方向を取得(Y軸は無視)
+    /// カメラの正面方向を取得
     /// </summary>
     /// <returns>正面方向</returns>
     public Vector3 GetFront()
@@ -90,9 +90,18 @@ public class CameraControl : MonoBehaviour
         return transform.forward;
     }
 
+    /// <summary>
+    /// カメラの右方向を取得
+    /// </summary>
+    /// <returns>右方向</returns>
     public Vector3 GetRight()
     {
         return transform.right;
+    }
+
+    public void AddHpBarInfo(GameObject obj)
+    {
+        _cursorObjs.Add(obj);
     }
 
     /// <summary>
@@ -140,7 +149,7 @@ public class CameraControl : MonoBehaviour
         // 入力したことに
         _isUpdownInput = true;
 
-        _angleVert += inputRate * 1;
+        _angleVert += inputRate * -1;
         _angleVert = Mathf.Max(Mathf.Min(_angleVert, 30), -30);
     }
 

@@ -6,9 +6,13 @@ public class EnemyGround : EnemyBase
 {
     private void Start()
     {
+#if false
         targetBase = GameObject.Find("Farm").gameObject;
+        player = GameObject.Find("Player").gameObject;
 
         FindFarm();
+#endif
+        Init(this.transform.position);
     }
 
     /// <summary>
@@ -24,15 +28,21 @@ public class EnemyGround : EnemyBase
     /// </summary>
     public override void Init(Vector3 pos)
     {
+        targetBase = GameObject.Find("Farm").gameObject;
+        player = GameObject.Find("Player").gameObject;
+
         base.Init(pos);
+        FindFarm();
     }
 
     protected override void FindFarm()
     {
         int childIdx = 0;
 
-        bool isFirst = false;
+        bool isFirst = true;
         float dis = 0.0f;
+
+        Vector3 pos = this.transform.position;
 
         for (int i = 0; i < FarmManager.kFarmNum; ++i)
         {
@@ -42,7 +52,16 @@ public class EnemyGround : EnemyBase
 
             if (isFirst)
             {
-                var childSqrLen = targetBase.transform.GetChild(i).transform.position.sqrMagnitude;
+                Vector3 childPos = targetBase.transform.GetChild(i).transform.position;
+                dis = (pos - childPos).sqrMagnitude;
+                childIdx = i;
+
+                isFirst = false;
+            }
+            else
+            {
+                Vector3 childPos = targetBase.transform.GetChild(i).transform.position;
+                var childSqrLen = (pos - childPos).sqrMagnitude;
 
                 if (dis > childSqrLen)
                 {
@@ -50,18 +69,9 @@ public class EnemyGround : EnemyBase
                     childIdx = i;
                 }
             }
-            else
-            {
-                dis = targetBase.transform.GetChild(i).transform.position.sqrMagnitude;
-                childIdx = i;
-
-                isFirst = true;
-            }
 
         }
 
-        var pos = targetBase.transform.GetChild(childIdx).transform.position;
-        // Init(pos);
         target = targetBase.transform.GetChild(childIdx).gameObject;
         farm = target.GetComponent<Farm>();
     }
@@ -84,7 +94,14 @@ public class EnemyGround : EnemyBase
         {
             Transform transform = this.transform;  //オブジェクトを取得
 
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _speed/* * Time.deltaTime*/);  //playerへ向かう
+            //transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _speed/* * Time.deltaTime*/);  //playerへ向かう
+
+            Vector3 pos = transform.position;
+            Vector3 tarPos = player.transform.position;
+
+            Vector3 move = (tarPos - pos).normalized * _speed;
+
+            transform.position = pos + move;
         }
        
     }

@@ -16,6 +16,8 @@ public class SpawnerManager : MonoBehaviour
 
 
     /* 変数 */
+    // カメラ
+    private CameraControl _camera;
     // 生成場所の取得
     [SerializeField] private GameObject[] createPos = new GameObject[kCreatePosNum];
     // プレハブデータ
@@ -39,6 +41,7 @@ public class SpawnerManager : MonoBehaviour
 
     void Start()
     {
+        _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         GameObject parent = GameObject.Find("CreatePos");
         // 生成場所の取得
         for (int i = 0; i < kCreatePosNum; ++i)
@@ -133,7 +136,8 @@ public class SpawnerManager : MonoBehaviour
         enemy = Instantiate(enemyPrefab[enemyNo]);
 
         // TODO: 敵の位置初期化できたらそれに変更
-//        enemy.GetComponent<EnemyBase>().Init(createPos[posNo]);
+        enemy.GetComponent<EnemyBase>().Init(createPos[posNo].transform.position);
+        _camera.AddHpBarInfo(enemy);
     }
 
 

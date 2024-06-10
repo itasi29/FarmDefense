@@ -41,7 +41,7 @@ public class EnemyBase : MonoBehaviour
     private const int kDecreaseSpeed = 1;   // _deltaHpの減らすスピード
 
     // 変数の追加
-    private int _maxHp;     // 最大HP(各キャラで違ってくるため変数として持っておく)
+    [SerializeField] protected int _maxHp;     // 最大HP(各キャラで違ってくるため変数として持っておく)
     private int _deltaHp;   // HPの赤表記部分
     private bool _isDelat;  // DeltaHPを減少しているか
     private bool _isExist;  // 生存しているか
@@ -72,18 +72,14 @@ public class EnemyBase : MonoBehaviour
     {
         transform.position = pos;  //Enemyの初期位置初期化
 
-        _hp = 0;
-        _speed = 0;
-        _attack = 0;
         _attackTime = 0;
 
         /* 田代が追加しところ */
         // TODO: 最大ＨＰを取得する関数は後々作るのでそれを使ってやる
+        _hp = _maxHp;
         _deltaHp = _hp;
         _isDelat = false;
         _isExist = true;
-
-        FindFarm();
         /* ここまで */
 
         _attackinterval = false;
@@ -102,7 +98,13 @@ public class EnemyBase : MonoBehaviour
     {
         Transform transform = this.transform; //オブジェクトを取得
 
-        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, _speed/* * Time.deltaTime*/);  //ターゲットのオブジェクトに向かう
+        //        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, _speed/* * Time.deltaTime*/);  //ターゲットのオブジェクトに向かう
+        Vector3 pos = transform.position;
+        Vector3 tarPos = target.transform.position;
+
+        Vector3 move = (tarPos - pos).normalized * _speed;
+
+        transform.position = pos + move;
 
         ReduceDeltaHp();
     }
@@ -172,12 +174,10 @@ public class EnemyBase : MonoBehaviour
     /// <param name="collision"></param>
     public virtual void OnTriggerEnter(Collider collision)
     {
-        Debug.Log("hanntei2");
         if (collision.gameObject.tag == "Player")  //Playerが索敵範囲に入ったらPlayerを追いかける
         {
             _isFindPlayer = true;  //m_playerをtrueにする
 
-            Debug.Log("入った");
         }
     }
 
@@ -205,6 +205,7 @@ public class EnemyBase : MonoBehaviour
     /// <param name="damage">ダメージ量</param>
     public void OnDamage(int damage)
     {
+        Debug.Log(Time.time + "| damage" + damage);
         _hp -= damage;
         _isDelat = true;
 

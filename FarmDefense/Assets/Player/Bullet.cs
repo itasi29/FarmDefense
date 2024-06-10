@@ -9,7 +9,7 @@ public class Bullet : MonoBehaviour
 
     private float _spd;
 
-    private int _atk;
+    private int _atk = 10;
 
     private Vector3 _moveVec;
 
@@ -33,11 +33,32 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-       // collision.gameObject.SetActive(false);
+        // collision.gameObject.SetActive(false);
 
         //TODO:É^ÉOÇ≈îªï 
-        GameObject hitEnemy = collision.gameObject;  
+        //GameObject hitEnemy = collision.gameObject;
 
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
+        Debug.Log("Ç†ÇΩÇ¡ÇΩÇ…ÇÂÇÒcollision");
+        if (collision.gameObject.tag == "Enemy")
+        {
+            EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
+            enemy.OnDamage(_atk);
+        }
+
+//        Destroy(this.gameObject);
     }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    Debug.Log("Ç†ÇΩÇ¡ÇΩÇ…ÇÂÇÒtrigger");
+    //    if (other.gameObject.tag == "Enemy")
+    //    {
+    //        Debug.Log("Ç†ÇΩÇ¡ÇΩÇ…ÇÂÇÒ");
+    //        EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
+    //        enemy.OnDamage(_atk);
+
+    //        Destroy(this.gameObject);
+    //    }
+
+    //}
 }
