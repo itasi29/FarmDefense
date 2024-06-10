@@ -104,6 +104,11 @@ public class CameraControl : MonoBehaviour
         _cursorObjs.Add(obj);
     }
 
+    public void SubHpBarInfo(GameObject obj)
+    {
+        _cursorObjs.Remove(obj);
+    }
+
     /// <summary>
     /// ç∂âEÇÃâÒì]
     /// </summary>

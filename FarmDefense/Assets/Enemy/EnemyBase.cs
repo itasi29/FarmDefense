@@ -44,7 +44,9 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected int _maxHp;     // 最大HP(各キャラで違ってくるため変数として持っておく)
     private int _deltaHp;   // HPの赤表記部分
     private bool _isDelat;  // DeltaHPを減少しているか
-    private bool _isExist;  // 生存しているか
+    [SerializeField] protected bool _isExist;  // 生存しているか
+    [SerializeField] protected SpawnerManager _spawnerMgr;
+    [SerializeField] protected CameraControl _camera;
 
     // プロパティの作成
     public int Hp { get { return _hp; } }
@@ -70,6 +72,8 @@ public class EnemyBase : MonoBehaviour
     /// </summary>
     public virtual void Init(Vector3 pos)
     {
+        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
+        _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         transform.position = pos;  //Enemyの初期位置初期化
 
         _attackTime = 0;
@@ -213,7 +217,10 @@ public class EnemyBase : MonoBehaviour
         if (_hp <= 0)
         {
             _hp = 0;
+            _spawnerMgr.AddKilledEnemy();
+            _camera.SubHpBarInfo(this.gameObject);
             _isExist = false;
+            Destroy(this.gameObject);
         }
     }
 
