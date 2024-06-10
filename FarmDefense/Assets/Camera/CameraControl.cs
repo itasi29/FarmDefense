@@ -86,9 +86,14 @@ public class CameraControl : MonoBehaviour
     /// ƒJƒƒ‰‚Ì³–Ê•ûŒü‚ğæ“¾(Y²‚Í–³‹)
     /// </summary>
     /// <returns>³–Ê•ûŒü</returns>
-    public Vector3 GetForward()
+    public Vector3 GetFront()
     {
         return transform.forward;
+    }
+
+    public Vector3 GetRight()
+    {
+        return transform.right;
     }
 
     /// <summary>
