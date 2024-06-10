@@ -11,8 +11,8 @@ public class CameraControl : MonoBehaviour
     private const float kAxisMinThershold = 0.2f; // 入力情報の最小のしきい値:無視する割合
     private const float kAxisMaxThershold = 0.8f; // 入力情報の最大のしきい値:1.0とみなす割合
     private const float kRotLimitUpdownSwing = 30.0f * Mathf.Deg2Rad;   // 上下の回転制限
-    private const float kRotSpeedLeftright = 0.4f * Mathf.Deg2Rad;  // 左右の回転スピード(ラジアン)
-    private const float kRotSpeedUpdown = 0.25f * Mathf.Deg2Rad;  // 上下の回転スピード(ラジアン)
+    private const float kRotSpeedLeftright = 1.0f * Mathf.Deg2Rad;  // 左右の回転スピード(ラジアン)
+    private const float kRotSpeedUpdown = 0.5f * Mathf.Deg2Rad;  // 上下の回転スピード(ラジアン)
     // FIXME: 名前いい感じに変更
     private float kRangeCursorDot = Mathf.Cos(10 * Mathf.Deg2Rad);   // カーソル内とする内積の範囲
     private const float kCursorLimitDistance = 30.0f;
@@ -22,12 +22,14 @@ public class CameraControl : MonoBehaviour
     private GameObject _target;         // ターゲットのオブジェクト情報
     private Vector3 _centerPos;         // 中心座標
     private Vector3 _cameraPos;         // 中心座標
-    private float _rotLeftrightSwing;   // 左右のカメラの回転量
-    private float _rotUpdownSwing;      // 上下のカメラの回転量
     private bool _isUpdownSwing;        // 上下にカメラを揺らしているか
     private bool _isLeftrightSwing;     // 左右に入力したか
     private bool _isUpdownInput;        // 上下に入力したか
     private bool _isReset;              // リセットしたか
+
+    float _angleVert = 0.0f;
+    Quaternion _rotSide = Quaternion.AngleAxis(0, Vector3.up);
+    Vector3 kBaseVec = new Vector3(0, 0, 1);
 
     // FIXME: なんかいい感じの変数名に変更
     [SerializeField] private GameObject _canvas;    // キャンバス
@@ -46,9 +48,6 @@ public class CameraControl : MonoBehaviour
         _centerPos = _target.transform.position;
         // カメラ座標
         _cameraPos = _centerPos + new Vector3(0, kShiftPosY, -kDistance);
-        // 回転量無しに
-        _rotLeftrightSwing = 0.0f;
-        _rotUpdownSwing = 0.0f;
         // 回転していないに
         _isUpdownSwing = false;
         _isLeftrightSwing = false;
@@ -113,10 +112,10 @@ public class CameraControl : MonoBehaviour
 
         inputRate = LimitValue(inputRate, kAxisMinThershold, kAxisMaxThershold);
 
-        // 代入
-        _rotLeftrightSwing += inputRate * kRotSpeedLeftright;
         // 入力していることに
         _isLeftrightSwing = true;
+
+        _rotSide = _rotSide * Quaternion.AngleAxis(inputRate * 2, Vector3.up);
     }
 
     /// <summary>
@@ -136,14 +135,13 @@ public class CameraControl : MonoBehaviour
 
         inputRate = LimitValue(inputRate, kAxisMinThershold, kAxisMaxThershold);
 
-        // 上下の回転地に代入
-        _rotUpdownSwing += inputRate * kRotSpeedUpdown;
-        // 回転の制限
-        _rotUpdownSwing = Mathf.Max(Mathf.Min(_rotUpdownSwing, kRotLimitUpdownSwing), -kRotLimitUpdownSwing);
         // 動かしていることに
         _isUpdownSwing = true;
         // 入力したことに
         _isUpdownInput = true;
+
+        _angleVert += inputRate * 1;
+        _angleVert = Mathf.Max(Mathf.Min(_angleVert, 30), -30);
     }
 
     /// <summary>
@@ -156,8 +154,10 @@ public class CameraControl : MonoBehaviour
         if (Input.GetButtonDown("StickPushRight"))
         {
             // TODO:現状Leftrightの回転を0にしているだけなのでプレイヤーの向いている方向を向くように
-            _rotLeftrightSwing = 0.0f;
-            _rotUpdownSwing = 0.0f;
+
+//            _rotLeftrightSwing = dirRad;
+            _rotSide = _target.transform.rotation;
+            _angleVert = 0.0f;
             _isLeftrightSwing = false;
             _isUpdownSwing = false;
 
@@ -174,12 +174,11 @@ public class CameraControl : MonoBehaviour
         if (_isUpdownInput) return;
 
         // 0に近づける
-        _rotUpdownSwing = Mathf.Lerp(_rotUpdownSwing, 0.0f, 0.05f);
-
+        _angleVert = Mathf.Lerp(_angleVert, 0.0f, 0.05f);
         // 限りなく0に近づいたら戻したことにする
-        if (-0.001f < _rotUpdownSwing && _rotUpdownSwing < 0.001f)
+        if (-0.001f < _angleVert && _angleVert < 0.001f)
         {
-            _rotUpdownSwing = 0.0f;
+            _angleVert = 0.0f;
             _isUpdownSwing = false;
         }
     }
@@ -209,31 +208,11 @@ public class CameraControl : MonoBehaviour
         // 回転またはリセットしていれば
         if (_isReset || _isLeftrightSwing || _isUpdownSwing || isUpdateCenter)
         {
-            _cameraPos = _centerPos;
+            Quaternion rotVert = Quaternion.AngleAxis(_angleVert, transform.right);
+            Vector3 dir = _rotSide * rotVert * kBaseVec;
 
-            // 左右の回転量
-            float sinLeftright = Mathf.Sin(_rotLeftrightSwing);
-            float cosLeftright = Mathf.Cos(_rotLeftrightSwing);
-            // 上下回転のみor左右+上下回転
-            if (_isUpdownSwing)
-            {
-                // 上下の回転量
-                float sinUpdown = Mathf.Sin(_rotUpdownSwing);
-                float cosUpdown = Mathf.Cos(_rotUpdownSwing);
-
-                // 回転した位置の適用
-                _cameraPos.x += sinLeftright * (kDistance * cosUpdown);
-                _cameraPos.y += kShiftPosY + kDistance * sinUpdown * -1.0f;
-                _cameraPos.z += cosLeftright * (kDistance * cosUpdown) * -1.0f;
-            }
-            // 左右回転のみ
-            else
-            {
-                // 回転した位置の適用
-                _cameraPos.x += sinLeftright * kDistance;
-                _cameraPos.y += kShiftPosY;
-                _cameraPos.z += cosLeftright * kDistance * -1.0f;
-            }
+            _cameraPos = dir * -kDistance + _centerPos;
+            _cameraPos.y += kShiftPosY;
         }
 
         
@@ -253,8 +232,6 @@ public class CameraControl : MonoBehaviour
     /// </summary>
     private void Cursor()
     {
-        return;
-
         GameObject drawingObj = null;
         float nowSqrDist = 0.0f;
 
