@@ -29,6 +29,7 @@ public class EnemyBase : MonoBehaviour
 
     [SerializeField] protected bool _isFindPlayer;  //プレイヤーを発見したかどうかのフラグ
 
+    protected GameObject targetBase;
     [SerializeField] protected GameObject target; //ターゲットのオブジェクト獲得
 
     [SerializeField] protected GameObject player; //Playerのオブジェクト獲得
@@ -51,6 +52,11 @@ public class EnemyBase : MonoBehaviour
     public int MaxHp { get { return _maxHp; } }
     public bool IsExist { get { return _isExist; } }
     /* ここまで */
+
+    private void Start()
+    {
+        
+    }
 
     /// <summary>
     /// 更新処理
@@ -76,10 +82,17 @@ public class EnemyBase : MonoBehaviour
         _deltaHp = _hp;
         _isDelat = false;
         _isExist = true;
+
+        FindFarm();
         /* ここまで */
 
         _attackinterval = false;
         _isFindPlayer = false;
+    }
+
+    protected virtual void FindFarm()
+    {
+        // 実装は別で書く
     }
 
     /// <summary>
@@ -89,7 +102,7 @@ public class EnemyBase : MonoBehaviour
     {
         Transform transform = this.transform; //オブジェクトを取得
 
-        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, _speed * Time.deltaTime);  //ターゲットのオブジェクトに向かう
+        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, _speed/* * Time.deltaTime*/);  //ターゲットのオブジェクトに向かう
 
         ReduceDeltaHp();
     }
@@ -99,7 +112,7 @@ public class EnemyBase : MonoBehaviour
     /// </summary>
     public virtual void OnCollisionStay(Collision collision)
     {
-        if(collision.gameObject.name == "Farm") //Farmに当たったら攻撃
+        if(collision.gameObject.tag == "Farm") //Farmに当たったら攻撃
         {
             if(_attackinterval == false)    //フラグがfalseなら攻撃開始
             {
@@ -120,7 +133,7 @@ public class EnemyBase : MonoBehaviour
             }
 
         }
-        else if(collision.gameObject.name == "Player")  //Plyaerに当たったら攻撃
+        else if(collision.gameObject.tag == "Player")  //Plyaerに当たったら攻撃
         {
             if (_attackinterval == false)    //フラグがfalseなら攻撃開始
             {
@@ -159,7 +172,8 @@ public class EnemyBase : MonoBehaviour
     /// <param name="collision"></param>
     public virtual void OnTriggerEnter(Collider collision)
     {
-        if(collision.gameObject.name == "Player")  //Playerが索敵範囲に入ったらPlayerを追いかける
+        Debug.Log("hanntei2");
+        if (collision.gameObject.tag == "Player")  //Playerが索敵範囲に入ったらPlayerを追いかける
         {
             _isFindPlayer = true;  //m_playerをtrueにする
 
@@ -173,11 +187,11 @@ public class EnemyBase : MonoBehaviour
     /// <param name="collision"></param>
     public virtual void OnTriggerExit(Collider collision)
     {
-        if(collision.gameObject.name == "Player")
+        if(collision.gameObject.tag == "Player")
         {
             _isFindPlayer = false; //m_playerをfalseにする
 
-            Debug.Log("入った");
+            Debug.Log("deta");
 
         }
     }

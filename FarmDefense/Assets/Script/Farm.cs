@@ -12,14 +12,16 @@ public class Farm : MonoBehaviour
     /* 変数 */
     [SerializeField] private int _hp;        // 現在のHP
     [SerializeField] private int _deltaHp;   // 減少HP
-    private bool _isBreak;  // 壊れているか
-    private bool _isDelta;  // 現在のHPと減少HPの差があるか
+    [SerializeField] private bool _isBreak;  // 壊れているか
+    [SerializeField] private bool _isDelta;  // 現在のHPと減少HPの差があるか
+    [SerializeField] private bool _isInPlayer;
 
     /* プロパティ */
     public int Hp { get { return _hp; } }
     public int DeltaHp { get { return _deltaHp; } }
     public int MaxHp {  get { return kMaxHp; } }
     public bool IsBreak { get { return _isBreak;} }
+    public bool IsInPlayer { get { return _isInPlayer; } }
 
 
     private void Start()
@@ -29,6 +31,7 @@ public class Farm : MonoBehaviour
         _deltaHp = kMaxHp;
         _isBreak = false;
         _isDelta = false;
+        _isInPlayer = false;
     }
 
     private void FixedUpdate()
@@ -91,10 +94,10 @@ public class Farm : MonoBehaviour
     /// <param name="collision"></param>
     public void OnTriggerEnter(Collider collision)
     {
-//        enemy.OnTriggerEnter(collision);
         if (collision.tag == "Player")
         {
-            collision.GetComponent<EnemyBase>().OnTriggerEnter(collision);
+            // collision.GetComponent<EnemyBase>().OnTriggerEnter(collision);
+            _isInPlayer = true;
         }
     }
 
@@ -104,10 +107,11 @@ public class Farm : MonoBehaviour
     /// <param name="collision"></param>
     public void OnTriggerExit(Collider collision)
     {
-//        enemy.OnTriggerExit(collision);
+        //        enemy.OnTriggerExit(collision);
         if (collision.tag == "Player")
         {
-            collision.GetComponent<EnemyBase>().OnTriggerExit(collision);
+            // collision.GetComponent<EnemyBase>().OnTriggerExit(collision);
+            _isInPlayer = false;
         }
     }
 }

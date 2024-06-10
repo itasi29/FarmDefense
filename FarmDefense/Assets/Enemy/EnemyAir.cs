@@ -5,6 +5,8 @@ using static UnityEditor.PlayerSettings;
 
 public class EnemyAir : EnemyBase
 {
+    [SerializeField] private const float kAngleSpeed = 180 / Mathf.PI * 0.2f;
+
     public int m_enemyAirPosY;  //空のエネミーのY座標のポジション
     private bool _enemyAirMove;  //農場にむかう行動フラグ
     private bool _circularmotion;  //円運動をするフラグ
@@ -26,6 +28,8 @@ public class EnemyAir : EnemyBase
     /// </summary>
     void Start()
     {
+        targetBase = GameObject.Find("Farm").gameObject;
+
         _airAttakTime = 0.0f;
         _enemyAirMove = false;
         _airAttak = false;
@@ -33,6 +37,8 @@ public class EnemyAir : EnemyBase
         m_enemyAirPosY = 5;
 
         _airReturn = false;
+
+        FindFarm();
     }
 
     /// <summary>
@@ -50,12 +56,59 @@ public class EnemyAir : EnemyBase
         base.Init(pos);
     }
 
+    protected override void FindFarm()
+    {
+        int childIdx = 0;
+
+        bool isFirst = false;
+        float dis = 0.0f;
+
+        for (int i = 0; i < FarmManager.kFarmNum; ++i)
+        {
+            Farm tempFarm = targetBase.transform.GetChild(i).gameObject.GetComponent<Farm>();
+            if (tempFarm.IsBreak) continue;
+
+            if (isFirst)
+            {
+                var childSqrLen = targetBase.transform.GetChild(i).transform.position.sqrMagnitude;
+
+                if (dis < childSqrLen)
+                {
+                    dis = childSqrLen;
+                    childIdx = i;
+                }
+            }
+            else
+            {
+                dis = targetBase.transform.GetChild(i).transform.position.sqrMagnitude;
+                childIdx = i;
+
+                isFirst = true;
+            }
+
+        }
+
+        var pos = targetBase.transform.GetChild(childIdx).transform.position;
+        // Init(pos);
+        target = targetBase.transform.GetChild(childIdx).gameObject;
+        farm = target.GetComponent<Farm>();
+    }
+
     /// <summary>
     /// 物理挙動の更新処理
     /// </summary>
     public override void FixedUpdate()
     {
-        if(_isFindPlayer == true)   //m_playerがtrueならプレイヤーへ向かう
+        if (farm.IsBreak)
+        {
+            FindFarm();
+            _circularmotion = false;
+            _enemyAirMove = false;
+        }
+
+        _isFindPlayer = farm.IsInPlayer;
+
+        if (_isFindPlayer == true)   //m_playerがtrueならプレイヤーへ向かう
         {
             Transform transform = this.transform;  //オブジェクトを取得
 
@@ -73,7 +126,9 @@ public class EnemyAir : EnemyBase
 
                 timer += Time.deltaTime;
 
-                transform.position = Vector3.Lerp(pos, farm, timer);
+                Vector3 move = (farm - pos).normalized  * _speed;
+
+                transform.position = pos + move;
 
             }
             if (_airReturn == true)  //空中に戻るフラグがtrueなら
@@ -86,7 +141,9 @@ public class EnemyAir : EnemyBase
 
                 timer += Time.deltaTime;
 
-                transform.position = Vector3.Lerp(pos, farm, timer);
+                Vector3 move = (farm - pos).normalized * _speed;
+
+                transform.position = pos + move;
 
                 if (pos.y >= 4.9f)
                 {
@@ -97,7 +154,6 @@ public class EnemyAir : EnemyBase
             }
             else if (_circularmotion == true)   //_circularmotionがtrueなら旋回行動
             {
-
                 _airAttakTime += Time.deltaTime;  //攻撃までの間隔を進める
 
 
@@ -105,7 +161,7 @@ public class EnemyAir : EnemyBase
 
                 var tr = transform;
 
-                var angleAxis = Quaternion.AngleAxis(360 / _period * Time.deltaTime, _axis);  //回転のクォータニオン作成
+                var angleAxis = Quaternion.AngleAxis(kAngleSpeed * _period * Time.deltaTime, _axis);  //回転のクォータニオン作成
 
                 var circlepos = tr.position;  //円運動の位置計算
 
@@ -142,7 +198,7 @@ public class EnemyAir : EnemyBase
     {
         base.OnCollisionStay(collision);
 
-        if (collision.gameObject.name == "Farm")
+        if (collision.gameObject.tag == "Farm")
         {
             _airAttak = false;  //攻撃をしたらfalseに戻す
 
@@ -150,7 +206,7 @@ public class EnemyAir : EnemyBase
 
             _airAttakTime = 0;  //初期に戻す
         }
-        else if(collision.gameObject.name == "Player")  //Playerに当たったら
+        else if(collision.gameObject.tag == "Player")  //Playerに当たったら
         {
             _airReturn = true;  //空中に戻す
         }
@@ -158,7 +214,7 @@ public class EnemyAir : EnemyBase
 
     private new void OnTriggerEnter(Collider collision)
     {
-        if(collision.gameObject.name == "Farm")  //物体に当たったら
+        if (collision.gameObject.name == target.name)  //物体に当たったら
         {
             if(_circularmotion == false　&& _airAttak == false) //_circularmotionがfalseで_airAttackがfalseなら
             {

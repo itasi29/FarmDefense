@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class EnemyGround : EnemyBase
 {
+    private void Start()
+    {
+        targetBase = GameObject.Find("Farm").gameObject;
 
+        FindFarm();
+    }
 
     /// <summary>
     /// 更新処理
@@ -22,11 +27,55 @@ public class EnemyGround : EnemyBase
         base.Init(pos);
     }
 
+    protected override void FindFarm()
+    {
+        int childIdx = 0;
+
+        bool isFirst = false;
+        float dis = 0.0f;
+
+        for (int i = 0; i < FarmManager.kFarmNum; ++i)
+        {
+            Farm tempFarm = targetBase.transform.GetChild(i).gameObject.GetComponent<Farm>();
+
+            if (tempFarm.IsBreak) continue;
+
+            if (isFirst)
+            {
+                var childSqrLen = targetBase.transform.GetChild(i).transform.position.sqrMagnitude;
+
+                if (dis > childSqrLen)
+                {
+                    dis = childSqrLen;
+                    childIdx = i;
+                }
+            }
+            else
+            {
+                dis = targetBase.transform.GetChild(i).transform.position.sqrMagnitude;
+                childIdx = i;
+
+                isFirst = true;
+            }
+
+        }
+
+        var pos = targetBase.transform.GetChild(childIdx).transform.position;
+        // Init(pos);
+        target = targetBase.transform.GetChild(childIdx).gameObject;
+        farm = target.GetComponent<Farm>();
+    }
+
     /// <summary>
     /// 物理挙動の更新処理
     /// </summary>
     public override void FixedUpdate()
     {
+        if (farm.IsBreak)
+        {
+            FindFarm();
+        }
+
         if(_isFindPlayer == false)  //Playerを発見していない状況
         {
             base.FixedUpdate();
@@ -35,9 +84,8 @@ public class EnemyGround : EnemyBase
         {
             Transform transform = this.transform;  //オブジェクトを取得
 
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _speed * Time.deltaTime);  //playerへ向かう
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, _speed/* * Time.deltaTime*/);  //playerへ向かう
         }
-       
        
     }
 
