@@ -31,34 +31,34 @@ public class Bullet : MonoBehaviour
         _moveVec = dirVec * speed;
     }
 
-    private void OnCollisionEnter(Collision collision)
+//    private void OnCollisionEnter(Collision collision)
+//    {
+//        // collision.gameObject.SetActive(false);
+
+//        //TODO:タグで判別
+//        //GameObject hitEnemy = collision.gameObject;
+
+//        //Destroy(this.gameObject);
+//        Debug.Log("あたったにょんcollision");
+//        if (collision.gameObject.tag == "Enemy")
+//        {
+//            EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
+//            enemy.OnDamage(_atk);
+//        }
+
+////        Destroy(this.gameObject);
+//    }
+    private void OnTriggerEnter(Collider other)
     {
-        // collision.gameObject.SetActive(false);
-
-        //TODO:タグで判別
-        //GameObject hitEnemy = collision.gameObject;
-
-        //Destroy(this.gameObject);
-        Debug.Log("あたったにょんcollision");
-        if (collision.gameObject.tag == "Enemy")
+        Debug.Log("あたったにょんtrigger");
+        if (other.gameObject.tag == "Enemy")
         {
-            EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
+            Debug.Log("あたったにょん");
+            EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
             enemy.OnDamage(_atk);
+
+            Destroy(this.gameObject);
         }
 
-//        Destroy(this.gameObject);
     }
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    Debug.Log("あたったにょんtrigger");
-    //    if (other.gameObject.tag == "Enemy")
-    //    {
-    //        Debug.Log("あたったにょん");
-    //        EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
-    //        enemy.OnDamage(_atk);
-
-    //        Destroy(this.gameObject);
-    //    }
-
-    //}
 }
