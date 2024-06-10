@@ -555,6 +555,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hp: 0
   _deltaHp: 0
+  _isBreak: 0
+  _isDelta: 0
+  _isInPlayer: 0
 --- !u!65 &668957991
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -868,6 +871,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hp: 0
   _deltaHp: 0
+  _isBreak: 0
+  _isDelta: 0
+  _isInPlayer: 0
 --- !u!65 &761495859
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1072,12 +1078,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3a10e7a56cbe4540bac71384c0e6f65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_enemyHp: 0
-  m_enemySpeed: 0
-  m_enemyAttack: 0
-  m_attackTime: 0
-  m_attackinterval: 0
-  m_player: 0
+  _hp: 0
+  _speed: 0
+  _attack: 0
+  _attackTime: 0
+  _attackinterval: 0
+  _isFindPlayer: 0
   target: {fileID: 0}
   player: {fileID: 0}
   farm: {fileID: 0}
@@ -1159,6 +1165,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hp: 0
   _deltaHp: 0
+  _isBreak: 0
+  _isDelta: 0
+  _isInPlayer: 0
 --- !u!65 &920281835
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1411,6 +1420,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hp: 0
   _deltaHp: 0
+  _isBreak: 0
+  _isDelta: 0
+  _isInPlayer: 0
 --- !u!65 &1212904288
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1531,6 +1543,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hp: 0
   _deltaHp: 0
+  _isBreak: 0
+  _isDelta: 0
+  _isInPlayer: 0
 --- !u!65 &1267847345
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1651,6 +1666,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hp: 0
   _deltaHp: 0
+  _isBreak: 0
+  _isDelta: 0
+  _isInPlayer: 0
 --- !u!65 &1282759730
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1840,7 +1858,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1432303427}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f70837ff18c7684e9ab8656a294c1a3, type: 3}
   m_Name: 
