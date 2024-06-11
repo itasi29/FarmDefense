@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// エネミーの親
 /// </summary>
-public class EnemyBase : MonoBehaviour
+public class _EnemyBase : MonoBehaviour
 {
     /* 田代がやったこと */
     // 定数の追加

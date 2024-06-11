@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
-public class EnemyAir : EnemyBase
+public class _EnemyAir : _EnemyBase
 {
     [SerializeField] private const float kAngleSpeed = 180 / Mathf.PI * 0.2f;
 
