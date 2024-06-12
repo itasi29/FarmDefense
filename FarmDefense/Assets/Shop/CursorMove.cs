@@ -3,15 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class cursorMove : MonoBehaviour
+public class CursorMove : MonoBehaviour
 {
+
+    public enum UpgradeParts
+    {
+        kNearAtk,
+        kNearRange,
+        kNearSpd,
+        kFarAtk,
+        kFarSpd,
+        kFarRate,
+        kPartsNum
+    }
+
+
     private const int kImageWidth = 110;
 
     private const int kWaitTime = 15;
 
-
-
     private Vector2 _cursorIndex;
+
+    private UpgradeParts _selectPart;
 
     private GameObject _selectImage;
     private GameObject _cursorImage;
@@ -26,6 +39,7 @@ public class cursorMove : MonoBehaviour
         _cursorIndex = new Vector2(0, 0);
         _cursorImage = GameObject.Find("cursor");
         _selectImage = GameObject.Find("nearAtk");
+        _selectPart = UpgradeParts.kNearAtk;
     }
 
     // Update is called once per frame
@@ -39,14 +53,17 @@ public class cursorMove : MonoBehaviour
             if (_cursorIndex.y == 0)
             {
                 _selectImage = GameObject.Find("nearAtk");
+                _selectPart = UpgradeParts.kNearAtk;
             }
             else if (_cursorIndex.y == 1)
             {
                 _selectImage = GameObject.Find("nearRange");
+                _selectPart = UpgradeParts.kNearRange;
             }
             else if (_cursorIndex.y == 2)
             {
                 _selectImage = GameObject.Find("nearSpd");
+                _selectPart = UpgradeParts.kNearSpd;
             }
         }
         else
@@ -54,14 +71,17 @@ public class cursorMove : MonoBehaviour
             if (_cursorIndex.y == 0)
             {
                 _selectImage = GameObject.Find("farAtk");
+                _selectPart = UpgradeParts.kFarAtk;
             }
             else if (_cursorIndex.y == 1)
             {
                 _selectImage = GameObject.Find("farSpd");
+                _selectPart = UpgradeParts.kFarSpd;
             }
             else if (_cursorIndex.y == 2)
             {
                 _selectImage = GameObject.Find("farRate");
+                _selectPart = UpgradeParts.kFarRate;
             }
         }
         cursorPos = _selectImage.transform.position;
@@ -139,4 +159,6 @@ public class cursorMove : MonoBehaviour
             _isMoveCursor = false;
         }
     }
+
+    public UpgradeParts GetSelectPart() { return _selectPart; }
 }
