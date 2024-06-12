@@ -1,15 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
-public abstract class EnemyBase : MonoBehaviour
+public class EnemyBase : MonoBehaviour
 {
     /* 定数 */
     private const int kDecreaseHpSpeed = 1;   // _deltaHpの減少速度
 
     /* 変数 */
-    [SerializeField] private EnemyStatus _status;    // ステータス
+    [SerializeField] protected EnemyStatus _status;    // ステータス
     private int _hp;                // 現在のHP
     private int _deltaHp;           // 減少を分かりやすくするための変数
     private int _watiAttackFrame;   // 攻撃待機フレーム用
@@ -40,7 +39,7 @@ public abstract class EnemyBase : MonoBehaviour
         _farmBase = GameObject.Find("Farm").gameObject;
         _player = GameObject.Find("Player").gameObject;
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
-        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
+//        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
 
         // ステータス取得
         EnemyData data = GameObject.Find("DataManager").GetComponent<EnemyData>();
@@ -72,7 +71,7 @@ public abstract class EnemyBase : MonoBehaviour
             _hp = 0;
             _isExist = false;
             // スポナーマネージャーに死亡したことを伝える
-            _spawnerMgr.AddKilledEnemy();
+//            _spawnerMgr.AddKilledEnemy();
             // カメラに死亡したことを伝える
             _camera.SubHpBarInfo(this.gameObject);
             // 破壊
@@ -83,7 +82,7 @@ public abstract class EnemyBase : MonoBehaviour
     /// <summary>
     /// 農場に向かっての移動
     /// </summary>
-    protected void MoeveToFarm()
+    protected void MoveToFarm()
     {
         Vector3 pos = transform.position;
         Vector3 farmPos = _farm.transform.position;

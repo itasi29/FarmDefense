@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class EnemyGround : EnemyBase
 {
-    // HACK:　直置き時に動作するよう
-    //        後々は消す
-    private void Start()
-    {
-        Init(this.transform.position, 0);
-    }
-
     public override void Init(Vector3 pos, int enemyNo)
     {
         base.Init(pos, enemyNo);
@@ -36,7 +29,7 @@ public class EnemyGround : EnemyBase
         // プレイヤー非発見時
         else
         {
-            base.MoeveToFarm();
+            base.MoveToFarm();
         }
     }
 

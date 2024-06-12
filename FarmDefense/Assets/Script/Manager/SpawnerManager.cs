@@ -136,7 +136,7 @@ public class SpawnerManager : MonoBehaviour
         enemy = Instantiate(enemyPrefab[enemyNo]);
 
         // TODO: “G‚ÌˆÊ’u‰Šú‰»‚Å‚«‚½‚ç‚»‚ê‚É•ÏX
-        enemy.GetComponent<EnemyBase>().Init(createPos[posNo].transform.position);
+        enemy.GetComponent<EnemyBase>().Init(createPos[posNo].transform.position, enemyNo);
         _camera.AddHpBarInfo(enemy);
     }
 

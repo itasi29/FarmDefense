@@ -1,4 +1,5 @@
-/* ƒf[ƒ^Œn‚ğˆêŠ‡‚ÉŠÇ—‚·‚é */
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DataManager : MonoBehaviour
