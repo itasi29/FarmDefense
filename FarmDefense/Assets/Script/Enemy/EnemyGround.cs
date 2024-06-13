@@ -55,7 +55,8 @@ public class EnemyGround : EnemyBase
     {
         if (other.gameObject.tag == "Player")
         {
-            _isFindPlayer= true;
+            Debug.Log(Time.time + "| in:" + other.gameObject.name + "," + other.gameObject.tag);
+            _isFindPlayer = true;
         }
     }
 
@@ -63,6 +64,7 @@ public class EnemyGround : EnemyBase
     {
         if (other.gameObject.tag == "Player")
         {
+            Debug.Log(Time.time + "| out:" + other.gameObject.name + "," + other.gameObject.tag);
             _isFindPlayer = false;
         }
     }

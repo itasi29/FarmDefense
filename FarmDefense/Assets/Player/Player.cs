@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
 
     private bool _isJump;
 
-    private int _hp;
+    [SerializeField] private int _hp;
 
     private int _hitStanTime;
 
