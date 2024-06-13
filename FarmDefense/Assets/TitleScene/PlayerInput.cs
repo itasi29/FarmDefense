@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// Select‚·‚éƒV[ƒ“‚Åg‚¦‚é
+/// </summary>
 public class PlayerInput : MonoBehaviour
 {
     float lsh;
@@ -15,7 +18,7 @@ public class PlayerInput : MonoBehaviour
     Button setting;
     Button start;
 
-    GameObject A;
+
     void Start()
     {
         end = GameObject.Find("Canvas/GameObject/end/EndButton").GetComponent<Button>();

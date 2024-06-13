@@ -193,7 +193,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: "\u8A2D\u5B9A"
 --- !u!222 &128541372
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -214,6 +214,7 @@ GameObject:
   - component: {fileID: 153620133}
   - component: {fileID: 153620132}
   - component: {fileID: 153620131}
+  - component: {fileID: 153620134}
   m_Layer: 5
   m_Name: SettingButton
   m_TagString: Untagged
@@ -285,13 +286,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 153620134}
+        m_TargetAssemblyTypeName: Setting, Assembly-CSharp
+        m_MethodName: Change_Scene_Click
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -335,6 +336,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 153620129}
   m_CullTransparentMesh: 1
+--- !u!114 &153620134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153620129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 988502c2314f3714daa599fc5ad1f216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &359933478
 GameObject:
   m_ObjectHideFlags: 0
@@ -540,7 +553,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 608874429}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd3569eafb1b92247b1d9f9437647107, type: 3}
+  m_Script: {fileID: 11500000, guid: 440e11d925ee2a749980ffda0f8ac341, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &626246564
@@ -651,7 +664,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: "\u30B9\u30BF\u30FC\u30C8"
 --- !u!222 &1000521452
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -730,7 +743,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: "\u7D42\u4E86"
 --- !u!222 &1268760764
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -982,6 +995,7 @@ GameObject:
   - component: {fileID: 1924592190}
   - component: {fileID: 1924592189}
   - component: {fileID: 1924592188}
+  - component: {fileID: 1924592191}
   m_Layer: 5
   m_Name: StartButton
   m_TagString: Untagged
@@ -1053,13 +1067,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1924592191}
+        m_TargetAssemblyTypeName: Start, Assembly-CSharp
+        m_MethodName: Change_Scene_Click
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1103,6 +1117,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1924592186}
   m_CullTransparentMesh: 1
+--- !u!114 &1924592191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1924592186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d7e383144e65eb49a97ea401330be08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1964100442
 GameObject:
   m_ObjectHideFlags: 0
