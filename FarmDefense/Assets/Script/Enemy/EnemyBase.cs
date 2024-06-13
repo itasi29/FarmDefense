@@ -16,6 +16,7 @@ public class EnemyBase : MonoBehaviour
     private bool _isDeltaHp;        // 減少フラグ
     protected bool _isStopAttack;     // 攻撃停止フラグ
     protected bool _isFindPlayer;     // プレイヤー発見フラグ
+    protected Rigidbody _rb;
     private GameObject _farmBase;   // 農場全部を持っている親オブジェクト
     protected GameObject _farm;     // 攻撃する農場
     protected Farm _farmScript;     // 上ののスクリプト
@@ -27,7 +28,7 @@ public class EnemyBase : MonoBehaviour
     public int Hp { get { return _hp; } }
     public int DeltaHp { get { return _deltaHp; } }
     public int MaxHp { get { return _status.maxHp; } }
-    public bool IsExist { get { return  IsExist; } }
+    public bool IsExist { get { return  _isExist; } }
 
     /// <summary>
     /// 初期化
@@ -36,10 +37,12 @@ public class EnemyBase : MonoBehaviour
     /// <param name="enemyNo">敵の番号</param>
     public virtual void Init(Vector3 pos, int enemyNo)
     {
+        _rb = GetComponent<Rigidbody>();
+
         _farmBase = GameObject.Find("Farm").gameObject;
         _player = GameObject.Find("Player").gameObject;
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
-        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
+//        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
 
         // ステータス取得
         EnemyData data = GameObject.Find("DataManager").GetComponent<DataManager>().Enemy;
@@ -71,7 +74,7 @@ public class EnemyBase : MonoBehaviour
             _hp = 0;
             _isExist = false;
             // スポナーマネージャーに死亡したことを伝える
-            _spawnerMgr.AddKilledEnemy();
+//            _spawnerMgr.AddKilledEnemy();
             // カメラに死亡したことを伝える
             _camera.SubHpBarInfo(this.gameObject);
             // 破壊
@@ -89,7 +92,7 @@ public class EnemyBase : MonoBehaviour
 
         Vector3 velocity = (farmPos - pos).normalized * _status.speed;
 
-        transform.position = pos + velocity;
+        _rb.velocity = velocity;
     }
 
     /// <summary>
@@ -102,7 +105,7 @@ public class EnemyBase : MonoBehaviour
 
         Vector3 velocity = (playerPos - pos).normalized * _status.speed;
 
-        transform.position = pos + velocity;
+        _rb.velocity = velocity;
     }
 
     /// <summary>

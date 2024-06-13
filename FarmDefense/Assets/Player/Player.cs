@@ -11,9 +11,9 @@ public class Player : MonoBehaviour
 {
     private const float kDownSpeed = 0.1f;//スタミナ切れ時の移動速度
 
-    private const float kSpeed = 0.2f;//基本的な移動速度
+    private const float kSpeed = 16.0f;//基本的な移動速度
 
-    private const float kDashMaxSpeed = 0.5f;//ダッシュ時の移動速度
+    private const float kDashMaxSpeed = 18.0f;//ダッシュ時の移動速度
 
     private const float kDashMaxSpeedTime = 0.05f;//最高速度に達するまでの時間
 
@@ -36,8 +36,8 @@ public class Player : MonoBehaviour
     private Vector3 kInitPos = new Vector3(0, 0, 0);
 
     private Vector3 _dirVec;
-    private Vector3 _moveVec;
-    private Rigidbody _rigidBody;
+    private Vector3 _velocity;
+    private Rigidbody _rb;
 
     private float _speed;
 
@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _rigidBody = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         _stamina = kStaminaMax;
         _hp = kHpMax;
@@ -107,11 +107,11 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        //       Debug.Log(_stamina);
         //スタンしていないときの処理
         if (!_isStan)
         {
-            this.transform.position += _moveVec;
+            _rb.velocity = _velocity;
+            Debug.Log(Time.time + "| velocity" + _rb.velocity);
 
             //ダッシュ時の処理
             if (_isDash)
@@ -158,7 +158,6 @@ public class Player : MonoBehaviour
         //無敵時間があるとき
         if (_safeTime >= 0)
         {
-            Debug.Log("むてきだよ");
             _isSafe = true;
             _safeTime--;
         }
@@ -171,7 +170,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
         //攻撃ボタンを押したとき
         if (Input.GetButtonDown("X"))
         {
@@ -190,7 +189,7 @@ public class Player : MonoBehaviour
                 _farWeapon.Attack(_dirVec);
             }
         }
-        //強攻撃を使ったとき(ボタンわかんない)
+        //強攻撃を使ったとき
         if (Input.GetButtonDown("Y") && !_isTired)
         {
             _stamina -= kHeavyAttackNeedStamina;
@@ -233,7 +232,6 @@ public class Player : MonoBehaviour
         cameraFront.y = 0;
         cameraFront.Normalize();
 
-        _moveVec = new Vector3(0, 0, 0);
         Vector3 dirVec = new Vector3(0, 0, 0);
 
 
@@ -272,13 +270,16 @@ public class Player : MonoBehaviour
         {
             _speed = kDownSpeed;
         }
-        _moveVec = dirVec * _speed;
+
+        Vector3 move = dirVec * _speed;
+        move.y = _rb.velocity.y;
+        _velocity = move;
     }
 
     private void Jump()
     {
-        _rigidBody.velocity = new Vector3(0, 0, 0);
-        _rigidBody.AddForce(new Vector3(0, kJumpPower, 0), ForceMode.Impulse);
+        Debug.Log("じゃんぬ");
+        _rb.AddForce(new Vector3(0, kJumpPower, 0), ForceMode.Impulse);
         _isJump = true;
     }
 
@@ -320,7 +321,7 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
         {
-            Debug.Log("あたった");
+            Debug.Log("じゃんぬ復活");
             _isJump = false;
         }
     }

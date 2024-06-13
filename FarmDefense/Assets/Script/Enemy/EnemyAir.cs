@@ -136,7 +136,7 @@ public class EnemyAir : EnemyBase
 
         Vector3 velocity = (farmPos - pos).normalized * _status.speed;
 
-        transform.position = pos + velocity;
+        _rb.velocity = velocity;
     }
 
     /// <summary>
@@ -162,6 +162,6 @@ public class EnemyAir : EnemyBase
 
         Vector3 velocity = (_approachPos - pos).normalized * _status.speed;
 
-        transform.position = pos + velocity;
+        _rb.velocity = _rb.velocity + velocity;
     }
 }

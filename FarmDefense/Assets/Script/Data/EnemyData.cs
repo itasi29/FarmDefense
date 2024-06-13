@@ -18,7 +18,7 @@ public class EnemyData
     {
         _status = new EnemyStatus();
         _status.maxHp = 100;
-        _status.speed = 0.2f;
+        _status.speed = 15.0f;
         _status.attack = 2;
         _status.attackInterval = 60;
     }

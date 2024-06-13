@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class CameraControl : MonoBehaviour
 {
     /* 定数 */
-    private const float kDistance = 2.2f;   // ターゲットとカメラとの距離
+    private const float kDistance = 4.0f;   // ターゲットとカメラとの距離
     private const float kShiftPosY = 1.2f;   // ターゲット中心から上にずらす量
     private const float kAxisMinThershold = 0.2f; // 入力情報の最小のしきい値:無視する割合
     private const float kAxisMaxThershold = 0.8f; // 入力情報の最大のしきい値:1.0とみなす割合
@@ -206,7 +206,7 @@ public class CameraControl : MonoBehaviour
 
         // 中心を更新するか
         bool isUpdateCenter = (_centerPos != targetTrs.position);
-        Debug.Log(isUpdateCenter);
+
         // 中心位置の更新
         if (isUpdateCenter)
         {

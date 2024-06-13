@@ -96,7 +96,6 @@ public class Farm : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            // collision.GetComponent<EnemyBase>().OnTriggerEnter(collision);
             _isInPlayer = true;
         }
     }
@@ -107,10 +106,8 @@ public class Farm : MonoBehaviour
     /// <param name="collision"></param>
     public void OnTriggerExit(Collider collision)
     {
-        //        enemy.OnTriggerExit(collision);
         if (collision.tag == "Player")
         {
-            // collision.GetComponent<EnemyBase>().OnTriggerExit(collision);
             _isInPlayer = false;
         }
     }

@@ -7,9 +7,6 @@ public class NearWeapon : Weapon
 {
     private const int kAttackTime = 60;
 
-    /* “c‘ãŸè‚É‚â‚Á‚Ä‚Ü‚· */
-    private int _attack = 10;
-
     private bool _isAttack;
 
     private int _attackTime;
