@@ -16,21 +16,36 @@ public class CursorMove : MonoBehaviour
         kFarRate,
         kPartsNum
     }
+    public enum Item
+    {
+        kFarmHeal,
+        kPlayerHeal,
+        kItemNum
+    }
 
+    private const int kImageWidth = 110;//画像の横幅(仮設定)
 
-    private const int kImageWidth = 110;
+    private const int kWaitTime = 15;//長押しでカーソルを動かすときの間隔
 
-    private const int kWaitTime = 15;
+    private Vector2 _cursorIndex;//カーソルのいる位置
 
-    private Vector2 _cursorIndex;
+    private UpgradeParts _selectPart;//選んでいる強化パーツenum
 
-    private UpgradeParts _selectPart;
+    private Item _selectItem;//選んでいるアイテムenum
 
-    private GameObject _selectImage;
-    private GameObject _cursorImage;
+    private ShopManager _shopManager;//ショップを管理しているスクリプト
 
-    private bool _isMoveCursor;
-    private int _waitTime;
+    private GameObject _weaponShop;//武器ショップ
+    private GameObject _itemShop;//アイテムショップ
+
+    private GameObject _selectImage;//選択している画像
+    private GameObject _cursorImage;//カーソルの画像
+
+    private bool _isMoveCursor;//カーソルを動かしたかどうか
+    private int _waitTime;//カーソルを動かす間隔
+
+    private bool _lastShowWeaponShop;//前のフレーム開いていたショップ
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +55,13 @@ public class CursorMove : MonoBehaviour
         _cursorImage = GameObject.Find("cursor");
         _selectImage = GameObject.Find("nearAtk");
         _selectPart = UpgradeParts.kNearAtk;
+        _selectItem = Item.kFarmHeal;
+        _shopManager = GameObject.Find("Manager").GetComponent<ShopManager>();
+
+        _weaponShop = GameObject.Find("WeaponShop");
+        _itemShop = GameObject.Find("ItemShop");
+
+        _lastShowWeaponShop = true;
     }
 
     // Update is called once per frame
@@ -48,40 +70,67 @@ public class CursorMove : MonoBehaviour
         MoveCursor();
 
         Vector2 cursorPos = new Vector2(0, 0);
-        if (_cursorIndex.x == 0)
+
+        //前のフレーム開いていたショップと違うショップを開いていたら
+        if (_lastShowWeaponShop != _shopManager.IsGetWeaponShop())
         {
-            if (_cursorIndex.y == 0)
+            //カーソルの位置を初期位置に戻す
+            _cursorIndex = new Vector2(0, 0);
+            _lastShowWeaponShop = _shopManager.IsGetWeaponShop();
+        }
+
+        //強化パーツショップを開いている場合
+        if (_lastShowWeaponShop)
+        {
+            if (_cursorIndex.x == 0)
             {
-                _selectImage = GameObject.Find("nearAtk");
-                _selectPart = UpgradeParts.kNearAtk;
+                if (_cursorIndex.y == 0)
+                {
+                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearAtk).gameObject;
+                    _selectPart = UpgradeParts.kNearAtk;
+                }
+                else if (_cursorIndex.y == 1)
+                {
+                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearRange).gameObject;
+                    _selectPart = UpgradeParts.kNearRange;
+                }
+                else if (_cursorIndex.y == 2)
+                {
+                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearSpd).gameObject;
+                    _selectPart = UpgradeParts.kNearSpd;
+                }
             }
-            else if (_cursorIndex.y == 1)
+            else
             {
-                _selectImage = GameObject.Find("nearRange");
-                _selectPart = UpgradeParts.kNearRange;
-            }
-            else if (_cursorIndex.y == 2)
-            {
-                _selectImage = GameObject.Find("nearSpd");
-                _selectPart = UpgradeParts.kNearSpd;
+                if (_cursorIndex.y == 0)
+                {
+                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarAtk).gameObject;
+                    _selectPart = UpgradeParts.kFarAtk;
+                }
+                else if (_cursorIndex.y == 1)
+                {
+                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarSpd).gameObject;
+                    _selectPart = UpgradeParts.kFarSpd;
+                }
+                else if (_cursorIndex.y == 2)
+                {
+                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarRate).gameObject;
+                    _selectPart = UpgradeParts.kFarRate;
+                }
             }
         }
+        //アイテムショップを開いている場合
         else
         {
-            if (_cursorIndex.y == 0)
+            if (_cursorIndex.x == 0)
             {
-                _selectImage = GameObject.Find("farAtk");
-                _selectPart = UpgradeParts.kFarAtk;
+                _selectImage = _itemShop.transform.GetChild((int)Item.kFarmHeal).gameObject;
+                _selectItem = Item.kFarmHeal;
             }
-            else if (_cursorIndex.y == 1)
+            else if (_cursorIndex.x == 1)
             {
-                _selectImage = GameObject.Find("farSpd");
-                _selectPart = UpgradeParts.kFarSpd;
-            }
-            else if (_cursorIndex.y == 2)
-            {
-                _selectImage = GameObject.Find("farRate");
-                _selectPart = UpgradeParts.kFarRate;
+                _selectImage = _itemShop.transform.GetChild((int)Item.kPlayerHeal).gameObject;
+                _selectItem = Item.kPlayerHeal;
             }
         }
         cursorPos = _selectImage.transform.position;
@@ -93,7 +142,7 @@ public class CursorMove : MonoBehaviour
     private void FixedUpdate()
     {
         _waitTime++;
-        if(_waitTime > kWaitTime)
+        if (_waitTime > kWaitTime)
         {
             _isMoveCursor = false;
         }
@@ -146,7 +195,7 @@ public class CursorMove : MonoBehaviour
                     isHit = true;
                 }
             }
-            if(isHit)
+            if (isHit)
             {
                 _isMoveCursor = true;
                 _waitTime = 0;
@@ -161,4 +210,5 @@ public class CursorMove : MonoBehaviour
     }
 
     public UpgradeParts GetSelectPart() { return _selectPart; }
+    public Item GetSelectItem() { return _selectItem; }
 }
