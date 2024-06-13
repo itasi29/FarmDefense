@@ -7,7 +7,7 @@ public class DataManager : MonoBehaviour
     private SpawnerData _spawner;
     private EnemyData _enemy;
 
-    void Start()
+    void Awake()
     {
         // 自信を非破壊オブジェクトにする
         DontDestroyOnLoad(this.gameObject);

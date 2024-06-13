@@ -1,9 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class EnemyGround : EnemyBase
 {
+    private void Start()
+    {
+        Init(this.transform.position, 0);
+    }
+
     public override void Init(Vector3 pos, int enemyNo)
     {
         base.Init(pos, enemyNo);
@@ -42,6 +48,22 @@ public class EnemyGround : EnemyBase
         if (collision.gameObject.tag == "Player")
         {
             AttackPlayer();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            _isFindPlayer= true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            _isFindPlayer = false;
         }
     }
 }

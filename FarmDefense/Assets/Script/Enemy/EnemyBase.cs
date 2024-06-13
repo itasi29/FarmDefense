@@ -39,10 +39,10 @@ public class EnemyBase : MonoBehaviour
         _farmBase = GameObject.Find("Farm").gameObject;
         _player = GameObject.Find("Player").gameObject;
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
-//        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
+        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
 
         // ステータス取得
-        EnemyData data = GameObject.Find("DataManager").GetComponent<EnemyData>();
+        EnemyData data = GameObject.Find("DataManager").GetComponent<DataManager>().Enemy;
         _status = data.GetStatus(enemyNo);
 
         // 各種初期化
@@ -71,7 +71,7 @@ public class EnemyBase : MonoBehaviour
             _hp = 0;
             _isExist = false;
             // スポナーマネージャーに死亡したことを伝える
-//            _spawnerMgr.AddKilledEnemy();
+            _spawnerMgr.AddKilledEnemy();
             // カメラに死亡したことを伝える
             _camera.SubHpBarInfo(this.gameObject);
             // 破壊
@@ -117,6 +117,7 @@ public class EnemyBase : MonoBehaviour
 
         _farmScript.OnDamage(_status.attack);
         _isStopAttack = true;
+        _watiAttackFrame = _status.attackInterval;
     }
 
     protected void AttackPlayer()
@@ -128,6 +129,7 @@ public class EnemyBase : MonoBehaviour
 
         _player.GetComponent<Player>().OnDamage(_status.attack);
         _isStopAttack = true;
+        _watiAttackFrame = _status.attackInterval;
     }
 
     /// <summary>

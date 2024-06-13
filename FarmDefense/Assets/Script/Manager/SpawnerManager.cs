@@ -39,7 +39,7 @@ public class SpawnerManager : MonoBehaviour
     // ‘Swave‚Ì“G‚ğ¶¬‚µ‚½‚©
     private bool _isAllCreate;
 
-    void Start()
+    void Awake()
     {
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         GameObject parent = GameObject.Find("CreatePos");
