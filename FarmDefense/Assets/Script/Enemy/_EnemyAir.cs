@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
-public class EnemyAir : EnemyBase
+public class _EnemyAir : _EnemyBase
 {
     [SerializeField] private const float kAngleSpeed = 180 / Mathf.PI * 0.2f;
 
@@ -189,9 +189,14 @@ public class EnemyAir : EnemyBase
 
                 var circlepos = tr.position;  //‰~‰^“®‚ÌˆÊ’uŒvŽZ
 
+                Debug.Log("center" + _center);
+                Debug.Log("befor" + circlepos);
                 circlepos -= _center;
+                Debug.Log("-" + circlepos);
                 circlepos = angleAxis * circlepos;
+                Debug.Log("q" + circlepos);
                 circlepos += _center;
+                Debug.Log("+" + circlepos);
 
                 tr.position = circlepos;
 

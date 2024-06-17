@@ -31,34 +31,18 @@ public class Bullet : MonoBehaviour
         _moveVec = dirVec * speed;
     }
 
-//    private void OnCollisionEnter(Collision collision)
-//    {
-//        // collision.gameObject.SetActive(false);
-
-//        //TODO:タグで判別
-//        //GameObject hitEnemy = collision.gameObject;
-
-//        //Destroy(this.gameObject);
-//        Debug.Log("あたったにょんcollision");
-//        if (collision.gameObject.tag == "Enemy")
-//        {
-//            EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
-//            enemy.OnDamage(_atk);
-//        }
-
-////        Destroy(this.gameObject);
-//    }
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("あたったにょんtrigger");
-        if (other.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Enemy")
         {
-            Debug.Log("あたったにょん");
-            EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
+            EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
             enemy.OnDamage(_atk);
-
-            Destroy(this.gameObject);
         }
 
+        // プレイヤー以外にあったたら消す
+        if (!(collision.gameObject.tag == "Player")) 
+        {
+            Destroy(this.gameObject);
+        }
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyGround : EnemyBase
+public class _EnemyGround : _EnemyBase
 {
     private void Start()
     {

@@ -39,7 +39,7 @@ public class SpawnerManager : MonoBehaviour
     // 全waveの敵を生成したか
     private bool _isAllCreate;
 
-    void Start()
+    void Awake()
     {
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         GameObject parent = GameObject.Find("CreatePos");
@@ -58,7 +58,7 @@ public class SpawnerManager : MonoBehaviour
         _waveData = GameObject.Find("DataManager").GetComponent<DataManager>().Spawner.GetWaveData(_stageNo);
 
         // 各パラメータの初期化
-        _nowWaveNo = 1;
+        _nowWaveNo = 0;
         _elapsFrame = 0;
         _createNo = 0;
         _killedEnemyNum = 0;
@@ -86,7 +86,10 @@ public class SpawnerManager : MonoBehaviour
     private void Create()
     {
         // 生成終了していれば何もしない
-        if (_isStopCreate) return;
+        if (_isStopCreate)
+        {
+            return;
+        }
 
         // 生成フレームの増加
         ++_elapsFrame;
@@ -109,8 +112,8 @@ public class SpawnerManager : MonoBehaviour
             // 生成停止
             _isStopCreate = true;
 
-            // 現在のwaveが3になっていれば
-            if (_nowWaveNo == 3)
+            // 現在が最終waveになっていれば
+            if (_nowWaveNo == 2)
             {
                 // 全て生成したことに
                 _isAllCreate = true;
@@ -136,7 +139,7 @@ public class SpawnerManager : MonoBehaviour
         enemy = Instantiate(enemyPrefab[enemyNo]);
 
         // TODO: 敵の位置初期化できたらそれに変更
-        enemy.GetComponent<EnemyBase>().Init(createPos[posNo].transform.position);
+        enemy.GetComponent<EnemyBase>().Init(createPos[posNo].transform.position, enemyNo);
         _camera.AddHpBarInfo(enemy);
     }
 
@@ -149,6 +152,7 @@ public class SpawnerManager : MonoBehaviour
     {
         bool isAllKill = false;
 
+//        Debug.Log(Time.time + "現在:" + _killedEnemyNum + ", 必要:" + _waveData[_nowWaveNo].createNum);
         // そのwaveの全ての敵を倒したら
         if (_killedEnemyNum >= _waveData[_nowWaveNo].createNum)
         {

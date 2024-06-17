@@ -11,15 +11,16 @@ public class Player : MonoBehaviour
 {
     private const float kDownSpeed = 0.1f;//スタミナ切れ時の移動速度
 
-    private const float kSpeed = 0.2f;//基本的な移動速度
+    private const float kSpeed = 16.0f;//基本的な移動速度
 
-    private const float kDashMaxSpeed = 0.5f;//ダッシュ時の移動速度
+    private const float kDashMaxSpeed = 18.0f;//ダッシュ時の移動速度
 
     private const float kDashMaxSpeedTime = 0.05f;//最高速度に達するまでの時間
 
     private const float kDashAddSpeed = (kDashMaxSpeed - kSpeed) * kDashMaxSpeedTime;
 
-    private const float kJumpPower = 30.0f;//ジャンプ力
+    private const float kJumpPower = 1.0f;//ジャンプ力
+    private const float kGravity = -0.04f;
 
     private const int kStaminaMax = 500;//スタミナの最大値
 
@@ -36,8 +37,9 @@ public class Player : MonoBehaviour
     private Vector3 kInitPos = new Vector3(0, 0, 0);
 
     private Vector3 _dirVec;
-    private Vector3 _moveVec;
-    private Rigidbody _rigidBody;
+    private Vector3 _velocity;
+    private Vector3 _jumpVelocity;
+    private Rigidbody _rb;
 
     private float _speed;
 
@@ -47,7 +49,7 @@ public class Player : MonoBehaviour
 
     private bool _isJump;
 
-    private int _hp;
+    [SerializeField] private int _hp;
 
     private int _hitStanTime;
 
@@ -69,7 +71,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _rigidBody = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         _stamina = kStaminaMax;
         _hp = kHpMax;
@@ -107,11 +109,16 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        //       Debug.Log(_stamina);
+        if (_isJump)
+        {
+            _rb.transform.position += _jumpVelocity;
+            _jumpVelocity.y += kGravity;
+        }
+
         //スタンしていないときの処理
         if (!_isStan)
         {
-            this.transform.position += _moveVec;
+            _rb.velocity = _velocity;
 
             //ダッシュ時の処理
             if (_isDash)
@@ -158,7 +165,6 @@ public class Player : MonoBehaviour
         //無敵時間があるとき
         if (_safeTime >= 0)
         {
-            Debug.Log("むてきだよ");
             _isSafe = true;
             _safeTime--;
         }
@@ -171,7 +177,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
         //攻撃ボタンを押したとき
         if (Input.GetButtonDown("X"))
         {
@@ -190,7 +196,7 @@ public class Player : MonoBehaviour
                 _farWeapon.Attack(_dirVec);
             }
         }
-        //強攻撃を使ったとき(ボタンわかんない)
+        //強攻撃を使ったとき
         if (Input.GetButtonDown("Y") && !_isTired)
         {
             _stamina -= kHeavyAttackNeedStamina;
@@ -233,7 +239,6 @@ public class Player : MonoBehaviour
         cameraFront.y = 0;
         cameraFront.Normalize();
 
-        _moveVec = new Vector3(0, 0, 0);
         Vector3 dirVec = new Vector3(0, 0, 0);
 
 
@@ -272,13 +277,15 @@ public class Player : MonoBehaviour
         {
             _speed = kDownSpeed;
         }
-        _moveVec = dirVec * _speed;
+
+        Vector3 move = dirVec * _speed;
+        move.y = _rb.velocity.y;
+        _velocity = move;
     }
 
     private void Jump()
     {
-        _rigidBody.velocity = new Vector3(0, 0, 0);
-        _rigidBody.AddForce(new Vector3(0, kJumpPower, 0), ForceMode.Impulse);
+        _jumpVelocity = new Vector3(0, kJumpPower, 0);
         _isJump = true;
     }
 
@@ -320,8 +327,28 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
         {
-            Debug.Log("あたった");
             _isJump = false;
+            Vector3 pos = _rb.transform.position;
+            pos.y = collision.transform.position.y + 1;
+            _rb.transform.position = pos;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
+            enemy.IsFindPlayer = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
+            enemy.IsFindPlayer = false;
         }
     }
 }
