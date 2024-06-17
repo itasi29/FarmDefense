@@ -16,6 +16,7 @@ public class EnemyBase : MonoBehaviour
     private bool _isDeltaHp;        // 減少フラグ
     protected bool _isStopAttack;     // 攻撃停止フラグ
     protected bool _isFindPlayer;     // プレイヤー発見フラグ
+    protected bool _isStopMove;       // 停止フラグ
     protected Rigidbody _rb;
     private GameObject _farmBase;   // 農場全部を持っている親オブジェクト
     protected GameObject _farm;     // 攻撃する農場
@@ -29,6 +30,7 @@ public class EnemyBase : MonoBehaviour
     public int DeltaHp { get { return _deltaHp; } }
     public int MaxHp { get { return _status.maxHp; } }
     public bool IsExist { get { return  _isExist; } }
+    public bool IsFindPlayer { get { return _isFindPlayer; } set { _isFindPlayer = value; } }
 
     /// <summary>
     /// 初期化
@@ -42,7 +44,7 @@ public class EnemyBase : MonoBehaviour
         _farmBase = GameObject.Find("Farm").gameObject;
         _player = GameObject.Find("Player").gameObject;
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
-//        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
+        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
 
         // ステータス取得
         EnemyData data = GameObject.Find("DataManager").GetComponent<DataManager>().Enemy;
@@ -56,7 +58,24 @@ public class EnemyBase : MonoBehaviour
         _isDeltaHp = false;
         _isStopAttack = false;
         _isFindPlayer = false;
+        _isStopMove = false;
         transform.position = pos;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            _isStopMove = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            _isStopMove = false;
+        }
     }
 
     /// <summary>
@@ -74,7 +93,7 @@ public class EnemyBase : MonoBehaviour
             _hp = 0;
             _isExist = false;
             // スポナーマネージャーに死亡したことを伝える
-//            _spawnerMgr.AddKilledEnemy();
+            _spawnerMgr.AddKilledEnemy();
             // カメラに死亡したことを伝える
             _camera.SubHpBarInfo(this.gameObject);
             // 破壊

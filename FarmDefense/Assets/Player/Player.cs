@@ -19,7 +19,8 @@ public class Player : MonoBehaviour
 
     private const float kDashAddSpeed = (kDashMaxSpeed - kSpeed) * kDashMaxSpeedTime;
 
-    private const float kJumpPower = 30.0f;//ジャンプ力
+    private const float kJumpPower = 1.0f;//ジャンプ力
+    private const float kGravity = -0.04f;
 
     private const int kStaminaMax = 500;//スタミナの最大値
 
@@ -37,6 +38,7 @@ public class Player : MonoBehaviour
 
     private Vector3 _dirVec;
     private Vector3 _velocity;
+    private Vector3 _jumpVelocity;
     private Rigidbody _rb;
 
     private float _speed;
@@ -107,11 +109,16 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (_isJump)
+        {
+            _rb.transform.position += _jumpVelocity;
+            _jumpVelocity.y += kGravity;
+        }
+
         //スタンしていないときの処理
         if (!_isStan)
         {
             _rb.velocity = _velocity;
-            Debug.Log(Time.time + "| velocity" + _rb.velocity);
 
             //ダッシュ時の処理
             if (_isDash)
@@ -278,8 +285,7 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
-        Debug.Log("じゃんぬ");
-        _rb.AddForce(new Vector3(0, kJumpPower, 0), ForceMode.Impulse);
+        _jumpVelocity = new Vector3(0, kJumpPower, 0);
         _isJump = true;
     }
 
@@ -321,8 +327,28 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
         {
-            Debug.Log("じゃんぬ復活");
             _isJump = false;
+            Vector3 pos = _rb.transform.position;
+            pos.y = collision.transform.position.y + 1;
+            _rb.transform.position = pos;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
+            enemy.IsFindPlayer = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
+            enemy.IsFindPlayer = false;
         }
     }
 }

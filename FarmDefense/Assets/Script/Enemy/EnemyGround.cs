@@ -27,6 +27,12 @@ public class EnemyGround : EnemyBase
         // 攻撃待機処理
         base.AttackInterval();
 
+        if (_isStopMove)
+        {
+            _rb.velocity = Vector3.zero;
+            return;
+        }
+
         // プレイヤー発見時
         if (_isFindPlayer)
         {
@@ -48,22 +54,6 @@ public class EnemyGround : EnemyBase
         if (collision.gameObject.tag == "Player")
         {
             AttackPlayer();
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Player")
-        {
-            _isFindPlayer = true;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.tag == "Player")
-        {
-            _isFindPlayer = false;
         }
     }
 }

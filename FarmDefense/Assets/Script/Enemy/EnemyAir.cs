@@ -6,33 +6,36 @@ using UnityEngine;
 public class EnemyAir : EnemyBase
 {
     /* ’è” */
-    private const int kAirWaitRate = 3;
-    private const float kAngleSpeed = 180 / Mathf.PI * 0.2f;    // ‰ñ“]‘¬“x
+    private const int kAirWaitRate = 5;
+    private const float kAngleSpeed = 180 / Mathf.PI * 0.02f;    // ‰ñ“]‘¬“x
     private Quaternion kCircleMotionRot = Quaternion.AngleAxis(kAngleSpeed, Vector3.up);    // ù‰ñ‚ÌƒNƒI[ƒ^ƒjƒIƒ“
 
     /* •Ï” */
-    [SerializeField] private int _enemyAirPosY; // ”ò‚ÔYÀ•W
+    [SerializeField] private float _enemyAirPosY; // ”ò‚ÔYÀ•W
     private int _airWaitFrame;
     private int _airWaitInterval;
-    private bool _isMoveFarm;
+    private bool _isInFarm;
     private bool _isCircleMotion;
     private bool _isApproachFarm;
     private bool _isAirReturn;
-    private Vector3 _center;
     private Vector3 _approachPos;
+
+    private void Start()
+    {
+        Init(transform.position, 1);
+    }
 
     public override void Init(Vector3 pos, int enemyNo)
     {
+        pos.y = _enemyAirPosY;
         base.Init(pos, enemyNo);
         FindFarm(false);
 
-        // ‘_‚¤”_ê‚ÌÀ•W‚ğ’†S‚É
-        _center = _farm.transform.position;
         // ‹ó’†‘Ò‹@ŠÔ‚ÍUŒ‚ŠÔ‚ÌkAirWaitRate”{‚·‚é
         _airWaitInterval = _status.attackInterval * kAirWaitRate;
         // ‰Šú‰»
         _airWaitFrame = 0;
-        _isMoveFarm = false;
+        _isInFarm = false;
         _isCircleMotion = false;
         _isApproachFarm = false;
         _isAirReturn = false;
@@ -40,16 +43,22 @@ public class EnemyAir : EnemyBase
 
     private void FixedUpdate()
     {
+        PlayerFindInfo();
+
         // ”_ê‚ª”j‰ó‚³‚ê‚½‚çŸ‚Ì”_ê‚Ö
         if (_farmScript.IsBreak)
         {
             FindFarm(false);
-            _center = _farm.transform.position;
         }
-
 
         // UŒ‚‘Ò‹@ˆ—
         base.AttackInterval();
+
+        if (_isStopMove)
+        {
+            _rb.velocity = Vector3.zero;
+            return;
+        }
 
         // ƒvƒŒƒCƒ„[”­Œ©
         if (_isFindPlayer)
@@ -60,7 +69,7 @@ public class EnemyAir : EnemyBase
         else
         {
             // ”_ê‚ÉŒü‚©‚¢’†
-            if (_isMoveFarm)
+            if (!_isInFarm)
             {
                 this.MoveToFarm();
             }
@@ -74,6 +83,7 @@ public class EnemyAir : EnemyBase
                 {
                     _isCircleMotion = false;
                     _isApproachFarm = true;
+                    _approachPos = transform.position;
                 }
             }
             // ”_êÚ‹ß’†
@@ -93,6 +103,11 @@ public class EnemyAir : EnemyBase
                     _isCircleMotion = true;
 
                     _airWaitFrame = _airWaitInterval;
+                    _rb.velocity = Vector3.zero;
+
+                    Vector3 pos = transform.position;
+                    pos.y = _enemyAirPosY;
+                    transform.position = pos;
                 }
             }
         }
@@ -115,13 +130,34 @@ public class EnemyAir : EnemyBase
     private void OnTriggerEnter(Collider collider)
     {
         // ‚Ü‚¾”_ê‚ÖˆÚ“®’†‚ÉUŒ‚‘ÎÛ‚Ì”_ê‚É“–‚½‚Á‚½‚çù‰ñ‚Ö
-        if (_isMoveFarm && collider.gameObject.name == _farm.name)
+        if (!_isInFarm && collider.gameObject.name == _farm.name)
         {
-            _isMoveFarm = false;
+            _isInFarm = true;
             _isCircleMotion = true;
 
             _airWaitFrame = _airWaitInterval;
+            _rb.velocity = Vector3.zero;
         }
+    }
+
+    private void PlayerFindInfo()
+    {
+        // ”ñ”­Œ©¨”­Œ©
+        if (!_isFindPlayer && _farmScript.IsInPlayer)
+        {
+            _approachPos = _player.transform.position;
+            _approachPos.y = _enemyAirPosY;
+            
+        }
+        // ”­Œ©¨”ñ”­Œ©
+        if (_isFindPlayer && !_farmScript.IsInPlayer)
+        {
+            _isCircleMotion = false;
+            _isApproachFarm = false;
+            _isAirReturn = true;
+        }
+
+        _isFindPlayer = _farmScript.IsInPlayer;
     }
 
     /// <summary>
@@ -131,11 +167,9 @@ public class EnemyAir : EnemyBase
     {
         Vector3 pos = transform.position;
         Vector3 farmPos = _farm.transform.position;
-        // YÀ•W‚¾‚¯ã‹ó‚É•ÏX
         farmPos.y = _enemyAirPosY;
 
         Vector3 velocity = (farmPos - pos).normalized * _status.speed;
-
         _rb.velocity = velocity;
     }
 
@@ -145,10 +179,11 @@ public class EnemyAir : EnemyBase
     private void MoveCircleMotion()
     {
         Vector3 pos = transform.position;
+        Vector3 center = _farm.transform.position;
 
-        pos -= _center;
+        pos -= center;
         pos = kCircleMotionRot * pos;
-        pos += _center;
+        pos += center;
 
         transform.position = pos;
     }
@@ -162,6 +197,6 @@ public class EnemyAir : EnemyBase
 
         Vector3 velocity = (_approachPos - pos).normalized * _status.speed;
 
-        _rb.velocity = _rb.velocity + velocity;
+        _rb.velocity = velocity;
     }
 }

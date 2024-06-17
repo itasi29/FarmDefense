@@ -331,7 +331,6 @@ GameObject:
   - component: {fileID: 245412067}
   - component: {fileID: 245412066}
   - component: {fileID: 245412065}
-  - component: {fileID: 245412064}
   - component: {fileID: 245412063}
   m_Layer: 0
   m_Name: Farm0
@@ -378,27 +377,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: -2, z: 0}
---- !u!65 &245412064
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 245412061}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 10, z: 1}
-  m_Center: {x: 0, y: 5, z: 0}
 --- !u!114 &245412065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -748,6 +726,7 @@ GameObject:
   - component: {fileID: 392219958}
   - component: {fileID: 392219957}
   - component: {fileID: 392219956}
+  - component: {fileID: 392219959}
   m_Layer: 0
   m_Name: weaponCol
   m_TagString: Untagged
@@ -841,6 +820,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 392219953}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &392219959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392219953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf7bdf9241a94ff4b9e1221ab3d24641, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &565105183
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,7 +845,6 @@ GameObject:
   - component: {fileID: 565105189}
   - component: {fileID: 565105188}
   - component: {fileID: 565105187}
-  - component: {fileID: 565105186}
   - component: {fileID: 565105185}
   m_Layer: 0
   m_Name: Farm4
@@ -901,27 +891,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: -2, z: 0}
---- !u!65 &565105186
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 565105183}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 10, z: 1}
-  m_Center: {x: 0, y: 5, z: 0}
 --- !u!114 &565105187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1260,7 +1229,6 @@ GameObject:
   - component: {fileID: 979736113}
   - component: {fileID: 979736112}
   - component: {fileID: 979736111}
-  - component: {fileID: 979736110}
   - component: {fileID: 979736109}
   m_Layer: 0
   m_Name: Farm5
@@ -1307,27 +1275,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: -2, z: 0}
---- !u!65 &979736110
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 979736107}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 10, z: 1}
-  m_Center: {x: 0, y: 5, z: 0}
 --- !u!114 &979736111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1561,7 +1508,6 @@ GameObject:
   - component: {fileID: 1334553803}
   - component: {fileID: 1334553802}
   - component: {fileID: 1334553801}
-  - component: {fileID: 1334553800}
   - component: {fileID: 1334553799}
   m_Layer: 0
   m_Name: Farm2
@@ -1608,27 +1554,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: -2, z: 0}
---- !u!65 &1334553800
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1334553797}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 10, z: 1}
-  m_Center: {x: 0, y: 5, z: 0}
 --- !u!114 &1334553801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1838,7 +1763,6 @@ GameObject:
   - component: {fileID: 1506389975}
   - component: {fileID: 1506389974}
   - component: {fileID: 1506389973}
-  - component: {fileID: 1506389972}
   - component: {fileID: 1506389971}
   m_Layer: 0
   m_Name: Farm1
@@ -1885,27 +1809,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: -2, z: 0}
---- !u!65 &1506389972
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1506389969}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 10, z: 1}
-  m_Center: {x: 0, y: 5, z: 0}
 --- !u!114 &1506389973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1994,79 +1897,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1506389969}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1001 &1515301924
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 601254977183204092, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_Name
-      value: No0
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 969937066805762591, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5915473379698213147, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_Mass
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5915473379698213147, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_UseGravity
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5915473379698213147, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_Constraints
-      value: 84
-      objectReference: {fileID: 0}
-    - target: {fileID: 7582464741925601816, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 971a880330abd354ea0a0ee5889f44d6, type: 3}
 --- !u!1 &1874680394
 GameObject:
   m_ObjectHideFlags: 0
@@ -2112,6 +1942,7 @@ GameObject:
   - component: {fileID: 1891941867}
   - component: {fileID: 1891941866}
   - component: {fileID: 1891941873}
+  - component: {fileID: 1891941874}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2165,8 +1996,8 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
-  m_CollisionDetection: 0
+  m_Constraints: 84
+  m_CollisionDetection: 1
 --- !u!23 &1891941870
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2226,7 +2057,7 @@ Transform:
   m_GameObject: {fileID: 1891941865}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1.8, y: 0, z: -37.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2248,6 +2079,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hp: 0
+--- !u!135 &1891941874
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891941865}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 6
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1931983411
 GameObject:
   m_ObjectHideFlags: 0
@@ -2292,7 +2144,6 @@ GameObject:
   - component: {fileID: 1985107854}
   - component: {fileID: 1985107853}
   - component: {fileID: 1985107852}
-  - component: {fileID: 1985107851}
   - component: {fileID: 1985107850}
   m_Layer: 0
   m_Name: Farm3
@@ -2339,27 +2190,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: -2, z: 0}
---- !u!65 &1985107851
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1985107848}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 10, z: 1}
-  m_Center: {x: 0, y: 5, z: 0}
 --- !u!114 &1985107852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2509,7 +2339,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2129830060}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af8e22fb4043109499c0e8733bca1559, type: 3}
   m_Name: 
@@ -2555,4 +2385,3 @@ SceneRoots:
   - {fileID: 2034763027}
   - {fileID: 378378496}
   - {fileID: 1891941872}
-  - {fileID: 1515301924}
