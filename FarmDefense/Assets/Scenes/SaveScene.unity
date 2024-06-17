@@ -474,7 +474,7 @@ GameObject:
   m_Component:
   - component: {fileID: 439024204}
   m_Layer: 5
-  m_Name: SaveSerect
+  m_Name: SaveSelect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -515,7 +515,7 @@ GameObject:
   - component: {fileID: 475546207}
   - component: {fileID: 475546206}
   m_Layer: 5
-  m_Name: return
+  m_Name: back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
