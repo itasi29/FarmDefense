@@ -8,93 +8,72 @@ using UnityEngine.UI;
 /// <summary>
 /// 選択用スクリプト(コントローラ)
 /// </summary>
-public class PlayerInput1 : MonoBehaviour
+public class PlayerInput1 : PlayerSelectBase
 {
-    float lsh;
-    float lsv;
-    bool A;
-    Image start;
-    Image setting;
-    Image end;
+    [SerializeField] public Image start;
+    [SerializeField] public Image setting;
+    [SerializeField] public Image end;
 
-    Image select;
+   
     // Start is called before the first frame update
-    void Start()
-    {
+    public override void Start()
+    { 
+
         start = GameObject.Find("Canvas/GameObject/start").GetComponent<Image>();
         setting = GameObject.Find("Canvas/GameObject/setting").GetComponent<Image>();
         end = GameObject.Find("Canvas/GameObject/end").GetComponent<Image>();
 
-        select = start;  //最初に取得するゲームオブジェクト
+        _select = start;  //最初に取得するゲームオブジェクト
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
-        //L Stick
-        lsh = Input.GetAxis("Horizontal");
-        lsv = Input.GetAxis("Vertical");
-        A = Input.GetKeyDown(KeyCode.A);
+        GetComponent<PlayerSelectBase>().Update();
 
+        GetComponent<PlayerSelectBase>().Select(start, "SaveScene");
+        GetComponent<PlayerSelectBase>().Select(setting, "OptionScene");
 
-        if(select == start) //スタートを選んでいた場合
+        if (_select == end)  //終了を選んでいた場合
         {
             //適当に「選んでいる」ということがわかるようにしてくれ
-            if(A)
-            {
-                SceneManager.LoadScene("SaveScene");  //セーブシーンへ遷移
-            }
-        }
-        else if(select == setting)  //設定を選んでいた場合
-        {
-            //適当に「選んでいる」ということがわかるようにしてくれ
-            if (A)
-            {
-                SceneManager.LoadScene("OptionScene");  //設定画面へ遷移
-            }
-        }
-        else if (select == end)  //終了を選んでいた場合
-        {
-            //適当に「選んでいる」ということがわかるようにしてくれ
-            if (A)
+            if (_A > 0)
             {
                 //終了処理
             }
         }
 
 
-        if (lsv > 0)  //上に行く
+        if (_lsv > 0)  //上に行く
         {
-            if(select == start)
+            if(_select == start)
             {
-                select = end;  //終了選択
+                _select = end;  //終了選択
             }
-            else if(select == end)
+            else if(_select == end)
             {
-                select = setting;  //設定選択
+                _select = setting;  //設定選択
             }
-            else if(select == setting)
+            else if(_select == setting)
             {
-                select = start;  //スタート選択
+                _select = start;  //スタート選択
             }
         }
 
-        if(lsv < 0) //下に行く
+        if(_lsv < 0) //下に行く
         {
-            if(select == start)
+            if(_select == start)
             {
-                select = setting;   //設定選択
+                _select = setting;   //設定選択
             }
-            else if(select == setting)
+            else if(_select == setting)
             {
-                select = end;   //終了選択
+                _select = end;   //終了選択
             }
-            else if(select == end)
+            else if(_select == end)
             {
-                select = start;  //スタート選択
+                _select = start;  //スタート選択
             }
         }
-
-        Debug.Log(select);  //選択してるゲームオブジェクトの名前
     }
 }
