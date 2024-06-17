@@ -27,6 +27,8 @@ public class EnemyGround : EnemyBase
         // UŒ‚‘Ò‹@ˆ—
         base.AttackInterval();
 
+        ReduceDeltaHp();
+
         if (_isStopMove)
         {
             _rb.velocity = Vector3.zero;
