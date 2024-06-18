@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public class PlayerInput1 : PlayerSelectBase
 {
     [SerializeField] public Image start;
-    [SerializeField] public Image setting;
+    [SerializeField] public Image option;
     [SerializeField] public Image end;
 
    
@@ -20,7 +20,7 @@ public class PlayerInput1 : PlayerSelectBase
     { 
 
         start = GameObject.Find("Canvas/GameObject/start").GetComponent<Image>();
-        setting = GameObject.Find("Canvas/GameObject/setting").GetComponent<Image>();
+        option = GameObject.Find("Canvas/GameObject/option").GetComponent<Image>();
         end = GameObject.Find("Canvas/GameObject/end").GetComponent<Image>();
 
         _select = start;  //最初に取得するゲームオブジェクト
@@ -31,8 +31,8 @@ public class PlayerInput1 : PlayerSelectBase
     {
         GetComponent<PlayerSelectBase>().Update();
 
-        GetComponent<PlayerSelectBase>().Select(start, "SaveScene");
-        GetComponent<PlayerSelectBase>().Select(setting, "OptionScene");
+        GetComponent<PlayerSelectBase>().Select(start, 0, "SaveScene");
+        GetComponent<PlayerSelectBase>().Select(option, 1,"OptionScene");
 
         if (_select == end)  //終了を選んでいた場合
         {
@@ -52,9 +52,9 @@ public class PlayerInput1 : PlayerSelectBase
             }
             else if(_select == end)
             {
-                _select = setting;  //設定選択
+                _select = option;  //設定選択
             }
-            else if(_select == setting)
+            else if(_select == option)
             {
                 _select = start;  //スタート選択
             }
@@ -64,9 +64,9 @@ public class PlayerInput1 : PlayerSelectBase
         {
             if(_select == start)
             {
-                _select = setting;   //設定選択
+                _select = option;   //設定選択
             }
-            else if(_select == setting)
+            else if(_select == option)
             {
                 _select = end;   //終了選択
             }

@@ -556,6 +556,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 440e11d925ee2a749980ffda0f8ac341, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lsh: 0
+  _lsv: 0
+  _A: 0
+  _select: {fileID: 0}
+  _back_to_scene: 0
+  start: {fileID: 0}
+  option: {fileID: 0}
+  end: {fileID: 0}
 --- !u!1 &626246564
 GameObject:
   m_ObjectHideFlags: 0
@@ -840,7 +848,7 @@ GameObject:
   - component: {fileID: 1585913928}
   - component: {fileID: 1585913927}
   m_Layer: 5
-  m_Name: setting
+  m_Name: option
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
