@@ -56,8 +56,7 @@ public class SpawnerManager : MonoBehaviour
         List<string> enemyIDList = dataMgr.Enemy.GetID();
         foreach (var id in enemyIDList)
         {
-            Debug.Log(id);
-            enemyPrefab[id] = (GameObject)Resources.Load(id);
+            enemyPrefab[id] = (GameObject)Resources.Load("Enemy/" + id);
         }
 
 
