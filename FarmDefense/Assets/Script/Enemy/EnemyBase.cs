@@ -36,8 +36,8 @@ public class EnemyBase : MonoBehaviour
     /// 初期化
     /// </summary>
     /// <param name="pos">初期位置</param>
-    /// <param name="enemyNo">敵の番号</param>
-    public virtual void Init(Vector3 pos, int enemyNo)
+    /// <param name="enemyNo">敵のID</param>
+    public virtual void Init(Vector3 pos, string enemyID)
     {
         _rb = GetComponent<Rigidbody>();
 
@@ -48,7 +48,7 @@ public class EnemyBase : MonoBehaviour
 
         // ステータス取得
         EnemyData data = GameObject.Find("DataManager").GetComponent<DataManager>().Enemy;
-        _status = data.GetStatus(enemyNo);
+        _status = data.GetStatus(enemyID);
 
         // 各種初期化
         _hp = _status.maxHp;
