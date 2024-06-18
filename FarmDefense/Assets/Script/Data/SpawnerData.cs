@@ -4,7 +4,7 @@ using UnityEngine;
 // パターンデータ
 public struct PatternData
 {
-    public int enemyNo;
+    public string enemyNo;
     public int createFrame;
     public int createPosNo;
 };
@@ -18,7 +18,6 @@ public struct WaveData
 // ステージデータ
 public struct StageData
 {
-    public int no;
     public float enemyBoostRate;
     public int staticMoney;
     public int dynamicMoney;
@@ -28,7 +27,7 @@ public struct StageData
 public class SpawnerData
 {
     // ステージデータ
-    [SerializeField] private List<StageData> _stageData = new List<StageData>();
+    private Dictionary<int, StageData> _data = new Dictionary<int, StageData>();
 
     /// <summary>
     /// ステージデータの読み込み
@@ -43,14 +42,13 @@ public class SpawnerData
         foreach (var item in items)
         {
             /* 各種データ代入 */
-            StageData data;
-            data.no = item.StageNo;
+            StageData data = new StageData();
             data.enemyBoostRate = item.EnemyBoostRate;
             data.staticMoney = item.StaticMoney;
             data.dynamicMoney = item.DynamicMoney;
             data.waveDatas = LoadPatter(item.StageName);
 
-            _stageData.Add(data);
+            _data[item.StageNo] = data;
         }
     }
 
@@ -112,6 +110,6 @@ public class SpawnerData
 
     public List<WaveData> GetWaveData(int no)
     {
-        return _stageData[no].waveDatas;
+        return _data[no].waveDatas;
     }
 }

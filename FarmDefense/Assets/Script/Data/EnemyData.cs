@@ -12,19 +12,47 @@ public struct EnemyStatus
 
 public class EnemyData
 {
-    private EnemyStatus _status;
+    private Dictionary<string, EnemyStatus> _data = new Dictionary<string, EnemyStatus>();
 
     public void Load()
     {
-        _status = new EnemyStatus();
-        _status.maxHp = 100;
-        _status.speed = 15.0f;
-        _status.attack = 2;
-        _status.attackInterval = 60;
+        // csvファイルの読み込み
+        TextAsset csv = Resources.Load("Csv/EnemyManager") as TextAsset;
+        // データ読み込み
+        EnemyCSV[] items = CSVSerializer.Deserialize<EnemyCSV>(csv.text);
+
+        foreach (var item in items)
+        {
+            EnemyStatus status = new EnemyStatus();
+            status.maxHp = item.MaxHp;
+            status.speed = item.Speed;
+            status.attack = item.Attack;
+            status.attackInterval = item.AttackInterval;
+
+            _data[item.ID] = status;
+        }
     }
 
-    public EnemyStatus GetStatus(int no)
+    public EnemyStatus GetStatus(string id)
     {
-        return _status;
+        EnemyStatus status = new EnemyStatus();
+        status.maxHp = 100;
+        status.speed = 15.0f;
+        status.attack = 2;
+        status.attackInterval = 60;
+        return status;
+        return _data[id];
+    }
+
+    public List<string> GetID()
+    {
+        List<string> result = new List<string>();
+
+        foreach (var item in _data)
+        {
+            result.Add(item.Key);
+        }
+
+        return result;
     }
 }

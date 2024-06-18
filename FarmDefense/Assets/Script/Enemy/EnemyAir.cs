@@ -20,15 +20,10 @@ public class EnemyAir : EnemyBase
     private bool _isAirReturn;
     private Vector3 _approachPos;
 
-    private void Start()
-    {
-        Init(transform.position, 1);
-    }
-
-    public override void Init(Vector3 pos, int enemyNo)
+    public override void Init(Vector3 pos, string enemyID)
     {
         pos.y = _enemyAirPosY;
-        base.Init(pos, enemyNo);
+        base.Init(pos, enemyID);
         FindFarm(false);
 
         // ‹ó’†‘Ò‹@ŠÔ‚ÍUŒ‚ŠÔ‚ÌkAirWaitRate”{‚·‚é

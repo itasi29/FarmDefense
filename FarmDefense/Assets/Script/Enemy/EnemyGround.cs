@@ -5,14 +5,9 @@ using UnityEngine;
 
 public class EnemyGround : EnemyBase
 {
-    private void Start()
+    public override void Init(Vector3 pos, string enemyID)
     {
-        Init(this.transform.position, 0);
-    }
-
-    public override void Init(Vector3 pos, int enemyNo)
-    {
-        base.Init(pos, enemyNo);
+        base.Init(pos, enemyID);
         FindFarm(true);
     }
 

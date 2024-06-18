@@ -21,7 +21,7 @@ public class SpawnerManager : MonoBehaviour
     // 生成場所の取得
     [SerializeField] private GameObject[] createPos = new GameObject[kCreatePosNum];
     // プレハブデータ
-    [SerializeField] private GameObject[] enemyPrefab = new GameObject[kEnemyTypeNum];  
+    [SerializeField] private Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>();
     // ステージ名
     [SerializeField] private int _stageNo;
     // ステージ生成データ
@@ -43,19 +43,23 @@ public class SpawnerManager : MonoBehaviour
     {
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         GameObject parent = GameObject.Find("CreatePos");
+
+        // ステージデータの取得
+        DataManager dataMgr = GameObject.Find("DataManager").GetComponent<DataManager>();
+        _waveData = dataMgr.Spawner.GetWaveData(_stageNo);
         // 生成場所の取得
         for (int i = 0; i < kCreatePosNum; ++i)
         {
             createPos[i] = parent.transform.GetChild(i).gameObject;
         }
         // プレハブデータの取得
-        for (int i = 0; i < kEnemyTypeNum; ++i)
+        List<string> enemyIDList = dataMgr.Enemy.GetID();
+        foreach (var id in enemyIDList)
         {
-            enemyPrefab[i] = (GameObject)Resources.Load("Enemy/No" + i);
+            Debug.Log(id);
+            enemyPrefab[id] = (GameObject)Resources.Load(id);
         }
 
-        // ステージデータの取得
-        _waveData = GameObject.Find("DataManager").GetComponent<DataManager>().Spawner.GetWaveData(_stageNo);
 
         // 各パラメータの初期化
         _nowWaveNo = 0;
@@ -131,15 +135,15 @@ public class SpawnerManager : MonoBehaviour
     /// <summary>
     /// 種類と場所に合わせて敵を生成する
     /// </summary>
-    /// <param name="enemyNo">敵の番号</param>
+    /// <param name="enemyNo">敵のID</param>
     /// <param name="posNo">生成場所の番号</param>
-    private void CreateEnemy(int enemyNo, int posNo)
+    private void CreateEnemy(string enemyID, int posNo)
     {
         GameObject enemy;
-        enemy = Instantiate(enemyPrefab[enemyNo]);
+        enemy = Instantiate(enemyPrefab[enemyID]);
 
         // TODO: 敵の位置初期化できたらそれに変更
-        enemy.GetComponent<EnemyBase>().Init(createPos[posNo].transform.position, enemyNo);
+        enemy.GetComponent<EnemyBase>().Init(createPos[posNo].transform.position, enemyID);
         _camera.AddHpBarInfo(enemy);
     }
 
