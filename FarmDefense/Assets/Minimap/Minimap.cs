@@ -7,13 +7,17 @@ using UnityEngine.UI;
 
 public class Minimap : MonoBehaviour
 {
+    public struct EnemyInfo
+    {
+        public GameObject enemy;
+        public Vector3 showPos;
+        public Image image;
+    }
+
+
     [SerializeField] private Image FarmImage;
     [SerializeField] private Image PlayerImage;
-    //[SerializeField] private Image FarmImage2;
-    //[SerializeField] private Image FarmImage3;
-    //[SerializeField] private Image FarmImage4;
-    //[SerializeField] private Image FarmImage5;
-    //[SerializeField] private Image FarmImage6;
+    [SerializeField] private Image EnemyImage;
 
     private const int kFarmNum = 6;
     private const int kMapH = 100;
@@ -27,11 +31,14 @@ public class Minimap : MonoBehaviour
     private GameObject _canvas;
     private GameObject _player;
     private GameObject _farm;
+
     private Image[] _farmImage = new Image[kFarmNum];
-    private Image _playerImage;
     private Vector3[] _farmPos = new Vector3[kFarmNum];
+
+    private List<EnemyInfo> _enemyList = new List<EnemyInfo>();
+
+    private Image _playerImage;
     private Vector3 _playerPos;
-    private Vector3[] _showFarmPos = new Vector3[kFarmNum];
     // Start is called before the first frame update
     void Start()
     {
@@ -43,13 +50,14 @@ public class Minimap : MonoBehaviour
         for (int i = 0; i < kFarmNum; i++)
         {
             _farmImage[i] = Instantiate(FarmImage, new Vector3(1000, 1000, 1000), Quaternion.identity);
-            _farmImage[i].transform.parent = _canvas.transform;
+            _farmImage[i].transform.SetParent(_canvas.transform);
         }
-        _playerImage = Instantiate(PlayerImage,new Vector3(1000,1000,1000),Quaternion.identity);
-        _playerImage.transform.parent = _canvas.transform;
+        _playerImage = Instantiate(PlayerImage, new Vector3(1000, 1000, 1000), Quaternion.identity);
+        _playerImage.transform.SetParent(_canvas.transform);
     }
 
     // Update is called once per frame
+    [System.Obsolete]
     void Update()
     {
         for (int i = 0; i < kFarmNum; i++)
@@ -59,14 +67,14 @@ public class Minimap : MonoBehaviour
             _farmPos[i] = farm.transform.position;
 
             //マップの大きさで座標を割り、全体の座標の割合を求める
-            _showFarmPos[i].x = (_farmPos[i].x / kMapH) * kMiniMapScale;
-            _showFarmPos[i].y = (_farmPos[i].z / kMapV) * kMiniMapScale;
+            _farmPos[i].x = (_farmPos[i].x / kMapH) * kMiniMapScale;
+            _farmPos[i].y = (_farmPos[i].z / kMapV) * kMiniMapScale;
 
 
-            _showFarmPos[i].x += kMiniMapStartPosX;
-            _showFarmPos[i].y += kMiniMapStartPosY;
+            _farmPos[i].x += kMiniMapStartPosX;
+            _farmPos[i].y += kMiniMapStartPosY;
 
-            _farmImage[i].rectTransform.localPosition = _showFarmPos[i];
+            _farmImage[i].rectTransform.localPosition = _farmPos[i];
         }
         _playerPos = _player.transform.position;
         //マップの大きさで座標を割り、全体の座標の割合を求める
@@ -78,5 +86,40 @@ public class Minimap : MonoBehaviour
 
         _playerImage.rectTransform.localPosition = _playerPos;
 
+        foreach (var item in _enemyList)
+        {
+            if (item.enemy.active == false)
+            {
+                _enemyList.Remove(item);
+            }
+        }
+
+
+    }
+    public void EntryMiniMapEnemy(GameObject gameObject)
+    {
+        EnemyInfo addEnemy;
+
+        addEnemy.enemy = gameObject;
+
+        addEnemy.image = EnemyImage;
+
+        addEnemy.showPos = gameObject.transform.position;
+
+        //マップの大きさで座標を割り、全体の座標の割合を求める
+        addEnemy.showPos.x = (addEnemy.showPos.x / kMapH) * kMiniMapScale;
+        addEnemy.showPos.y = (addEnemy.showPos.z / kMapV) * kMiniMapScale;
+
+
+        addEnemy.showPos.x += kMiniMapStartPosX;
+        addEnemy.showPos.y += kMiniMapStartPosY;
+
+        addEnemy.image.rectTransform.localPosition = addEnemy.showPos;
+
+        addEnemy.image = Instantiate(addEnemy.image, addEnemy.showPos, Quaternion.identity);
+
+        addEnemy.image.transform.SetParent(_canvas.transform);
+
+        _enemyList.Add(addEnemy);
     }
 }
