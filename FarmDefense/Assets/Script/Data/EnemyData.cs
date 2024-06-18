@@ -35,12 +35,6 @@ public class EnemyData
 
     public EnemyStatus GetStatus(string id)
     {
-        EnemyStatus status = new EnemyStatus();
-        status.maxHp = 100;
-        status.speed = 15.0f;
-        status.attack = 2;
-        status.attackInterval = 60;
-        return status;
         return _data[id];
     }
 

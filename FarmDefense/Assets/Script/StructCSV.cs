@@ -36,17 +36,13 @@ public class EnemyCSV
 [System.Serializable]
 public class WeaponCSV
 {
-    public string ID;
-    public float Lv1; 
-    public float Lv2; 
-    public float Lv3; 
-    public float Lv4; 
-    public float Lv5; 
-    public float Lv6;
-    public float Lv7;
-    public float Lv8;
-    public float Lv9;
-    public float Lv10;
+    public int Lv;
+    public int W_0;
+    public int W_1;
+    public float W_2;
+    public int W_3;
+    public int W_4;
+    public float W_5;
 }
 
 // ƒAƒCƒeƒ€
@@ -61,15 +57,11 @@ public class ItemCSV
 public class ShopCSV
 
 {
-    public string ID;
-    public int Lv1;
-    public int Lv2;
-    public int Lv3;
-    public int Lv4;
-    public int Lv5;
-    public int Lv6;
-    public int Lv7;
-    public int Lv8;
-    public int Lv9;
-    public int Lv10;
+    public int Lv;
+    public int I_0;
+    public int I_1;
+    public int I_2;
+    public int I_3;
+    public int I_4;
+    public int I_5;
 }
