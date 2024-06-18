@@ -10,6 +10,7 @@ public class PlayerSelectBase : MonoBehaviour
     [SerializeField] public float _lsv;
     [SerializeField] public float _A;
     [SerializeField] public Image _select;
+    [SerializeField] protected int _back_to_scene;
 
     // Start is called before the first frame update
     public virtual void Start()
@@ -30,12 +31,14 @@ public class PlayerSelectBase : MonoBehaviour
     /// <summary>
     /// Aƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚Ì”½‰
     /// </summary>
-    public void Select(Image image, string scene)
+    public void Select(Image image, int backscene, string scene)
     {
         if(_select == image)
         {
             if(_A > 0)
             {
+                _back_to_scene = backscene;  //İ’è‰æ–Ê‚©‚ç–ß‚éScene‚ğ‘I•Ê‚·‚é‚½‚ß‚Ì•Ï”
+
                 SceneManager.LoadScene(scene);
             }
         }
