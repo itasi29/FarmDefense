@@ -11,6 +11,7 @@ public struct Item
 public class ItemData
 {
     private Dictionary<string, Item> _data = new Dictionary<string, Item>();
+    private List<string> _idList;
 
     public void Load()
     {
@@ -26,11 +27,18 @@ public class ItemData
             temp.effect1 = item.Effect1;
 
             _data[item.ID] = temp;
+
+            _idList.Add(item.ID);
         }
     }
 
     public Item GetItem(string id)
     {
         return _data[id];
+    }
+    
+    public List<string> GetIdList()
+    {
+        return _idList;
     }
 }

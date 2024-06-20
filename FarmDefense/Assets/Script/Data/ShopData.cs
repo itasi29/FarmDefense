@@ -16,16 +16,16 @@ public class ShopData
 
         foreach (var item in items)
         {
-            _data[item.id][1]  = item.Lv1;
-            _data[item.id][2]  = item.Lv2;
-            _data[item.id][3]  = item.Lv3;
-            _data[item.id][4]  = item.Lv4;
-            _data[item.id][5]  = item.Lv5;
-            _data[item.id][6]  = item.Lv6;
-            _data[item.id][7]  = item.Lv7;
-            _data[item.id][8]  = item.Lv8;
-            _data[item.id][9]  = item.Lv9;
-            _data[item.id][10] = item.Lv10;
+            _data[item.ID][1]  = item.Lv1;
+            _data[item.ID][2]  = item.Lv2;
+            _data[item.ID][3]  = item.Lv3;
+            _data[item.ID][4]  = item.Lv4;
+            _data[item.ID][5]  = item.Lv5;
+            _data[item.ID][6]  = item.Lv6;
+            _data[item.ID][7]  = item.Lv7;
+            _data[item.ID][8]  = item.Lv8;
+            _data[item.ID][9]  = item.Lv9;
+            _data[item.ID][10] = item.Lv10;
         }
     }
 

@@ -3,20 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public struct WeaponStatus
-{
-    public int nearAttack;
-    public int nearAttackInterval;
-    public float nearRange;
-    public int farAttack;
-    public int farAttackInterval;
-    public float bulletSpeed;
-}
-
 public class WeaponData
 {
-
-    private Dictionary<int, WeaponStatus> _data = new Dictionary<int, WeaponStatus>();
+    private Dictionary<string, Dictionary<int, int>> _data;
+    private List<string> _idList;
 
     public void Load()
     {
@@ -25,42 +15,30 @@ public class WeaponData
         // ÉfÅ[É^ì«Ç›çûÇ›
         WeaponCSV[] items = CSVSerializer.Deserialize<WeaponCSV>(csv.text);
 
-        for (int i = 0; i < items.Length; ++i)
+        foreach (var item in items)
         {
-            WeaponStatus status = new WeaponStatus();
-            status.nearAttack = items[i].W_0;
-            status.nearAttackInterval = items[i].W_1;
-            status.nearRange = items[i].W_2;
-            status.farAttack = items[i].W_3;
-            status.farAttackInterval = items[i].W_4;
-            status.bulletSpeed = items[i].W_5;
+            _data[item.ID][1] = item.Lv1;
+            _data[item.ID][2] = item.Lv2;
+            _data[item.ID][3] = item.Lv3;
+            _data[item.ID][4] = item.Lv4;
+            _data[item.ID][5] = item.Lv5;
+            _data[item.ID][6] = item.Lv6;
+            _data[item.ID][7] = item.Lv7;
+            _data[item.ID][8] = item.Lv8;
+            _data[item.ID][9] = item.Lv9;
+            _data[item.ID][10] = item.Lv10;
 
-            _data[i] = status;
+            _idList.Add(item.ID);
         }
     }
 
-    public int GetNearAttack(int lv)
+    public int GetStatus(string id, int lv)
     {
-        return _data[lv].nearAttack;
+        return _data[id][lv];
     }
-    public int GetNearAttackInterval(int lv)
+
+    public List<string> GetIdList()
     {
-        return _data[lv].nearAttackInterval;
-    }
-    public float GetNearRange(int lv)
-    {
-        return _data[lv].nearRange;
-    }
-    public int GetFarAttack(int lv) 
-    {
-        return _data[lv].farAttack;
-    }
-    public int GetFarAttackInterval(int lv)
-    {
-        return _data[lv].farAttackInterval;
-    }
-    public float GetBulletSpeed(int lv)
-    {
-        return _data[lv].bulletSpeed;
+        return _idList;
     }
 }
