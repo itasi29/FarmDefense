@@ -57,11 +57,15 @@ public class ItemCSV
 public class ShopCSV
 
 {
-    public int Lv;
-    public int I_0;
-    public int I_1;
-    public int I_2;
-    public int I_3;
-    public int I_4;
-    public int I_5;
+    public string id;
+    public int Lv1;
+    public int Lv2;
+    public int Lv3;
+    public int Lv4;
+    public int Lv5;
+    public int Lv6;
+    public int Lv7;
+    public int Lv8;
+    public int Lv9;
+    public int Lv10;
 }
