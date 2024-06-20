@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +37,7 @@ public class Minimap : MonoBehaviour
     private Vector3[] _farmPos = new Vector3[kFarmNum];
 
     private List<EnemyInfo> _enemyList = new List<EnemyInfo>();
+    private List<GameObject> _deathEnemyList = new List<GameObject>();
 
     private Image _playerImage;
     private Vector3 _playerPos;
@@ -86,14 +88,44 @@ public class Minimap : MonoBehaviour
 
         _playerImage.rectTransform.localPosition = _playerPos;
 
+        //生きている敵リストをすべて削除するかどうか
+        bool isAllDeath = true;
+        //今生きている敵リストをすべて回す
         foreach (var item in _enemyList)
         {
-            if (item.enemy.active == false)
+            bool isDeath = false;
+            //死んだ敵リストを回す
+            foreach (var death in _deathEnemyList)
             {
-                _enemyList.Remove(item);
+                //生きている敵リストに死んだ敵が入っていたら
+                if (item.enemy == death)
+                {
+                    //表示を消す
+                    Destroy(item.image);
+                    //下で消したimageにアクセスしないようにフラグを立てる
+                    isDeath = true;
+                }
+                //生きているリストと死んでいる敵リストが完全に一致したら
+                else
+                {
+                    //すべて死んだと判定する
+                    isAllDeath = false;
+                }
+            }
+            //上で消されていなかったら
+            if (!isDeath)
+            {
+                //画像の座標を動かす
+                item.image.rectTransform.localPosition = new Vector2((item.enemy.transform.position.x / kMapH) * kMiniMapScale + kMiniMapStartPosX,
+                                                                     (item.enemy.transform.position.z / kMapV) * kMiniMapScale + kMiniMapStartPosY);
             }
         }
-
+        //今いる敵がすべて死んだら
+        if (isAllDeath && _deathEnemyList.Count != 0)
+        {
+            //生きている敵リストをすべて削除する
+            _enemyList.Clear();
+        }
 
     }
     public void EntryMiniMapEnemy(GameObject gameObject)
@@ -106,20 +138,14 @@ public class Minimap : MonoBehaviour
 
         addEnemy.showPos = gameObject.transform.position;
 
-        //マップの大きさで座標を割り、全体の座標の割合を求める
-        addEnemy.showPos.x = (addEnemy.showPos.x / kMapH) * kMiniMapScale;
-        addEnemy.showPos.y = (addEnemy.showPos.z / kMapV) * kMiniMapScale;
-
-
-        addEnemy.showPos.x += kMiniMapStartPosX;
-        addEnemy.showPos.y += kMiniMapStartPosY;
-
-        addEnemy.image.rectTransform.localPosition = addEnemy.showPos;
-
         addEnemy.image = Instantiate(addEnemy.image, addEnemy.showPos, Quaternion.identity);
 
         addEnemy.image.transform.SetParent(_canvas.transform);
 
         _enemyList.Add(addEnemy);
+    }
+    public void EntryDeathEnemyList(GameObject gameObject)
+    {
+        _deathEnemyList.Add(gameObject);
     }
 }
