@@ -26,15 +26,7 @@ public class UserData
     /// </summary>
     public void Load(List<string> weaponIdList, List<string> itemIdList)
     {
-        // kPathのファイルを読み込みモードで開く(存在しない場合は新しく作成する)
-        try
-        {
-
-        }
-        catch 
-        { 
-
-        }
+        
     }
 
     /// <summary>
