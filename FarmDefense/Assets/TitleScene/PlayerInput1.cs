@@ -17,7 +17,8 @@ public class PlayerInput1 : PlayerSelectBase
    
     // Start is called before the first frame update
     public override void Start()
-    { 
+    {
+        
 
         start = GameObject.Find("Canvas/GameObject/start").GetComponent<Image>();
         option = GameObject.Find("Canvas/GameObject/option").GetComponent<Image>();
@@ -31,8 +32,8 @@ public class PlayerInput1 : PlayerSelectBase
     {
         GetComponent<PlayerSelectBase>().Update();
 
-        GetComponent<PlayerSelectBase>().Select(start, 0, "SaveScene");
-        GetComponent<PlayerSelectBase>().Select(option, 1,"OptionScene");
+        GetComponent<PlayerSelectBase>().Select(start, "SaveScene");
+        GetComponent<PlayerSelectBase>().Select(option, "OptionScene");
 
         if (_select == end)  //èIóπÇëIÇÒÇ≈Ç¢ÇΩèÍçá
         {

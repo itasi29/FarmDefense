@@ -35,8 +35,8 @@ public class PlayerSelectSave : PlayerSelectBase
         //GetComponent<PlayerSelectBase>().Select(save3);  //セーブ3に飛ぶ
         //GetComponent<PlayerSelectBase>().Select(save4);  //セーブ4に飛ぶ
 
-        GetComponent<PlayerSelectBase>().Select(option, 2, "OptionScene");  //設定に飛ぶ
-        GetComponent<PlayerSelectBase>().Select(back, 0, "TitleScene");  //タイトル画面に飛ぶ
+        GetComponent<PlayerSelectBase>().Select(option, "OptionScene");  //設定に飛ぶ
+        GetComponent<PlayerSelectBase>().Select(back, "TitleScene");  //タイトル画面に飛ぶ
 
         if(_lsh > 0)  //右に行く
         {
