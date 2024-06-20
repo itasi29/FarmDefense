@@ -42,8 +42,8 @@ public class PlayerSelectStage : PlayerSelectBase
         //GetComponent<PlayerSelectBase>().Select(stage4);  //ステージ4に飛ぶ
         //GetComponent<PlayerSelectBase>().Select(stage5);  //ステージ5に飛ぶ
         //GetComponent<PlayerSelectBase>().Select(stage6);  //ステージ6に飛ぶ
-        GetComponent<PlayerSelectBase>().Select(option, 3, "OptionScene");  //設定に飛ぶ
-        //GetComponent<PlayerSelectBase>().Select(shop, "");  //ショップに飛ぶ
+        GetComponent<PlayerSelectBase>().Select(option, "OptionScene");  //設定に飛ぶ
+        GetComponent<PlayerSelectBase>().Select(shop, "ShopScene");  //ショップに飛ぶ
 
         if(_lsh > 0)  //右に行く
         {
