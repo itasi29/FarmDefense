@@ -23,6 +23,7 @@ public class EnemyBase : MonoBehaviour
     protected Farm _farmScript;     // 上ののスクリプト
     protected GameObject _player;   // プレイヤー
     private CameraControl _camera;  // カメラ情報
+    private Minimap _minimap;       // ミニマップ
     private SpawnerManager _spawnerMgr; // スポナーマネージャー
 
     /* プロパティ */
@@ -44,6 +45,7 @@ public class EnemyBase : MonoBehaviour
         _farmBase = GameObject.Find("Farm").gameObject;
         _player = GameObject.Find("Player").gameObject;
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
+        _minimap = GameObject.Find("MinimapManager").GetComponent<Minimap>();
         _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
 
         // ステータス取得
@@ -96,6 +98,8 @@ public class EnemyBase : MonoBehaviour
             _spawnerMgr.AddKilledEnemy();
             // カメラに死亡したことを伝える
             _camera.SubHpBarInfo(this.gameObject);
+            //ミニマップに死亡したことを伝える
+            _minimap.EntryDeathEnemyList(this.gameObject);
             // 破壊
             Destroy(this.gameObject);
         }

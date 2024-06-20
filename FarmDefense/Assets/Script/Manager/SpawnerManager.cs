@@ -24,6 +24,8 @@ public class SpawnerManager : MonoBehaviour
     [SerializeField] private Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>();
     // ステージ名
     [SerializeField] private int _stageNo;
+    //ミニマップ
+    private Minimap _miniMap;
     // ステージ生成データ
     private List<WaveData> _waveData;
     // 現在のwave番号
@@ -41,6 +43,8 @@ public class SpawnerManager : MonoBehaviour
 
     void Awake()
     {
+        _miniMap = GameObject.Find("MinimapManager").gameObject.GetComponent<Minimap>();
+
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         GameObject parent = GameObject.Find("CreatePos");
 
@@ -140,6 +144,8 @@ public class SpawnerManager : MonoBehaviour
     {
         GameObject enemy;
         enemy = Instantiate(enemyPrefab[enemyID]);
+
+        _miniMap.EntryMiniMapEnemy(enemy);
 
         // TODO: 敵の位置初期化できたらそれに変更
         enemy.GetComponent<EnemyBase>().Init(createPos[posNo].transform.position, enemyID);
