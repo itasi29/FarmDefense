@@ -35,7 +35,7 @@ public class SpawnerData
     public void Load()
     {
         // csvファイルの読み込み
-        TextAsset stageCsv = Resources.Load("Csv/StageManager") as TextAsset;
+        TextAsset stageCsv = Resources.Load(DataManager.kSpawnerFileName) as TextAsset;
         // データ読み込み
         StageCSV[] items = CSVSerializer.Deserialize<StageCSV>(stageCsv.text);
 

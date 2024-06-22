@@ -17,7 +17,7 @@ public class EnemyData
     public void Load()
     {
         // csvファイルの読み込み
-        TextAsset csv = Resources.Load("Csv/EnemyManager") as TextAsset;
+        TextAsset csv = Resources.Load(DataManager.kEnemyFileName) as TextAsset;
         // データ読み込み
         EnemyCSV[] items = CSVSerializer.Deserialize<EnemyCSV>(csv.text);
 
@@ -35,12 +35,6 @@ public class EnemyData
 
     public EnemyStatus GetStatus(string id)
     {
-        EnemyStatus status = new EnemyStatus();
-        status.maxHp = 100;
-        status.speed = 15.0f;
-        status.attack = 2;
-        status.attackInterval = 60;
-        return status;
         return _data[id];
     }
 

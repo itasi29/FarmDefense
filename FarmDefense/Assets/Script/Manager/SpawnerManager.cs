@@ -76,6 +76,7 @@ public class SpawnerManager : MonoBehaviour
     
     void FixedUpdate()
     {
+        return;
         if (_isAllCreate) return;
 
         IsKillAllEnemys();

@@ -4,8 +4,25 @@ using UnityEngine;
 
 public class EnemyBase : MonoBehaviour
 {
+    /* 型 */
+    protected enum AnimParm
+    {
+        kAttack,
+        kHit,
+        kDeath,
+        kMove,
+    };
+
     /* 定数 */
     private const int kDecreaseHpSpeed = 1;   // _deltaHpの減少速度
+    // アニメーションの動きを制御
+    protected Dictionary<AnimParm, string> kAnimParmInfo = new Dictionary<AnimParm, string>()
+    {
+        { AnimParm.kAttack, "Attack" },
+        { AnimParm.kHit,    "Hit" },
+        { AnimParm.kDeath,  "Death" },
+        { AnimParm.kMove,   "IsMove" },
+    };
 
     /* 変数 */
     [SerializeField] protected EnemyStatus _status;    // ステータス
@@ -25,6 +42,7 @@ public class EnemyBase : MonoBehaviour
     private CameraControl _camera;  // カメラ情報
     private Minimap _minimap;       // ミニマップ
     private SpawnerManager _spawnerMgr; // スポナーマネージャー
+    protected Animator _anim;
 
     /* プロパティ */
     public int Hp { get { return _hp; } }
@@ -47,6 +65,7 @@ public class EnemyBase : MonoBehaviour
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         _minimap = GameObject.Find("MinimapManager").GetComponent<Minimap>();
         _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
+        _anim = GetComponent<Animator>();
 
         // ステータス取得
         EnemyData data = GameObject.Find("DataManager").GetComponent<DataManager>().Enemy;
@@ -88,12 +107,14 @@ public class EnemyBase : MonoBehaviour
     {
         _hp -= damage;
         _isDeltaHp = true;
+        _anim.SetTrigger(kAnimParmInfo[AnimParm.kHit]);
 
         // HPが0以下になったら死亡処理
         if (_hp <= 0)
         {
             _hp = 0;
             _isExist = false;
+            _anim.SetTrigger(kAnimParmInfo[AnimParm.kDeath]);
             // スポナーマネージャーに死亡したことを伝える
             _spawnerMgr.AddKilledEnemy();
             // カメラに死亡したことを伝える
@@ -144,6 +165,7 @@ public class EnemyBase : MonoBehaviour
         _farmScript.OnDamage(_status.attack);
         _isStopAttack = true;
         _watiAttackFrame = _status.attackInterval;
+        _anim.SetTrigger(kAnimParmInfo[AnimParm.kAttack]);
     }
 
     protected void AttackPlayer()
@@ -156,6 +178,7 @@ public class EnemyBase : MonoBehaviour
         _player.GetComponent<Player>().OnDamage(_status.attack);
         _isStopAttack = true;
         _watiAttackFrame = _status.attackInterval;
+        _anim.SetTrigger(kAnimParmInfo[AnimParm.kAttack]);
     }
 
     /// <summary>
