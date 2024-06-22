@@ -11,12 +11,12 @@ public struct Item
 public class ItemData
 {
     private Dictionary<string, Item> _data = new Dictionary<string, Item>();
-    private List<string> _idList;
+    private List<string> _idList = new List<string>();
 
     public void Load()
     {
         // csvファイルの読み込み
-        TextAsset csv = Resources.Load("Csv/ItemManager") as TextAsset;
+        TextAsset csv = Resources.Load(DataManager.kImteFileName) as TextAsset;
         // データ読み込み
         ItemCSV[] items = CSVSerializer.Deserialize<ItemCSV>(csv.text);
 
@@ -26,7 +26,7 @@ public class ItemData
             temp.type = item.Type;
             temp.effect1 = item.Effect1;
 
-            _data[item.ID] = temp;
+            _data.Add(item.ID, temp);
 
             _idList.Add(item.ID);
         }

@@ -4,8 +4,22 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
+
+    /* 各データのファイルパス */
+    public const string kSpawnerFileName = "Csv/StageMaster";
+    public const string kEnemyFileName = "Csv/EnemyMaster";
+    public const string kWeaponFileName = "Csv/WeaponMaster";
+    public const string kImteFileName = "Csv/ItemMaster";
+    public const string kShopFileName = "Csv/ShopMaster";
+    public const string kUserFileName = "/Bin/UserData.bin";
+
+    /* 保持データ */
     private SpawnerData _spawner;
     private EnemyData _enemy;
+    private WeaponData _weapon;
+    private ItemData _item;
+    private ShopData _shop;
+    private UserData _user;
 
     void Awake()
     {
@@ -15,10 +29,21 @@ public class DataManager : MonoBehaviour
         // 各種データ系を生成
         _spawner = new SpawnerData();
         _enemy = new EnemyData();
+        _weapon = new WeaponData();
+        _item = new ItemData();
+        _shop = new ShopData();
+        _user = new UserData();
 
         // データの読み込み
         _spawner.Load();
         _enemy.Load();
+        _weapon.Load();
+        _item.Load();
+        _shop.Load();
+        _user.Load(_weapon.GetIdList(), _item.GetIdList());
+
+        // 仮
+        _user.Write();
     }
 
     // 各プロパティ
