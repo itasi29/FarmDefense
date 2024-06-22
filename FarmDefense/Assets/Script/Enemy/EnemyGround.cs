@@ -26,10 +26,21 @@ public class EnemyGround : EnemyBase
 
         if (_isStopMove)
         {
+            // 動くアニメーションしている場合は止める
+            if (_anim.GetBool(kAnimParmInfo[AnimParm.kMove]))
+            {
+                _anim.SetBool(kAnimParmInfo[AnimParm.kMove], false);
+            }
+
             _rb.velocity = Vector3.zero;
             return;
         }
 
+        // 動くアニメーションしていない場合は始める
+        if (!_anim.GetBool(kAnimParmInfo[AnimParm.kMove]))
+        {
+            _anim.SetBool(kAnimParmInfo[AnimParm.kMove], true);
+        }
         // プレイヤー発見時
         if (_isFindPlayer)
         {

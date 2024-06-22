@@ -88,8 +88,8 @@ public class UserData
             }
         }
 
-#if false
-// データの中身見る用
+#if true
+        // データの中身見る用
         int x = 0;
         foreach (var user in _data)
         {
@@ -108,9 +108,9 @@ public class UserData
     }
 
     /// <summary>
-    /// 書き込み
+    /// 保存
     /// </summary>
-    public void Write()
+    public void Save()
     {
         try
         {

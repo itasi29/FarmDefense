@@ -21,7 +21,7 @@ public class DataManager : MonoBehaviour
     private ShopData _shop;
     private UserData _user;
 
-    void Awake()
+    private void Awake()
     {
         // 自信を非破壊オブジェクトにする
         DontDestroyOnLoad(this.gameObject);
@@ -41,12 +41,19 @@ public class DataManager : MonoBehaviour
         _item.Load();
         _shop.Load();
         _user.Load(_weapon.GetIdList(), _item.GetIdList());
+    }
 
-        // 仮
-        _user.Write();
+    private void OnApplicationQuit()
+    {
+        // データの保存
+        _user.Save();
     }
 
     // 各プロパティ
     public SpawnerData Spawner { get { return _spawner; } }
     public EnemyData Enemy { get { return _enemy; } }
+    public WeaponData Weapon { get {  return _weapon; } }
+    public ItemData Item { get { return _item;} }
+    public ShopData Shop { get { return _shop; } }
+    public UserData User { get { return _user; } }
 }
