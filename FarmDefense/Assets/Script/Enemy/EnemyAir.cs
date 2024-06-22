@@ -38,6 +38,7 @@ public class EnemyAir : EnemyBase
 
     private void FixedUpdate()
     {
+        if (DeathAfterUpdate()) return;
         PlayerFindInfo();
 
         // ”_ê‚ª”j‰ó‚³‚ê‚½‚çŸ‚Ì”_ê‚Ö
@@ -108,6 +109,8 @@ public class EnemyAir : EnemyBase
                 }
             }
         }
+
+        FrontUpdate();
     }
 
     private void OnCollisionStay(Collision collision)

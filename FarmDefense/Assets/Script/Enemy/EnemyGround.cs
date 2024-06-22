@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class EnemyGround : EnemyBase
 {
+    private void Start()
+    {
+        Init(this.transform.position, "E_0");
+    }
+
     public override void Init(Vector3 pos, string enemyID)
     {
         base.Init(pos, enemyID);
@@ -13,6 +18,8 @@ public class EnemyGround : EnemyBase
 
     private void FixedUpdate()
     {
+        if (DeathAfterUpdate()) return;
+
         // 農場が破壊されたら次の農場へ
         if (_farmScript.IsBreak)
         {
@@ -26,21 +33,10 @@ public class EnemyGround : EnemyBase
 
         if (_isStopMove)
         {
-            // 動くアニメーションしている場合は止める
-            if (_anim.GetBool(kAnimParmInfo[AnimParm.kMove]))
-            {
-                _anim.SetBool(kAnimParmInfo[AnimParm.kMove], false);
-            }
-
             _rb.velocity = Vector3.zero;
             return;
         }
 
-        // 動くアニメーションしていない場合は始める
-        if (!_anim.GetBool(kAnimParmInfo[AnimParm.kMove]))
-        {
-            _anim.SetBool(kAnimParmInfo[AnimParm.kMove], true);
-        }
         // プレイヤー発見時
         if (_isFindPlayer)
         {
@@ -51,6 +47,8 @@ public class EnemyGround : EnemyBase
         {
             base.MoveToFarm();
         }
+
+        FrontUpdate();
     }
 
     private void OnCollisionStay(Collision collision)

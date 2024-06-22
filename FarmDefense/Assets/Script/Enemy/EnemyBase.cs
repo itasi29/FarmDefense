@@ -16,7 +16,7 @@ public class EnemyBase : MonoBehaviour
     /* 定数 */
     private const int kDecreaseHpSpeed = 1;   // _deltaHpの減少速度
     // アニメーションの動きを制御
-    protected Dictionary<AnimParm, string> kAnimParmInfo = new Dictionary<AnimParm, string>()
+    private Dictionary<AnimParm, string> kAnimParmInfo = new Dictionary<AnimParm, string>()
     {
         { AnimParm.kAttack, "Attack" },
         { AnimParm.kHit,    "Hit" },
@@ -34,6 +34,9 @@ public class EnemyBase : MonoBehaviour
     protected bool _isStopAttack;     // 攻撃停止フラグ
     protected bool _isFindPlayer;     // プレイヤー発見フラグ
     protected bool _isStopMove;       // 停止フラグ
+    protected bool _isColPlayer;
+    protected bool _isColFarm;
+    private bool _isDeathAnim;
     protected Rigidbody _rb;
     private GameObject _farmBase;   // 農場全部を持っている親オブジェクト
     protected GameObject _farm;     // 攻撃する農場
@@ -66,6 +69,8 @@ public class EnemyBase : MonoBehaviour
         _minimap = GameObject.Find("MinimapManager").GetComponent<Minimap>();
         _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
         _anim = GetComponent<Animator>();
+        _anim.speed = 0.2f;
+        _anim.SetBool(kAnimParmInfo[AnimParm.kMove], true);
 
         // ステータス取得
         EnemyData data = GameObject.Find("DataManager").GetComponent<DataManager>().Enemy;
@@ -80,23 +85,94 @@ public class EnemyBase : MonoBehaviour
         _isStopAttack = false;
         _isFindPlayer = false;
         _isStopMove = false;
+        _isColPlayer = false;
+        _isColFarm = false;
+        _isDeathAnim = false;
         transform.position = pos;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Player")
+        bool isPlayer = collision.gameObject.tag == "Player";
+        bool isFarm = collision.gameObject.tag == "Farm";
+
+        if (isPlayer || isFarm)
         {
-            _isStopMove = true;
+            // どちらとも当たったことがなければ移動アニメーション終了
+            if (!_isColPlayer && !_isColFarm)
+            {
+                _anim.SetBool(kAnimParmInfo[AnimParm.kMove], false);
+            }
+
+            if (isPlayer)
+            {
+                _isStopMove = true;
+                _isColPlayer = true;
+            }
+            else if (isFarm)
+            {
+                _isColFarm = true;
+            }
         }
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.tag == "Player")
+        bool isPlayer = collision.gameObject.tag == "Player";
+        bool isFarm = collision.gameObject.tag == "Farm";
+
+        if (isPlayer || isFarm) 
         {
-            _isStopMove = false;
+            if (isPlayer)
+            {
+                _isStopMove = false;
+                _isColPlayer = false;
+            }
+            else if (isFarm)
+            {
+                _isColFarm = false;
+            }
+
+            // どちらとも離れたら移動を開始させる
+            if (!_isColPlayer && !_isColFarm)
+            {
+                _anim.SetBool(kAnimParmInfo[AnimParm.kMove], true);
+            }
         }
+    }
+
+    protected void FrontUpdate()
+    {
+        if (_rb.velocity.sqrMagnitude > 0.0f)
+        {
+            Vector3 dir = _rb.velocity.normalized;
+
+            transform.forward = dir;
+        }
+    }
+
+    protected bool DeathAfterUpdate()
+    {
+        // 生存時は無視
+        if (_isExist) return false;
+
+        if (_anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == "Death")
+        {
+            _isDeathAnim = true;
+        }
+        else if (_isDeathAnim)
+        {
+            // カメラに死亡したことを伝える
+            _camera.SubHpBarInfo(this.gameObject);
+            // スポナーマネージャーに死亡したことを伝える
+            _spawnerMgr.AddKilledEnemy();
+            //ミニマップに死亡したことを伝える
+            _minimap.EntryDeathEnemyList(this.gameObject);
+            // 自身を破壊
+            Destroy(this.gameObject);
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -106,6 +182,7 @@ public class EnemyBase : MonoBehaviour
     public void OnDamage(int damage)
     {
         _hp -= damage;
+        Debug.Log("hp" + _hp);
         _isDeltaHp = true;
         _anim.SetTrigger(kAnimParmInfo[AnimParm.kHit]);
 
@@ -115,14 +192,6 @@ public class EnemyBase : MonoBehaviour
             _hp = 0;
             _isExist = false;
             _anim.SetTrigger(kAnimParmInfo[AnimParm.kDeath]);
-            // スポナーマネージャーに死亡したことを伝える
-            _spawnerMgr.AddKilledEnemy();
-            // カメラに死亡したことを伝える
-            _camera.SubHpBarInfo(this.gameObject);
-            //ミニマップに死亡したことを伝える
-            _minimap.EntryDeathEnemyList(this.gameObject);
-            // 破壊
-            Destroy(this.gameObject);
         }
     }
 
