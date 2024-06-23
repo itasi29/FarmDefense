@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.HID;
 
 //プレイヤーの処理まとめるよ
-public class Player : MonoBehaviour
+public class Player_Koumoto : MonoBehaviour
 {
     private const float kDownSpeed = 0.1f;//スタミナ切れ時の移動速度
 
@@ -174,7 +174,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         
