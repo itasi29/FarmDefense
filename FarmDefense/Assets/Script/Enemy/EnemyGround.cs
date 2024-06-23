@@ -7,9 +7,8 @@ public class EnemyGround : EnemyBase
 {
     private void Start()
     {
-        Init(this.transform.position, "E_0");
+        Init(transform.position, "E_0");
     }
-
     public override void Init(Vector3 pos, string enemyID)
     {
         base.Init(pos, enemyID);

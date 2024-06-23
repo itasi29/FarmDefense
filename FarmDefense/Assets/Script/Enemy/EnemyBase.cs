@@ -91,7 +91,7 @@ public class EnemyBase : MonoBehaviour
         transform.position = pos;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    protected void OnCollisionEnter(Collision collision)
     {
         bool isPlayer = collision.gameObject.tag == "Player";
         bool isFarm = collision.gameObject.tag == "Farm";
@@ -156,7 +156,7 @@ public class EnemyBase : MonoBehaviour
         // ê∂ë∂éûÇÕñ≥éã
         if (_isExist) return false;
 
-        if (_anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == "Death")
+        if (IsNowPlayClipName("Death"))
         {
             _isDeathAnim = true;
         }
@@ -173,6 +173,11 @@ public class EnemyBase : MonoBehaviour
         }
 
         return true;
+    }
+
+    protected bool IsNowPlayClipName(string clipName)
+    {
+        return _anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == clipName;
     }
 
     /// <summary>
@@ -192,6 +197,7 @@ public class EnemyBase : MonoBehaviour
             _hp = 0;
             _isExist = false;
             _anim.SetTrigger(kAnimParmInfo[AnimParm.kDeath]);
+            _anim.SetBool("Is" + kAnimParmInfo[AnimParm.kDeath], true);
         }
     }
 

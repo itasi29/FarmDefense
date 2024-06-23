@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class EnemyAir : EnemyBase
 {
     /* 定数 */
-    private const int kAirWaitRate = 5;
+    private const int kAirWaitRate = 1;
     private const float kAngleSpeed = 180 / Mathf.PI * 0.02f;    // 回転速度
     private Quaternion kCircleMotionRot = Quaternion.AngleAxis(kAngleSpeed, Vector3.up);    // 旋回のクオータニオン
 
@@ -17,6 +18,8 @@ public class EnemyAir : EnemyBase
     private bool _isInFarm;
     private bool _isCircleMotion;
     private bool _isApproachFarm;
+    private bool _isNowAttack;
+    private bool _isAttackAnim;
     private bool _isAirReturn;
     private Vector3 _approachPos;
 
@@ -33,6 +36,8 @@ public class EnemyAir : EnemyBase
         _isInFarm = false;
         _isCircleMotion = false;
         _isApproachFarm = false;
+        _isNowAttack = false;
+        _isAttackAnim = false;
         _isAirReturn = false;
     }
 
@@ -89,13 +94,29 @@ public class EnemyAir : EnemyBase
             {
                 base.MoveToFarm();
             }
+            // 攻撃アニメーション中
+            else if (_isNowAttack)
+            {
+                if (IsNowPlayClipName("Attack"))
+                {
+                    Debug.Log("attack");
+                    _isAttackAnim = true;
+                }
+                else if (_isAttackAnim)
+                {
+                    Debug.Log("ここ戻す！");
+                    _isAttackAnim = false;
+                    _isNowAttack = false;
+                    _isAirReturn = true;
+                }
+            }
             // 空中帰還中
             else if (_isAirReturn)
             {
                 ReturnToAir();
 
-                // 空中まで戻ったら旋回行動開始
-                if (transform.position.y >= _enemyAirPosY)
+                Vector3 pos = transform.position;
+                if ((_approachPos - pos).sqrMagnitude < 0.1f)
                 {
                     _isAirReturn = false;
                     _isCircleMotion = true;
@@ -103,7 +124,6 @@ public class EnemyAir : EnemyBase
                     _airWaitFrame = _airWaitInterval;
                     _rb.velocity = Vector3.zero;
 
-                    Vector3 pos = transform.position;
                     pos.y = _enemyAirPosY;
                     transform.position = pos;
                 }
@@ -113,12 +133,22 @@ public class EnemyAir : EnemyBase
         FrontUpdate();
     }
 
+    protected new void OnCollisionEnter(Collision collision)
+    {
+        base.OnCollisionEnter(collision);
+
+        if (collision.gameObject.tag == "Farm")
+        {
+            _isNowAttack = true;
+        }
+    }
+
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.tag == "Farm")
         {
+            _rb.velocity = Vector3.zero;
             _isApproachFarm = false;
-            _isAirReturn = true;
             AttackFarm();
         }
         else if (collision.gameObject.tag == "Player")
@@ -184,6 +214,9 @@ public class EnemyAir : EnemyBase
         pos -= center;
         pos = kCircleMotionRot * pos;
         pos += center;
+
+        Vector3 dir = pos - transform.position;
+        transform.forward =  dir.normalized;
 
         transform.position = pos;
     }
