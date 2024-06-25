@@ -26,15 +26,23 @@ public class ShopManager : MonoBehaviour
 
     private GameObject _hasGoldUi;
 
-    int[] _stutasLevel = new int[(int)CursorMove.UpgradeParts.kPartsNum];
-    int[] _hasItem = new int[(int)CursorMove.Item.kItemNum];
+    private int[] _stutasLevel = new int[(int)CursorMove.UpgradeParts.kPartsNum];
+    private int[] _hasItem = new int[(int)CursorMove.Item.kItemNum];
 
-
-    private int[] _partsCost = new int[kMaxLevel];
+    private string[] _partsId = new string[(int)CursorMove.UpgradeParts.kPartsNum];
+    private string[] _itemId = new string[(int)CursorMove.Item.kItemNum];
 
     private int _hasGold;
 
     private bool _isWeaponShop;
+
+    private ShopData _shopData;
+
+    private UserData _userData;
+
+    private ItemData _itemData;
+
+    private DataManager _dataManager;
 
     // Start is called before the first frame update
     void Start()
@@ -55,24 +63,21 @@ public class ShopManager : MonoBehaviour
         _cursor = GameObject.Find("cursor");
         _cursorScript = _cursor.GetComponent<CursorMove>();
 
-        //TODO : 外部ファイルをここで読み込む    関数化します
+        //TODO : 外部ファイルをここで読み込む
 
-        //レベルの読み込み
-        _stutasLevel[(int)CursorMove.UpgradeParts.kNearAtk] = 1;
-        _stutasLevel[(int)CursorMove.UpgradeParts.kNearRange] = 1;
-        _stutasLevel[(int)CursorMove.UpgradeParts.kNearSpd] = 1;
-        _stutasLevel[(int)CursorMove.UpgradeParts.kFarAtk] = 1;
-        _stutasLevel[(int)CursorMove.UpgradeParts.kFarSpd] = 1;
-        _stutasLevel[(int)CursorMove.UpgradeParts.kFarRate] = 1;
+        _dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
 
-        //アイテムを持っている数の読み込み
-        _hasItem[(int)CursorMove.Item.kFarmHeal] = 0;
-        _hasItem[(int)CursorMove.Item.kPlayerHeal] = 0;
+        _shopData = _dataManager.Shop;
+        _userData = _dataManager.User;
+        _itemData = _dataManager.Item;
 
-        //コストの読み込み
+        //データの読み込み
+        InitUserData(0);
+
+        //IDの読み込み
         for (int i = 0; i < kMaxLevel; i++)
         {
-            _partsCost[i] = (i) * 100;
+            _partsId[i] = _itemData.GetIdList()[i];
         }
         //開いていないショップを消しておく
         _itemShop.SetActive(false);
@@ -100,7 +105,7 @@ public class ShopManager : MonoBehaviour
                 }
                 else
                 {
-                    weaponCost.text = _stutasLevel[i].ToString()+ ":" + _partsCost[_stutasLevel[i]].ToString();
+                    weaponCost.text = _stutasLevel[i].ToString() + ":" + _partsCost[_stutasLevel[i]].ToString();
                 }
             }
         }
@@ -116,7 +121,7 @@ public class ShopManager : MonoBehaviour
                 }
                 else
                 {
-                    itemCost.text = _hasItem[i].ToString() + ":" + kItemCost.ToString(); 
+                    itemCost.text = _hasItem[i].ToString() + ":" + kItemCost.ToString();
                 }
             }
         }
@@ -181,6 +186,21 @@ public class ShopManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void InitUserData(int userNo)
+    {
+        //レベルの読み込み
+        _stutasLevel[(int)CursorMove.UpgradeParts.kNearAtk] = _userData.GetWeaponLv(userNo, "W_0");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kNearSpd] = _userData.GetWeaponLv(userNo, "W_1");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kNearRange] = _userData.GetWeaponLv(userNo, "W_2");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kFarAtk] = _userData.GetWeaponLv(userNo, "W_3");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kFarRate] = _userData.GetWeaponLv(userNo, "W_4");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kFarSpd] = _userData.GetWeaponLv(userNo, "W_5");
+
+        //アイテムを持っている数の読み込み
+        _hasItem[(int)CursorMove.Item.kFarmHeal] = _userData.GetHasItemNum(userNo, "I_0");
+        _hasItem[(int)CursorMove.Item.kPlayerHeal] = _userData.GetHasItemNum(userNo, "I_1");
     }
 
     public bool IsGetWeaponShop() { return _isWeaponShop; }
