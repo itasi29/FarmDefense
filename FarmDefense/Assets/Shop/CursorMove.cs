@@ -23,7 +23,7 @@ public class CursorMove : MonoBehaviour
         kItemNum
     }
 
-    private const int kImageWidth = 110;//‰æ‘œ‚Ì‰¡•(‰¼İ’è)
+    private const int kImageWidth = 230;//‰æ‘œ‚Ì‰¡•(‰¼İ’è)
 
     private const int kWaitTime = 15;//’·‰Ÿ‚µ‚ÅƒJ[ƒ\ƒ‹‚ğ“®‚©‚·‚Æ‚«‚ÌŠÔŠu
 
