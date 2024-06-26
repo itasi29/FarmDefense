@@ -19,7 +19,7 @@ public class FarWeapon : Weapon
     {
         GameObject bullet = Instantiate(_bullet, this.transform.position, Quaternion.identity);
 
-        Bullet script = bullet.GetComponent<Bullet>();
+        Bullet_Koumoto script = bullet.GetComponent<Bullet_Koumoto>();
 
         //TODO:UŒ‚—Í‚ğæ“¾‚Å‚«‚é‚æ‚¤‚É‚·‚é
         script.SetMoveVec(dir, 0.5f);

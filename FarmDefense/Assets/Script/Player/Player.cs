@@ -4,12 +4,32 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    struct SwordStatus
+    {
+        public int attack;
+        public int interval;
+        public float range;
+    }
+    struct BulletStatus
+    {
+        public int attack;
+        public int interval;
+        public float speed;
+    }
+    enum WeaponType
+    {
+        kNear,
+        kFar
+    }
+
     /* 定数 */
     private const int kDecreaseHpSpeed = 1;   // _deltaHpの減少速度
     private Vector3 kInitPos = Vector3.zero;
 
     /* 変数 */
+    // プレイヤー情報
     private Rigidbody _rb;
+    private CameraControl _camera;
     private PlayerStatus _status;
     private StaminaCost _cost;
     private PlayerTime _time;
@@ -26,7 +46,15 @@ public class Player : MonoBehaviour
     private bool _isDeltaHp;
     private Vector3 _jumpVelocity;
     private Vector3 _velocity;
-    private CameraControl _camera;
+    // 武器情報
+    private SwordStatus _swordStatus;
+    private BulletStatus _bulletStatus;
+    private WeaponType _nowWeaponType;
+    private GameObject _weapon;
+    [SerializeField] private GameObject _weaponArm;
+    [SerializeField] private GameObject _sword;
+    [SerializeField] private GameObject _gun;
+    [SerializeField] private GameObject _bullet;
     
     void Start()
     {
@@ -34,10 +62,22 @@ public class Player : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         var dataMgr = GameObject.Find("DataManager").GetComponent<DataManager>();
-        var data = dataMgr.Player;
-        _status = data.Status;
-        _cost = data.Cost;
-        _time = data.Time;
+        var player = dataMgr.Player;
+        _status = player.Status;
+        _cost = player.Cost;
+        _time = player.Time;
+        var user = dataMgr.User;
+        var weapon = dataMgr.Weapon;
+        _swordStatus = new SwordStatus();
+        _bulletStatus = new BulletStatus();
+        _swordStatus.attack    = weapon.GetStatus("W_0", user.GetWeaponLv(0, "W_0"));
+        _swordStatus.interval  = weapon.GetStatus("W_1", user.GetWeaponLv(0, "W_1"));
+        _swordStatus.range     = weapon.GetStatus("W_2", user.GetWeaponLv(0, "W_2"));
+        _bulletStatus.attack   = weapon.GetStatus("W_3", user.GetWeaponLv(0, "W_3"));
+        _bulletStatus.interval = weapon.GetStatus("W_4", user.GetWeaponLv(0, "W_4"));
+        _bulletStatus.speed    = weapon.GetStatus("W_5", user.GetWeaponLv(0, "W_5"));
+        _nowWeaponType = WeaponType.kNear;
+        _weapon = Instantiate(_sword, _weaponArm.transform);
 
         // 初期化
         Init();
@@ -48,21 +88,8 @@ public class Player : MonoBehaviour
         // スタン時は行動不可
         if (_isStan) return;
 
-        // 通常攻撃
-        if (Input.GetButtonDown("X"))
-        {
-            OnAttack();
-        }
-        // 強攻撃
-        else if (Input.GetButtonDown("Y"))
-        {
-            OnStrongAttack();
-        }
-        // 武器切り替え
-        else if (Input.GetButtonDown("RB"))
-        {
-            ChangeWeapon();
-        }
+        // 移動
+        Move();
         // ジャンプ
         if (Input.GetButtonDown("A"))
         {
@@ -73,13 +100,25 @@ public class Player : MonoBehaviour
         {
             UseItem();
         }
-        // 移動
-        Move();
+        // 武器切り替え
+        else if (Input.GetButtonDown("RB"))
+        {
+            ChangeWeapon();
+        }
+        // 通常攻撃
+        if (Input.GetButtonDown("X"))
+        {
+            OnAttack();
+        }
+        // 強攻撃
+        else if (Input.GetButtonDown("Y"))
+        {
+            OnStrongAttack();
+        }
     }
 
     private void FixedUpdate()
     {
-        _rb.velocity = _velocity;
         // ジャンプ処理
         Jump();
         // スタン時
@@ -98,10 +137,14 @@ public class Player : MonoBehaviour
         SafeTime();
         // DeltaHp処理
         ReduceDeltaHp();
+
+        // 移動速度適用
+        _rb.velocity = _velocity;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log(collision.gameObject.name);
         if (collision.gameObject.tag == "Ground")
         {
             _isJump = false;
@@ -176,12 +219,27 @@ public class Player : MonoBehaviour
     private void OnAttack()
     {
         // TODO: 通常攻撃
+        if (_nowWeaponType == WeaponType.kNear)
+        {
+
+        }
+        else if (_nowWeaponType == WeaponType.kFar)
+        {
+            // 弾の生成
+            var bullet = Instantiate(_bullet, _weapon.transform.position, Quaternion.identity);
+
+            Vector3 velocity = transform.forward;
+            velocity.y = _camera.GetFront().y;
+            velocity = velocity.normalized * _bulletStatus.speed;
+
+            bullet.GetComponent<Bullet>().Init(_bulletStatus.attack, velocity);
+        }
     }
 
-    /// <summary>
-    /// 強攻撃
-    /// </summary>
-    private void OnStrongAttack()
+        /// <summary>
+        /// 強攻撃
+        /// </summary>
+        private void OnStrongAttack()
     {
         // 消費後のスタミナ確認
         int temp = _stamina - _cost.strongAttack;
@@ -204,7 +262,21 @@ public class Player : MonoBehaviour
     /// </summary>
     private void ChangeWeapon()
     {
-        // TODO: 武器切り替え
+        // 現在所持している武器を削除
+        Destroy(_weapon);
+
+        // 現在近接武器の場合
+        if (_nowWeaponType == WeaponType.kNear)
+        {
+            _nowWeaponType = WeaponType.kFar;
+            _weapon = Instantiate(_gun, _weaponArm.transform);
+        }
+        // 現在遠距離武器の場合
+        else if (_nowWeaponType == WeaponType.kFar)
+        {
+            _nowWeaponType = WeaponType.kNear;
+            _weapon = Instantiate(_sword, _weaponArm.transform);
+        }
     }
 
     /// <summary>
@@ -216,6 +288,7 @@ public class Player : MonoBehaviour
         if (_isJump) return;
 
         _isJump = true;
+        _jumpVelocity.y = _status.jumpPower;
     }
 
     /// <summary>
