@@ -21,13 +21,43 @@ public class Player : MonoBehaviour
         kNear,
         kFar
     }
+    protected enum AnimParm
+    {
+        kAttack,
+        kStAttack,
+        kJump,
+        kJumpEnd,
+        kHit,
+        kWin,
+        kMove,
+        kDash,
+        kJumpAir,
+        kExist,
+        kNowPlaying,
+    };
 
     /* 定数 */
     private const int kDecreaseHpSpeed = 1;   // _deltaHpの減少速度
     private Vector3 kInitPos = Vector3.zero;
+    // アニメーションの動きを制御
+    private Dictionary<AnimParm, string> kAnimParmInfo = new Dictionary<AnimParm, string>()
+    {
+        { AnimParm.kAttack,     "Attack" },
+        { AnimParm.kStAttack,   "StrongAttack" },
+        { AnimParm.kJump,       "Jump" },
+        { AnimParm.kJumpEnd,    "JumpEnd" },
+        { AnimParm.kHit,        "Hit" },
+        { AnimParm.kWin,        "Win" },
+        { AnimParm.kMove,       "IsMove" },
+        { AnimParm.kDash,       "IsDash" },
+        { AnimParm.kJumpAir,    "IsJumpAir" },
+        { AnimParm.kExist,      "IsExist" },
+        { AnimParm.kNowPlaying, "IsNowPlaying" },
+    };
 
     /* 変数 */
     // プレイヤー情報
+    private Animator _anim;
     private Rigidbody _rb;
     private CameraControl _camera;
     private PlayerStatus _status;
@@ -38,6 +68,10 @@ public class Player : MonoBehaviour
     private int _stamina;
     private int _stanTime;
     private int _safeTime;
+    private string _stopAnimName;
+    private bool _isNowAnimCheckName;
+    private bool _isCheckAnimEnd;
+    private bool _isStopMove;
     private bool _isDash;
     private bool _isTired;
     private bool _isJump;
@@ -59,6 +93,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         // 各種取得
+        _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         var dataMgr = GameObject.Find("DataManager").GetComponent<DataManager>();
@@ -119,6 +154,12 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // ストップ終了確認処理
+        if (CheckStopAnimEnd())
+        {
+            _isStopMove = false;
+        }
+
         // ジャンプ処理
         Jump();
         // スタン時
@@ -148,8 +189,12 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             _isJump = false;
+            _anim.SetTrigger(kAnimParmInfo[AnimParm.kJumpEnd]);
+            _anim.SetBool(kAnimParmInfo[AnimParm.kJumpAir], false);
+            SetStopAnimInfo(kAnimParmInfo[AnimParm.kJumpEnd]);
+            _isStopMove = true;
             Vector3 pos = transform.position;
-            pos.y = collision.transform.position.y + 1;
+            pos.y = collision.transform.position.y + 0.5f;
             transform.position = pos;
         }
     }
@@ -214,92 +259,6 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 通常攻撃
-    /// </summary>
-    private void OnAttack()
-    {
-        // TODO: 通常攻撃
-        if (_nowWeaponType == WeaponType.kNear)
-        {
-
-        }
-        else if (_nowWeaponType == WeaponType.kFar)
-        {
-            // 弾の生成
-            var bullet = Instantiate(_bullet, _weapon.transform.position, Quaternion.identity);
-
-            Vector3 velocity = transform.forward;
-            velocity.y = _camera.GetFront().y;
-            velocity = velocity.normalized * _bulletStatus.speed;
-
-            bullet.GetComponent<Bullet>().Init(_bulletStatus.attack, velocity);
-        }
-    }
-
-        /// <summary>
-        /// 強攻撃
-        /// </summary>
-        private void OnStrongAttack()
-    {
-        // 消費後のスタミナ確認
-        int temp = _stamina - _cost.strongAttack;
-        // 実行できるか
-        bool isDo = temp >= 0;
-        // 実行
-        if (isDo)
-        {
-            _stamina = temp;
-            // TODO: 強攻撃
-        }
-        else
-        {
-            // TODO: 余裕があれば「足りない」というテキストを出すように
-        }
-    }
-
-    /// <summary>
-    /// 武器の変更
-    /// </summary>
-    private void ChangeWeapon()
-    {
-        // 現在所持している武器を削除
-        Destroy(_weapon);
-
-        // 現在近接武器の場合
-        if (_nowWeaponType == WeaponType.kNear)
-        {
-            _nowWeaponType = WeaponType.kFar;
-            _weapon = Instantiate(_gun, _weaponArm.transform);
-        }
-        // 現在遠距離武器の場合
-        else if (_nowWeaponType == WeaponType.kFar)
-        {
-            _nowWeaponType = WeaponType.kNear;
-            _weapon = Instantiate(_sword, _weaponArm.transform);
-        }
-    }
-
-    /// <summary>
-    /// ジャンプ状態遷移
-    /// </summary>
-    private void OnJump()
-    {
-        // ジャンプ中は無視
-        if (_isJump) return;
-
-        _isJump = true;
-        _jumpVelocity.y = _status.jumpPower;
-    }
-
-    /// <summary>
-    /// アイテムの使用
-    /// </summary>
-    private void UseItem()
-    {
-        // TODO: アイテム使用
-    }
-
-    /// <summary>
     /// 移動
     /// </summary>
     private void Move()
@@ -319,19 +278,42 @@ public class Player : MonoBehaviour
         if (velocity.sqrMagnitude == 0.0f)
         {
             _velocity = Vector3.zero;
+            _anim.SetBool(kAnimParmInfo[AnimParm.kMove], false);
             return;
-        }
-        
-        // ダッシュ
-        _isDash = false;
-        if (Input.GetAxis("RT") > 0.0f)
-        {
-            OnDash();
         }
 
         velocity.Normalize();
         // 方向変換
         transform.rotation = Quaternion.LookRotation(velocity);
+
+        // 移動停止中なら
+        if (_isStopMove)
+        {
+            // ジャンプしている
+            if (_isJump)
+            {
+                // 速度を通常の速度に
+                _velocity = velocity * _status.speed;
+            }
+            // ジャンプしていない
+            else
+            {
+                // 移動停止
+                _velocity = Vector3.zero;
+            }
+            // 移動処理終了
+            return;
+        }
+
+        // 移動モーション有効化
+        _anim.SetBool(kAnimParmInfo[AnimParm.kMove], true);
+        // ダッシュ
+        _isDash = Input.GetAxis("RT") > 0.0f && !_isTired;
+        if (_nowWeaponType == WeaponType.kNear)
+        {
+            _anim.SetBool(kAnimParmInfo[AnimParm.kDash], _isDash);
+        }
+
 
         // 速度調整
         // ダッシュ時
@@ -354,15 +336,152 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// ダッシュ
+    /// 通常攻撃
     /// </summary>
-    private void OnDash()
+    private void OnAttack()
     {
-        // 疲れていなければダッシュ状態に
-        if (!_isTired)
+        _anim.SetTrigger(kAnimParmInfo[AnimParm.kAttack]);
+
+        // TODO: 通常攻撃
+        if (_nowWeaponType == WeaponType.kNear)
         {
-            _isDash = true;
         }
+        else if (_nowWeaponType == WeaponType.kFar)
+        {
+            // 弾の生成
+            var bullet = Instantiate(_bullet, _weapon.transform.position, Quaternion.identity);
+
+            Vector3 velocity = transform.forward;
+            velocity.y = _camera.GetFront().y;
+            velocity = velocity.normalized * _bulletStatus.speed;
+
+            bullet.GetComponent<Bullet>().Init(_bulletStatus.attack, velocity);
+        }
+
+        StopMove(kAnimParmInfo[AnimParm.kAttack]);
+    }
+
+    /// <summary>
+    /// 強攻撃
+    /// </summary>
+    private void OnStrongAttack()
+    {
+        // 遠距離攻撃には強攻撃なし
+        if (_nowWeaponType == WeaponType.kFar) return;
+
+        // 消費後のスタミナ確認
+        int temp = _stamina - _cost.strongAttack;
+        // 実行できるか
+        bool isDo = temp >= 0;
+        // 実行
+        if (isDo)
+        {
+            StopMove(kAnimParmInfo[AnimParm.kStAttack]);
+            _anim.SetTrigger(kAnimParmInfo[AnimParm.kStAttack]);
+            _stamina = temp;
+        }
+        else
+        {
+            // TODO: 余裕があれば「足りない」というテキストを出すように
+        }
+    }
+
+    private void StopMove(string animName)
+    {
+        _anim.SetBool(kAnimParmInfo[AnimParm.kMove], false);
+        _isStopMove = true;
+        _isDash = false;
+        SetStopAnimInfo(animName);
+    }
+
+    private void SetStopAnimInfo(string animName)
+    {
+        _stopAnimName = animName;
+        _isNowAnimCheckName = false;
+        _isCheckAnimEnd = true;
+    }
+
+    /// <summary>
+    /// 武器の変更
+    /// </summary>
+    private void ChangeWeapon()
+    {
+        // 現在所持している武器を削除
+        Destroy(_weapon);
+
+        // 現在近接武器の場合
+        if (_nowWeaponType == WeaponType.kNear)
+        {
+            _anim.SetBool("IsSword", false);
+            _anim.SetBool("IsGun", true);
+            _nowWeaponType = WeaponType.kFar;
+            _weapon = Instantiate(_gun, _weaponArm.transform);
+        }
+        // 現在遠距離武器の場合
+        else if (_nowWeaponType == WeaponType.kFar)
+        {
+            _anim.SetBool("IsGun", false);
+            _anim.SetBool("IsSword", true);
+            _nowWeaponType = WeaponType.kNear;
+            _weapon = Instantiate(_sword, _weaponArm.transform);
+        }
+    }
+
+    /// <summary>
+    /// ジャンプ状態遷移
+    /// </summary>
+    private void OnJump()
+    {
+        // ジャンプ中は無視
+        if (_isJump) return;
+
+        _anim.SetTrigger(kAnimParmInfo[AnimParm.kJump]);
+        _anim.SetBool(kAnimParmInfo[AnimParm.kJumpAir], true);
+        _isJump = true;
+        _jumpVelocity.y = _status.jumpPower;
+    }
+
+    /// <summary>
+    /// アイテムの使用
+    /// </summary>
+    private void UseItem()
+    {
+        // TODO: アイテム使用
+    }
+
+    private bool CheckStopAnimEnd()
+    {
+        if (!_isCheckAnimEnd) return false;
+
+
+        //Debug.Log(_anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
+        //if (_anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        //{
+        //    _isCheckAnimEnd = false;
+        //}
+        Debug.Log(_anim.GetCurrentAnimatorClipInfo(0)[0].clip.name);
+        if (_anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == _stopAnimName)
+        {
+            _isNowAnimCheckName = true;
+        }
+        else if (_isNowAnimCheckName)
+        {
+            _isCheckAnimEnd = false;
+        }
+
+#if false
+        if (_anim.GetCurrentAnimatorClipInfo(0)[0].clip.name != _stopAnimName)
+        {
+            _isNowAnimCheckName = true;
+        }
+        else if (_isNowAnimCheckName)
+        {
+            _isCheckAnimEnd = false;
+        }
+#endif
+
+        // MEMO: 反転したものを返すことで終了時の1フレームだけtrueにする
+        return !_isCheckAnimEnd;
     }
 
     private void Jump()
@@ -389,7 +508,11 @@ public class Player : MonoBehaviour
             {
                 _stamina = 0;
                 _isTired = true;
-                _isDash = false;
+                if (_isDash)
+                {
+                    _isDash = false;
+                    _anim.SetBool(kAnimParmInfo[AnimParm.kDash], false);
+                }
                 return;
             }
             // スタミナが最大でない場合
