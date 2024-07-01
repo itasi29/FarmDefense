@@ -18,6 +18,9 @@ public class UserData
 
     // 各ユーザデータの情報
     private Dictionary<int, User> _data = new Dictionary<int, User>();
+    // 共通ユーザデータ
+    private int _bgmVolLv;
+    private int _seVolLv;
 
     /// <summary>
     /// 読み込み
@@ -31,6 +34,9 @@ public class UserData
             using (var reader = new BinaryReader(new FileStream(Application.dataPath + DataManager.kUserFileName, FileMode.Open)))
             {
                 // ファイルが存在する場合
+                _bgmVolLv = reader.ReadInt32();
+                _seVolLv = reader.ReadInt32();
+
                 for (int i = 0; i < kUserNum; ++i)
                 {
                     User user = new User();
@@ -66,6 +72,9 @@ public class UserData
         catch
         {
             // ファイルが存在しない場合
+            _bgmVolLv = SoundManager.kVolumeLvMax;
+            _seVolLv = SoundManager.kVolumeLvMax;
+
             for (int i = 0; i < kUserNum; ++i)
             {
                 User user = new User();
@@ -127,6 +136,9 @@ public class UserData
             // ファイルを開く(ない場合は作成)
             using (var writer = new BinaryWriter(new FileStream(Application.dataPath + DataManager.kUserFileName, FileMode.OpenOrCreate)))
             {
+                writer.Write((Int32)_bgmVolLv);
+                writer.Write((Int32)_seVolLv);
+
                 foreach (var user in _data)
                 {
                     // 所持金書き込み
@@ -157,6 +169,14 @@ public class UserData
     }
 
     // MEMO: プロパティがいいか下のままがいいか…
+    public int GetBgmVolLv()
+    {
+        return _bgmVolLv;
+    }
+    public int GetSeVolLv() 
+    {
+        return _seVolLv;
+    }
     /// <summary>
     /// 現在所持しているお金
     /// </summary>
@@ -195,6 +215,14 @@ public class UserData
     public int GetHasItemNum(int userNo, string id, int lv)
     {
         return _data[userNo].item[id][lv];
+    }
+    public void SetBgmVolLv(int lv)
+    {
+        _bgmVolLv = lv;
+    }
+    public void SetSeVolLv(int lv)
+    {
+        _seVolLv = lv;
     }
     /// <summary>
     /// 所持金を増やす

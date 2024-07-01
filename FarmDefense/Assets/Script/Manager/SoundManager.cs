@@ -12,6 +12,10 @@ struct SoundData
 
 public class SoundManager : MonoBehaviour
 {
+    /* 定数 */
+    public const int kVolumeLvMax = 5;
+    private const float kVolumeLvRate = 0.2f;
+
     /* サウンドリソース */
     public AudioSource _seSource;
     public AudioSource _bgmSource;
@@ -30,7 +34,9 @@ public class SoundManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        var user = GetComponent<DataManager>().User;
+        ChangeMasterVolumeBgm(user.GetBgmVolLv());
+        ChangeMasterVolumeSe(user.GetSeVolLv());
     }
 
     public void PlaySe(string name)
@@ -69,20 +75,23 @@ public class SoundManager : MonoBehaviour
         _bgmSource.Stop();
     }
 
-    public void ChangeMasterVolumeSe(float volume)
+    public void ChangeMasterVolumeSe(int lv)
     {
-        _seMasterVolume = volume;
+        _seMasterVolume = lv * kVolumeLvRate;
         Mathf.Max(Mathf.Min(_seMasterVolume, 1.0f), 0.0f);
+
+        _seSource.volume = _seMasterVolume;
     }
 
-    public void ChangeMasterVolumeBgm(float volume)
+    public void ChangeMasterVolumeBgm(int lv)
     {
-        _bgmMasterVolume = volume;
+        _bgmMasterVolume = lv * kVolumeLvRate;
         Mathf.Max(Mathf.Min(_bgmMasterVolume, 1.0f), 0.0f);
+        _bgmSource.volume = _bgmMasterVolume;
 
         // 再生していなければ終了
         if (!_bgmSource.isPlaying) return;
         // 現在流しているBGMのボリュームを変更する
-        _bgmSource.volume = _bgmData[_nowPlayBgm].volume * _bgmMasterVolume;
+//        _bgmSource.volume = _bgmData[_nowPlayBgm].volume * _bgmMasterVolume;
     }
 }
