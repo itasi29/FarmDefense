@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/TitleScene.unity
+    path: Assets/Scenes/TitleScene_Fuchimoto.unity
     guid: 0b5a45bc8abbf8d4795422990e55622a
   - enabled: 1
     path: Assets/Scenes/SaveScene.unity
