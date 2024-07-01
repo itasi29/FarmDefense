@@ -7,7 +7,6 @@ public class DataManager : MonoBehaviour
 
     /* 各データのファイルパス */
     public const string kSpawnerFileName = "Csv/StageMaster";
-    public const string kPlayerFileName = "Csv/PlayerMaster";
     public const string kEnemyFileName = "Csv/EnemyMaster";
     public const string kWeaponFileName = "Csv/WeaponMaster";
     public const string kImteFileName = "Csv/ItemMaster";
@@ -16,7 +15,6 @@ public class DataManager : MonoBehaviour
 
     /* 保持データ */
     private SpawnerData _spawner;
-    private PlayerData _player;
     private EnemyData _enemy;
     private WeaponData _weapon;
     private ItemData _item;
@@ -30,7 +28,6 @@ public class DataManager : MonoBehaviour
 
         // 各種データ系を生成
         _spawner = new SpawnerData();
-        _player = new PlayerData();
         _enemy = new EnemyData();
         _weapon = new WeaponData();
         _item = new ItemData();
@@ -39,7 +36,6 @@ public class DataManager : MonoBehaviour
 
         // データの読み込み
         _spawner.Load();
-        _player.Load();
         _enemy.Load();
         _weapon.Load();
         _item.Load();
@@ -56,7 +52,6 @@ public class DataManager : MonoBehaviour
 
     // 各プロパティ
     public SpawnerData Spawner { get { return _spawner; } }
-    public PlayerData Player { get { return _player; } }
     public EnemyData Enemy { get { return _enemy; } }
     public WeaponData Weapon { get {  return _weapon; } }
     public ItemData Item { get { return _item;} }

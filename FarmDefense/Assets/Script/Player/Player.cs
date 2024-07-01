@@ -1,5 +1,7 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -54,32 +56,51 @@ public class Player : MonoBehaviour
         { AnimParm.kExist,      "IsExist" },
         { AnimParm.kNowPlaying, "IsNowPlaying" },
     };
+    /* ステータス系 */
+    private const int kMaxHp = 100;             // 最大HP
+    private const int kMaxStamina = 500;        // 最大スタミナ
+    private const float kSpeed = 16.0f;         // 通常スピード
+    private const float kDashSpeed = 30.0f;     // ダッシュスピード
+    private const float kDownSpeed = 5.0f;      // 低速時スピード
+    private const float kJumpPower = 0.8f;      // ジャンプ力
+    private const float kFallSpeed = -0.04f;    // 落下スピード
+    /* コスト系 */
+    private const int kDashCost = 5;
+    private const int kStAttackCost = 50;
+    /* 時間系 */
+    private const int kStanTime = 30;       // スタン
+    private const int kHitSafeTime = 40;    // ヒット時無敵
+    private const int kRevivalSafeTime = 60;    // 復活時無敵
+    /* その他 */
+    private const int kRecoveryStaminaSpeed = 2;     // スタミナ回復速度
+    private const float kMaxFallSpeed = -0.1f;  // 最大落下速度
+    private const int kAddStrongAttack = 10;    // 基礎強攻撃追加ダメージ量
+    private const float kRateStrongAttackInterval = 1.25f;  // 強攻撃追加フレーム割合
 
     /* 変数 */
     // プレイヤー情報
     private Animator _anim;
     private Rigidbody _rb;
     private CameraControl _camera;
-    private PlayerStatus _status;
-    private StaminaCost _cost;
-    private PlayerTime _time;
-    private int _hp;
-    private int _deltaHp;
-    private int _stamina;
-    private int _stanTime;
-    private int _safeTime;
-    private string _stopAnimName;
-    private bool _isNowAnimCheckName;
-    private bool _isCheckAnimEnd;
-    private bool _isStopMove;
-    private bool _isDash;
-    private bool _isTired;
-    private bool _isJump;
-    private bool _isStan;
-    private bool _isSafe;
-    private bool _isDeltaHp;
-    private Vector3 _jumpVelocity;
-    private Vector3 _velocity;
+    private int _hp;                    // 現在のHP
+    private int _deltaHp;               // 減少HP
+    private int _stamina;               // 現在のスタミナ
+    private int _waitAttackTime;       // 攻撃停止時間
+    private int _stanTime;              // スタン時間
+    private int _safeTime;              // 無敵時間
+    private string _stopAnimName;       // 停止確認アニメ名
+    private bool _isNowAnimCheckName;   // 停止アニメ名がプレイされたか
+    private bool _isCheckAnimEnd;       // アニメ停止確認するか
+    private bool _isCanAttack;          // 攻撃可能
+    private bool _isStopMove;           // 移動停止
+    private bool _isDash;               // ダッシュ
+    private bool _isTired;              // 疲れ
+    private bool _isJump;               // ジャンプ
+    private bool _isStan;               // スタン
+    private bool _isSafe;               // 無敵
+    private bool _isDeltaHp;            // 減少
+    private Vector3 _jumpVelocity;      // ジャンプ力
+    private Vector3 _velocity;          // 移動力
     // 武器情報
     private SwordStatus _swordStatus;
     private BulletStatus _bulletStatus;
@@ -97,10 +118,6 @@ public class Player : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         var dataMgr = GameObject.Find("DataManager").GetComponent<DataManager>();
-        var player = dataMgr.Player;
-        _status = player.Status;
-        _cost = player.Cost;
-        _time = player.Time;
         var user = dataMgr.User;
         var weapon = dataMgr.Weapon;
         _swordStatus = new SwordStatus();
@@ -141,12 +158,12 @@ public class Player : MonoBehaviour
             ChangeWeapon();
         }
         // 通常攻撃
-        if (Input.GetButtonDown("X"))
+        if (Input.GetButtonDown("X") && _isCanAttack)
         {
             OnAttack();
         }
         // 強攻撃
-        else if (Input.GetButtonDown("Y"))
+        else if (Input.GetButtonDown("Y") && _isCanAttack)
         {
             OnStrongAttack();
         }
@@ -157,23 +174,24 @@ public class Player : MonoBehaviour
         // ストップ終了確認処理
         if (CheckStopAnimEnd())
         {
-            _isStopMove = false;
+            if (_isStopMove)
+            {
+                _isStopMove = false;
+                if (_nowWeaponType == WeaponType.kNear)
+                {
+                    _weapon.GetComponent<Sword>().OffAttack();
+                }
+            }
         }
 
         // ジャンプ処理
         Jump();
-        // スタン時
-        if (_isStan)
-        {
-            // スタミナ処理
-            Stamina();
-        }
-        // 非スタン時
-        else
-        {
-            // スタン処理
-            StanTime();
-        }
+        // スタン処理
+        StanTime();
+        // スタミナ処理
+        Stamina();
+        // 攻撃待機処理
+        AttackWaitTime();
         // 無敵処理
         SafeTime();
         // DeltaHp処理
@@ -237,18 +255,20 @@ public class Player : MonoBehaviour
         // 無敵状態に
         _isSafe = true;
         // スタン・無敵時間の設定
-        _stanTime = _time.stan;
-        _safeTime = _time.hitSafe;
+        _stanTime = kStanTime;
+        _safeTime = kHitSafeTime;
     }
 
     private void Init()
     {
         this.transform.position = kInitPos;
-        _hp = _status.maxHp;
+        _hp = kMaxHp;
         _deltaHp = _hp;
-        _stamina = _status.maxStamina;
+        _stamina = kMaxStamina;
         _stanTime = 0;
-        _safeTime = _time.revivalSafe;
+        _safeTime = kRevivalSafeTime;
+        _waitAttackTime = 0;
+        _isCanAttack = true;
         _isDash = false;
         _isTired = false;
         _isJump = false;
@@ -293,7 +313,7 @@ public class Player : MonoBehaviour
             if (_isJump)
             {
                 // 速度を通常の速度に
-                _velocity = velocity * _status.speed;
+                _velocity = velocity * kSpeed;
             }
             // ジャンプしていない
             else
@@ -319,17 +339,17 @@ public class Player : MonoBehaviour
         // ダッシュ時
         if (_isDash)
         {
-            velocity *= _status.dashSpeed;
+            velocity *= kDashSpeed;
         }
         // 疲れているとき
         else if (_isTired)
         {
-            velocity *= _status.downSpeed;
+            velocity *= kDownSpeed;
         }
         // 通常時
         else
         {
-            velocity *= _status.speed;
+            velocity *= kSpeed;
         }
 
         _velocity = velocity;
@@ -345,18 +365,25 @@ public class Player : MonoBehaviour
         // TODO: 通常攻撃
         if (_nowWeaponType == WeaponType.kNear)
         {
+            // 待機時間適用
+            _waitAttackTime = _swordStatus.interval;
+            // 攻撃力適用
+            _weapon.GetComponent<Sword>().OnAttack(_swordStatus.attack);
         }
         else if (_nowWeaponType == WeaponType.kFar)
         {
+            // 待機時間適用
+            _waitAttackTime = _bulletStatus.interval;
             // 弾の生成
             var bullet = Instantiate(_bullet, _weapon.transform.position, Quaternion.identity);
-
+            // 方向・速度適用
             Vector3 velocity = transform.forward;
             velocity.y = _camera.GetFront().y;
             velocity = velocity.normalized * _bulletStatus.speed;
-
+            // 弾に設定
             bullet.GetComponent<Bullet>().Init(_bulletStatus.attack, velocity);
         }
+        _isCanAttack = false;
 
         StopMove(kAnimParmInfo[AnimParm.kAttack]);
     }
@@ -370,15 +397,23 @@ public class Player : MonoBehaviour
         if (_nowWeaponType == WeaponType.kFar) return;
 
         // 消費後のスタミナ確認
-        int temp = _stamina - _cost.strongAttack;
+        int temp = _stamina - kStAttackCost;
         // 実行できるか
         bool isDo = temp >= 0;
         // 実行
         if (isDo)
         {
+            // アニメ再生
             StopMove(kAnimParmInfo[AnimParm.kStAttack]);
             _anim.SetTrigger(kAnimParmInfo[AnimParm.kStAttack]);
+            // スタミナ適用
             _stamina = temp;
+            // 待機時間適用
+            _isCanAttack = false;
+            _waitAttackTime = (int)(_swordStatus.interval * kRateStrongAttackInterval);
+            // 攻撃力適用
+            int attack = _swordStatus.attack + kAddStrongAttack;
+            _weapon.GetComponent<Sword>().OnAttack(attack);
         }
         else
         {
@@ -438,7 +473,7 @@ public class Player : MonoBehaviour
         _anim.SetTrigger(kAnimParmInfo[AnimParm.kJump]);
         _anim.SetBool(kAnimParmInfo[AnimParm.kJumpAir], true);
         _isJump = true;
-        _jumpVelocity.y = _status.jumpPower;
+        _jumpVelocity.y = kJumpPower;
     }
 
     /// <summary>
@@ -453,13 +488,6 @@ public class Player : MonoBehaviour
     {
         if (!_isCheckAnimEnd) return false;
 
-
-        //Debug.Log(_anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
-        //if (_anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-        //{
-        //    _isCheckAnimEnd = false;
-        //}
-        Debug.Log(_anim.GetCurrentAnimatorClipInfo(0)[0].clip.name);
         if (_anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == _stopAnimName)
         {
             _isNowAnimCheckName = true;
@@ -468,17 +496,6 @@ public class Player : MonoBehaviour
         {
             _isCheckAnimEnd = false;
         }
-
-#if false
-        if (_anim.GetCurrentAnimatorClipInfo(0)[0].clip.name != _stopAnimName)
-        {
-            _isNowAnimCheckName = true;
-        }
-        else if (_isNowAnimCheckName)
-        {
-            _isCheckAnimEnd = false;
-        }
-#endif
 
         // MEMO: 反転したものを返すことで終了時の1フレームだけtrueにする
         return !_isCheckAnimEnd;
@@ -490,7 +507,12 @@ public class Player : MonoBehaviour
         if (!_isJump) return;
 
         transform.position += _jumpVelocity;
-        _jumpVelocity.y += _status.fallPower;
+        _jumpVelocity.y += kFallSpeed;
+        // 最低速度未満になったら補正
+        if (_jumpVelocity.y < kMaxFallSpeed)
+        {
+            _jumpVelocity.y = kMaxFallSpeed;
+        }
     }
 
     private void Stamina()
@@ -501,7 +523,7 @@ public class Player : MonoBehaviour
             // ダッシュ時スタミナ減らす
             if (_isDash)
             {
-                _stamina -= _cost.dash;
+                _stamina -= kDashCost;
             }
             // スタミナが0未満になったら
             if (_stamina <= 0)
@@ -516,23 +538,23 @@ public class Player : MonoBehaviour
                 return;
             }
             // スタミナが最大でない場合
-            if (_stamina < _status.maxStamina)
+            if (_stamina < kMaxStamina)
             {
                 // スタミナ回復
-                _stamina += _status.recoveryStamina;
+                _stamina += kRecoveryStaminaSpeed;
                 // 最大値を超えたら補正
-                _stamina = Mathf.Min(_stamina, _status.maxStamina);
+                _stamina = Mathf.Min(_stamina, kMaxStamina);
             }
         }
         // 疲れているとき
         else
         {
             // 通常時の2倍の速度でスタミナ回復
-            _stamina += _status.recoveryStamina * 2;
+            _stamina += kRecoveryStaminaSpeed * 2;
             // 最大値まで回復したら通常状態へ
-            if (_stamina >= _status.maxStamina)
+            if (_stamina >= kMaxStamina)
             {
-                _stamina = _status.maxStamina;
+                _stamina = kMaxStamina;
                 _isTired = false;
             }
         }
@@ -540,11 +562,28 @@ public class Player : MonoBehaviour
 
     private void StanTime()
     {
+        // スタン状態でないなら無視
+        if (!_isStan) return;
+
+        Debug.Log(_stanTime);
         --_stanTime;
 
         if (_stanTime < 0)
         {
             _isStan = false;
+        }
+    }
+
+    private void AttackWaitTime()
+    {
+        // 攻撃可能状態なら無視
+        if (_isCanAttack) return;
+
+        --_waitAttackTime;
+
+        if (_waitAttackTime < 0)
+        {
+            _isCanAttack = true;
         }
     }
 
