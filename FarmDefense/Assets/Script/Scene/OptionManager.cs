@@ -2,33 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TitleManager : MonoBehaviour
+public class OptionManager : MonoBehaviour
 {
     /* 型 */
     enum Kind
     {
-        kStart,
-        kOption,
-        kEnd,
+        kBgm,
+        kSe,
+        kReturn,
+        kClose,
         kMax
     }
 
     /* 定数 */
-    [SerializeField] private const int kCursorHeight = 300;
-    private const string kNextSceneName = "UserSelectScene";
-
 
     /* 変数 */
     private int _index;
     private bool _isPrePush;
-    private GameObject _cursor;
+    [SerializeField] private GameObject _cursor;
+    [SerializeField] private GameObject _bgm;
+    [SerializeField] private GameObject _se;
+    private GameObject[] _gauge;
+    private int _bgmVol;
+    private int _seVol;
 
     void Start()
     {
-        _index = 0;
-        _isPrePush = false;
+        _gauge = new GameObject[5];
     }
 
+    // Update is called once per frame
     void Update()
     {
         CursorMove();
@@ -64,24 +67,21 @@ public class TitleManager : MonoBehaviour
 
     private void Select()
     {
-        if (_index == (int)Kind.kStart)
+        if (_index == (int)Kind.kBgm)
         {
-            // TODO: Sceneの切り替え(即時)
-            // TODO: fadeの終了時に着かえるように変更
+            
         }
-        else if (_index == (int)Kind.kOption)
+        else if (_index == (int)Kind.kSe)
         {
-            // TODO: キャンバス上に出すようにする
+
         }
-        else if (_index == (int)Kind.kEnd)
+        else if (_index == (int)Kind.kReturn)
         {
-#if UNITY_EDITOR
-            // エディター上の時
-            UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
-#else
-                // ビルド上の時
-                Application.Quit();//ゲームプレイ終了
-#endif
+            
+        }
+        else if (_index == (int)Kind.kClose)
+        {
+
         }
     }
 }
