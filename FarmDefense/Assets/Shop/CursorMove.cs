@@ -9,17 +9,21 @@ public class CursorMove : MonoBehaviour
     public enum UpgradeParts
     {
         kNearAtk,
-        kNearRange,
         kNearSpd,
+        kNearRange,
         kFarAtk,
-        kFarSpd,
         kFarRate,
+        kFarSpd,
         kPartsNum
     }
     public enum Item
     {
-        kFarmHeal,
-        kPlayerHeal,
+        kFarmHealLv1,
+        kFarmHealLv2,
+        kFarmHealLv3,
+        kPlayerHealLv1,
+        kPlayerHealLv2,
+        kPlayerHealLv3,
         kItemNum
     }
 
@@ -55,7 +59,7 @@ public class CursorMove : MonoBehaviour
         _cursorImage = GameObject.Find("cursor");
         _selectImage = GameObject.Find("nearAtk");
         _selectPart = UpgradeParts.kNearAtk;
-        _selectItem = Item.kFarmHeal;
+        _selectItem = Item.kFarmHealLv1;
         _shopManager = GameObject.Find("Manager").GetComponent<ShopManager>();
 
         _weaponShop = GameObject.Find("WeaponShop");
@@ -124,16 +128,45 @@ public class CursorMove : MonoBehaviour
         {
             if (_cursorIndex.x == 0)
             {
-                _selectImage = _itemShop.transform.GetChild((int)Item.kFarmHeal).gameObject;
-                _selectItem = Item.kFarmHeal;
+                if (_cursorIndex.y == 0)
+                {
+                    _selectImage = _itemShop.transform.GetChild((int)Item.kFarmHealLv1).gameObject;
+                    _selectItem = Item.kFarmHealLv1;
+                }
+                else if (_cursorIndex.y == 1)
+                {
+                    _selectImage = _itemShop.transform.GetChild((int)Item.kFarmHealLv2).gameObject;
+                    _selectItem = Item.kFarmHealLv2;
+                }
+                else if (_cursorIndex.y == 2)
+                {
+                    _selectImage = _itemShop.transform.GetChild((int)Item.kFarmHealLv3).gameObject;
+                    _selectItem = Item.kFarmHealLv3;
+                }
+
             }
             else if (_cursorIndex.x == 1)
             {
-                _selectImage = _itemShop.transform.GetChild((int)Item.kPlayerHeal).gameObject;
-                _selectItem = Item.kPlayerHeal;
+                if (_cursorIndex.y == 0)
+                {
+                    _selectImage = _itemShop.transform.GetChild((int)Item.kPlayerHealLv1).gameObject;
+                    _selectItem = Item.kPlayerHealLv1;
+                }
+                else if (_cursorIndex.y == 1)
+                {
+                    _selectImage = _itemShop.transform.GetChild((int)Item.kPlayerHealLv2).gameObject;
+                    _selectItem = Item.kPlayerHealLv2;
+                }
+                else if (_cursorIndex.y == 2)
+                {
+                    _selectImage = _itemShop.transform.GetChild((int)Item.kPlayerHealLv3).gameObject;
+                    _selectItem = Item.kPlayerHealLv3;
+                }
             }
         }
+        //画像の位置にカーソルを移動
         cursorPos = _selectImage.transform.position;
+        //画像の横幅の大きさだけカーソルを右にずらす
         cursorPos.x = _selectImage.transform.position.x + kImageWidth;
 
         _cursorImage.transform.position = cursorPos;
@@ -211,4 +244,22 @@ public class CursorMove : MonoBehaviour
 
     public UpgradeParts GetSelectPart() { return _selectPart; }
     public Item GetSelectItem() { return _selectItem; }
+    public int GetSelectItemLevel()
+    {
+        int ans = 0;
+
+        if (_selectItem == Item.kPlayerHealLv1 || _selectItem == Item.kFarmHealLv1)
+        {
+            ans = 0;
+        }
+        else if (_selectItem == Item.kPlayerHealLv2 || _selectItem == Item.kFarmHealLv2)
+        {
+            ans = 1;
+        }
+        else if (_selectItem == Item.kPlayerHealLv3 || _selectItem == Item.kFarmHealLv3)
+        {
+            ans = 2;
+        }
+        return ans;
+    }
 }

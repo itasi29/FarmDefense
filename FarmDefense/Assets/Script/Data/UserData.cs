@@ -8,7 +8,7 @@ public class User
     public int money;   // 所持金お金
     public int time;    // プレイ時間
     public Dictionary<string, int> weapon;    // 武器のレベル
-    public Dictionary<string, int> item;        // アイテム所持数
+    public Dictionary<string, List<int>> item;        // アイテム所持数
 }
 
 public class UserData
@@ -46,10 +46,15 @@ public class UserData
                     }
                     user.weapon = weapon;
                     // 各種アイテム所持数読み込み
-                    Dictionary<string, int> item = new Dictionary<string, int>();
+                    Dictionary<string, List<int>> item = new Dictionary<string, List<int>>();
                     for (int j = 0; j < itemIdList.Count; ++j)
                     {
-                        item.Add(itemIdList[j], reader.ReadInt32());
+                        List<int> lv = new List<int>();
+                        for (int k  = 0; k < 3; ++k)
+                        {
+                            lv.Add(reader.ReadInt32());
+                        }
+                        item.Add(itemIdList[j], lv);
                     }
                     user.item = item;
 
@@ -65,21 +70,26 @@ public class UserData
             {
                 User user = new User();
                 // 所持金
-                user.money = 0;
+                user.money = 100000;
                 // プレイ時間
                 user.time = 0;
                 // 武器のレベル
                 Dictionary<string, int> weapon = new Dictionary<string, int>();
                 for (int j = 0; j < weaponIdList.Count; ++j)
                 {
-                    weapon.Add(weaponIdList[j], 1);
+                    weapon.Add(weaponIdList[j], 0);
                 }
                 user.weapon = weapon;
                 // アイテム所持数
-                Dictionary<string, int> item = new Dictionary<string, int>();
+                Dictionary<string, List<int>> item = new Dictionary<string, List<int>>();
                 for (int j = 0; j < itemIdList.Count; ++j)
                 {
-                    item.Add(weaponIdList[j], 0);
+                    List<int> lv = new List<int>();
+                    for (int k = 0; k < 3; ++k)
+                    {
+                        lv.Add(0);
+                    }
+                    item.Add(itemIdList[j], lv);
                 }
                 user.item = item;
 
@@ -126,12 +136,16 @@ public class UserData
                     // 武器のレベル書き込み
                     foreach (var weapon in user.Value.weapon)
                     {
+                        Debug.Log("weapon.Value : " + weapon.Value);
                         writer.Write((Int32)weapon.Value);
                     }
                     // アイテム所持数書き込み
                     foreach (var item in user.Value.item)
                     {
-                        writer.Write((Int32)item.Value);
+                        foreach (var lv in item.Value)
+                        {
+                            writer.Write((Int32)lv);
+                        }
                     }
                 }
             }
@@ -176,10 +190,11 @@ public class UserData
     /// </summary>
     /// <param name="userNo">ユーザ番号</param>
     /// <param name="id">アイテムのID</param>
+    /// <param name="lv">アイテムのレベル</param>
     /// <returns>所持数</returns>
-    public int GetHasItemNum(int userNo, string id)
+    public int GetHasItemNum(int userNo, string id, int lv)
     {
-        return _data[userNo].item[id];
+        return _data[userNo].item[id][lv];
     }
     /// <summary>
     /// 所持金を増やす
@@ -232,19 +247,21 @@ public class UserData
     /// </summary>
     /// <param name="userNo">ユーザ番号</param>
     /// <param name="id">アイテムのID</param>
-    public void AddHasItemNum(int userNo, string id)
+    /// <param name="lv">アイテムのレベル</param>
+    public void AddHasItemNum(int userNo, string id, int lv)
     {
-        ++_data[userNo].item[id];
+        ++_data[userNo].item[id][lv];
     }
     /// <summary>
     /// 所持している場合アイテムを使用する
     /// </summary>
     /// <param name="userNo">ユーザ番号</param>
     /// <param name="id">アイテムのID</param>
+    /// <param name="lv">アイテムのレベル</param>
     /// <returns>true: 使用可能 / false: 使用不可能</returns>
-    public bool UseItem(int userNo, string id)
+    public bool UseItem(int userNo, string id, int lv)
     {
-        int temp = _data[userNo].item[id];
+        int temp = _data[userNo].item[id][lv];
         --temp;
         if (temp < 0)
         {
@@ -252,7 +269,7 @@ public class UserData
         }
         else
         {
-            _data[userNo].item[id] = temp;
+            _data[userNo].item[id][lv] = temp;
             return true;
         }
     }
