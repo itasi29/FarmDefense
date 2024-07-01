@@ -17,16 +17,16 @@ public class ShopData
         foreach (var item in items)
         {
             Dictionary<int, int> cost = new Dictionary<int, int>();
-            cost.Add(1, item.Lv1);
-            cost.Add(2, item.Lv2);
-            cost.Add(3, item.Lv3);
-            cost.Add(4, item.Lv4);
-            cost.Add(5, item.Lv5);
-            cost.Add(6, item.Lv6);
-            cost.Add(7, item.Lv7);
-            cost.Add(8, item.Lv8);
-            cost.Add(9, item.Lv9);
-            cost.Add(10, item.Lv10);
+            cost.Add(0, item.Lv1);
+            cost.Add(1, item.Lv2);
+            cost.Add(2, item.Lv3);
+            cost.Add(3, item.Lv4);
+            cost.Add(4, item.Lv5);
+            cost.Add(5, item.Lv6);
+            cost.Add(6, item.Lv7);
+            cost.Add(7, item.Lv8);
+            cost.Add(8, item.Lv9);
+            cost.Add(9, item.Lv10);
             _data.Add(item.ID, cost);
         }
     }

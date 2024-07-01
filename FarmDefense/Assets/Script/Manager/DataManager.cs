@@ -49,6 +49,7 @@ public class DataManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        Debug.Log("呼ばれてる？");
         // データの保存
         _user.Save();
     }

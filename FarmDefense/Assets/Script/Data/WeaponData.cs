@@ -31,16 +31,16 @@ public class WeaponData
         foreach (var item in items)
         {
             Dictionary<int, int> effect = new Dictionary<int, int>();
-            effect.Add(1, item.Lv1);
-            effect.Add(2, item.Lv2);
-            effect.Add(3, item.Lv3);
-            effect.Add(4, item.Lv4);
-            effect.Add(5, item.Lv5);
-            effect.Add(6, item.Lv6);
-            effect.Add(7, item.Lv7);
-            effect.Add(8, item.Lv8);
-            effect.Add(9, item.Lv9);
-            effect.Add(10, item.Lv10);
+            effect.Add(0, item.Lv1);
+            effect.Add(1, item.Lv2);
+            effect.Add(2, item.Lv3);
+            effect.Add(3, item.Lv4);
+            effect.Add(4, item.Lv5);
+            effect.Add(5, item.Lv6);
+            effect.Add(6, item.Lv7);
+            effect.Add(7, item.Lv8);
+            effect.Add(8, item.Lv9);
+            effect.Add(9, item.Lv10);
             _data.Add(item.ID, effect);
             //_data.Add(new Tuple<string, int>(item.ID, 1), item.Lv1);
             //_data.Add(new Tuple<string, int>(item.ID, 2), item.Lv2);
