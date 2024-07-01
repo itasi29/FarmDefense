@@ -1,6 +1,8 @@
 /* 外部ファイルの構造体 */
 
 // ステージ
+using JetBrains.Annotations;
+
 [System.Serializable]
 public class StageCSV
 {
@@ -19,6 +21,24 @@ public class PatternCSV
     public string EnemyNo;
     public float CreateSec;
     public int CreatePosNo;
+}
+
+[System.Serializable]
+public class PlayerCSV
+{
+    public int MaxHp;
+    public int MaxStamina;
+    public int RecoveryStamina;
+    public float Speed;
+    public float DashSpeed;
+    public float DownSpeed;
+    public float JumpPower;
+    public float FallPower;
+    public int DashCost;
+    public int StrongAttackCost;
+    public int StanTime;
+    public int HitSafeTime;
+    public int RevivalSafeTime;
 }
 
 // 敵

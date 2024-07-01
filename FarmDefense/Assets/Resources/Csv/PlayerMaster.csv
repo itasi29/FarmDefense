@@ -1,1 +1,2 @@
-MaxHp,Speed,TiredSpeed,DashSpeed,JumpPower,Gravity,MaxStamina,CostDashStamina,ConstStrongAttackStamina
+MaxHp,MaxStamina,RecoveryStamina,Speed,DashSpeed,DownSpeed,JumpPower,FallPower,DashCost,StrongAttackCost,StanTime,HitSafeTime,RevivalSafeTime
+100,500,1,16,30,5,0.8,-0.04,5,100,30,40,60

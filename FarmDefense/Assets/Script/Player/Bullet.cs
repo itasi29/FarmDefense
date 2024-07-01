@@ -1,34 +1,31 @@
-using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
     private const int kLifeTime = 180;
 
-    private float _spd;
+    private int _attack;
 
-    private int _atk = 10;
+    private Vector3 _velocity;
+    private int _lifeTime;
 
-    private Vector3 _moveVec;
+    public void Init(int attack, Vector3 velocity)
+    {
+        _attack = attack;
+        _velocity = velocity;
+    }
 
-    private int _lifeTime = 0;
-
-    // Update is called once per frame
     private void FixedUpdate()
     {
-        transform.position += _moveVec;
-        _lifeTime++;
-        if(_lifeTime > kLifeTime)
+        this.transform.position += _velocity;
+        ++_lifeTime;
+        if (_lifeTime > kLifeTime)
         {
             Destroy(this.gameObject);
         }
-    }
-
-    public void SetMoveVec(Vector3 dirVec, float speed)
-    {
-        _moveVec = dirVec * speed;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -36,11 +33,13 @@ public class Bullet : MonoBehaviour
         if (collision.gameObject.tag == "Enemy")
         {
             EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
-            enemy.OnDamage(_atk);
+            enemy.OnDamage(_attack);
+            Destroy(this.gameObject);
+            return;
         }
 
         // プレイヤー以外にあったたら消す
-        if (!(collision.gameObject.tag == "Player")) 
+        if (collision.gameObject.tag != "Player")
         {
             Destroy(this.gameObject);
         }
