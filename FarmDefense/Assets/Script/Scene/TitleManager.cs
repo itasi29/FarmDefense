@@ -23,19 +23,11 @@ public class TitleManager : SelectManager
     private const float kCursorShakeWidth = 48;
 
     /* 変数 */
-    OptionSystem _optionSys;
+    
 
-    void Start()
-    {
-        _index = 0;
-        _isPrePush = false;
-        _optionSys = new OptionSystem();
-    }
-
-    void Update()
+    private void Update()
     {
         if (_optionSys.IsOpenOption()) return;
-        Debug.Log("lakjdfs");
 
         CursorMove((int)Kind.kMax);
 
@@ -71,8 +63,8 @@ public class TitleManager : SelectManager
             // エディター上の時
             UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
 #else
-                // ビルド上の時
-                Application.Quit();//ゲームプレイ終了
+            // ビルド上の時
+            Application.Quit();//ゲームプレイ終了
 #endif
         }
     }

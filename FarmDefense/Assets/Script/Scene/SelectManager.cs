@@ -10,8 +10,16 @@ public abstract class SelectManager : MonoBehaviour
     private float _cursorShakeFrame;
     protected bool _isPrePush;
     [SerializeField] protected GameObject _cursor;
+    protected OptionSystem _optionSys;
 
-    protected void SetCursorPos(float initY, float intervalY)
+    protected virtual void Start()
+    {
+        _index = 0;
+        _isPrePush = false;
+        _optionSys = new OptionSystem();
+    }
+
+    protected virtual void SetCursorPos(float initY, float intervalY)
     {
         var pos = _cursor.transform.localPosition;
         pos.y = initY - (_index * intervalY);
