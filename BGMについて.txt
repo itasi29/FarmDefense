@@ -1,0 +1,29 @@
+BGM
+ Title  平和のハンモック(魔王魂)
+ Shop  石畳の下で(魔王魂)
+ Buttle * 3  Concecutive Battle(魔王魂),Silence Seekers(魔王魂),Revive(魔王魂)
+ Victory  シングル013(魔王魂)
+ Lose   シングル008(魔王魂)
+
+SE
+ Player
+  Attack 
+   Sword
+    Normal  剣の素振り2(効果音ラボ)
+    Strong  剣の素振り1(効果音ラボ)
+   Gun　　拳銃を撃つ(効果音ラボ)
+  Walk  芝生の上を歩く(効果音ラボ)
+  Dash  芝生の上を走る(効果音ラボ)
+  Jump  ジャンプ-03の効果音(効果音工房)
+  Damage  重いパンチ2(効果音ラボ)
+ Enemy * 7  
+  Attack  パンチ素振り(効果音ラボ)
+  Walk   　芝生の上を歩く(効果音ラボ)※プレイヤーと同じ
+  Damage  パンチの布擦れ2(効果音ラボ)
+ Select   決定ボタンを押す13(効果音ラボ)
+ Cancel   キャンセル5(効果音ラボ)
+ CursorMove  カーソル移動10(効果音ラボ)
+  
+
+効果音ラボと効果音工房は商用OK
+魔王魂は著作権表示が必要
