@@ -41,17 +41,23 @@ public abstract class SelectManager : MonoBehaviour
 
         if (!_isPrePush)
         {
+            bool isPush = false;
             if (input == 1)
             {
                 _index = (max + _index - 1) % max;
+                isPush = true;
             }
             else if (input == -1)
             {
                 _index = (_index + 1) % max;
+                isPush = true;
             }
 
-            _isPrePush = true;
-            return true;
+            if (isPush)
+            {
+                _isPrePush = true;
+                return true;
+            }
         }
         else if (input == 0)
         {

@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class DataSelectManager : SelectManager
+public class StageSelectManager : SelectManager
 {
     enum Kind
     {
-        Data1,
-        Data2,
-        Data3,
-        Data4,
+        kStage1,
+        kStage2, 
+        kStage3, 
+        kStage4,
+        kStage5,
+        kStage6,
+        kShop,
         kMax
     }
 
     /* 定数 */
     private const string kStageSelectSceneName = "StageSelectScene";
-    private const string kTitleSceneName       = "TitleScene";
+    private const string kTitleSceneName = "TitleScene";
     private const float kBasePosX = -80;
     private const float kBasePosY = 192;
     private const float kIntervalX = 640;
@@ -24,20 +27,13 @@ public class DataSelectManager : SelectManager
     private const float kCursorShakeWidth = 32;
     private Vector2[] kCursorPos = new Vector2[]
     {
-        new Vector2(kBasePosX               , kBasePosY             ),
-        new Vector2(kBasePosX + kIntervalX  , kBasePosY             ),
-        new Vector2(kBasePosX               , kBasePosY + kIntervalY),
-        new Vector2(kBasePosX + kIntervalX  , kBasePosY + kIntervalY)
+        new Vector2(kBasePosX                   , kBasePosY             ),
+        new Vector2(kBasePosX + kIntervalX      , kBasePosY             ),
+        new Vector2(kBasePosX + kIntervalX * 2  , kBasePosY             ),
+        new Vector2(kBasePosX                   , kBasePosY + kIntervalY),
+        new Vector2(kBasePosX + kIntervalX      , kBasePosY + kIntervalY),
+        new Vector2(kBasePosX + kIntervalX * 2  , kBasePosY + kIntervalY)
     };
-
-    /* 変数 */
-    private UserData _user;
-
-    private new void Start()
-    {
-        _user = GameObject.Find("GameManager").GetComponent<DataManager>().User;
-    }
-
 
     private void Update()
     {
@@ -48,11 +44,6 @@ public class DataSelectManager : SelectManager
         if (Input.GetButtonDown("A"))
         {
             Select();
-        }
-        if (Input.GetButtonDown("B"))
-        {
-            // TODO: フェードスタート
-            SceneManager.LoadScene(kTitleSceneName);
         }
     }
 
@@ -79,12 +70,12 @@ public class DataSelectManager : SelectManager
             bool isPush = false;
             if (inputY == 1)
             {
-                _index = (max + _index - 2) % max;
+                _index = (max + _index - 3) % max;
                 isPush = true;
             }
             else if (inputY == -1)
             {
-                _index = (_index + 2) % max;
+                _index = (_index + 3) % max;
                 isPush = true;
             }
             if (inputX == 1)
@@ -97,7 +88,6 @@ public class DataSelectManager : SelectManager
                 _index = (max + _index - 1) % max;
                 isPush = true;
             }
-
 
             if (isPush)
             {
@@ -115,8 +105,6 @@ public class DataSelectManager : SelectManager
 
     protected override void Select()
     {
-        _user.SetUserNo(_index);
-        // TODO: フェードスタート
-        SceneManager.LoadScene(kStageSelectSceneName);
+        
     }
 }
