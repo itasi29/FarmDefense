@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class TitleManager : MonoBehaviour
+public class TitleManager : SelectManager
 {
     /* 型 */
     enum Kind
@@ -16,22 +17,19 @@ public class TitleManager : MonoBehaviour
     /* 定数 */
     [SerializeField] private const int kCursorHeight = 300;
     private const string kNextSceneName = "UserSelectScene";
-
+    private const float kInitPosY = 232;
+    private const float kIntervalPosY = 232;
+    private const float kCursorPosx = 64;
+    private const float kCursorShakeWidth = 48;
 
     /* 変数 */
-    private int _index;
-    private bool _isPrePush;
-    private GameObject _cursor;
+    
 
-    void Start()
+    private void Update()
     {
-        _index = 0;
-        _isPrePush = false;
-    }
+        if (_optionSys.IsOpenOption()) return;
 
-    void Update()
-    {
-        CursorMove();
+        CursorMove((int)Kind.kMax);
 
         if (Input.GetButtonDown("A"))
         {
@@ -39,39 +37,25 @@ public class TitleManager : MonoBehaviour
         }
     }
 
-    private void CursorMove()
+    private void FixedUpdate()
     {
-        float input = Input.GetAxis("DPADY");
+        if (_optionSys.IsOpenOption()) return;
 
-        if (!_isPrePush)
-        {
-            if (input == 1)
-            {
-                _index = ((int)Kind.kMax + _index - 1) % (int)Kind.kMax;
-            }
-            else if (input == -1)
-            {
-                _index = (_index + 1) % (int)Kind.kMax;
-            }
-
-            _isPrePush = true;
-        }
-        else if (input == 0)
-        {
-            _isPrePush = false;
-        }
+        SetCursorPos(kInitPosY, kIntervalPosY);
+        CursorShake(kCursorPosx, kCursorShakeWidth);
     }
 
-    private void Select()
+    protected override void Select()
     {
         if (_index == (int)Kind.kStart)
         {
             // TODO: Sceneの切り替え(即時)
             // TODO: fadeの終了時に着かえるように変更
+            SceneManager.LoadScene(kNextSceneName);
         }
         else if (_index == (int)Kind.kOption)
         {
-            // TODO: キャンバス上に出すようにする
+            _optionSys.Create(OptionManager.ReturnScene.kTitle, Instantiate);
         }
         else if (_index == (int)Kind.kEnd)
         {
@@ -79,8 +63,8 @@ public class TitleManager : MonoBehaviour
             // エディター上の時
             UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
 #else
-                // ビルド上の時
-                Application.Quit();//ゲームプレイ終了
+            // ビルド上の時
+            Application.Quit();//ゲームプレイ終了
 #endif
         }
     }

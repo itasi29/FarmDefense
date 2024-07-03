@@ -18,6 +18,11 @@ public class UserData
 
     // 各ユーザデータの情報
     private Dictionary<int, User> _data = new Dictionary<int, User>();
+    // 共通ユーザデータ
+    private int _bgmVolLv;
+    private int _seVolLv;
+    // 現在のユーザ番号
+    private int _nowUserNo;
 
     /// <summary>
     /// 読み込み
@@ -31,6 +36,9 @@ public class UserData
             using (var reader = new BinaryReader(new FileStream(Application.dataPath + DataManager.kUserFileName, FileMode.Open)))
             {
                 // ファイルが存在する場合
+                _bgmVolLv = reader.ReadInt32();
+                _seVolLv = reader.ReadInt32();
+
                 for (int i = 0; i < kUserNum; ++i)
                 {
                     User user = new User();
@@ -66,6 +74,9 @@ public class UserData
         catch
         {
             // ファイルが存在しない場合
+            _bgmVolLv = SoundManager.kVolumeLvMax;
+            _seVolLv = SoundManager.kVolumeLvMax;
+
             for (int i = 0; i < kUserNum; ++i)
             {
                 User user = new User();
@@ -127,6 +138,9 @@ public class UserData
             // ファイルを開く(ない場合は作成)
             using (var writer = new BinaryWriter(new FileStream(Application.dataPath + DataManager.kUserFileName, FileMode.OpenOrCreate)))
             {
+                writer.Write((Int32)_bgmVolLv);
+                writer.Write((Int32)_seVolLv);
+
                 foreach (var user in _data)
                 {
                     // 所持金書き込み
@@ -157,63 +171,87 @@ public class UserData
     }
 
     // MEMO: プロパティがいいか下のままがいいか…
+    public int GetBgmVolLv()
+    {
+        return _bgmVolLv;
+    }
+    public int GetSeVolLv() 
+    {
+        return _seVolLv;
+    }
+    public void SetUserNo(int userNo)
+    {
+        _nowUserNo = userNo;
+    }
     /// <summary>
     /// 現在所持しているお金
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
+    /// <param name="userNo">ユーザ番号 def:_nowUserNo</param>
     /// <returns>所持金</returns>
-    public int GetMoney(int userNo)
+    public int GetMoney(int userNo = -1)
     {
+        if (userNo < 0)
+        {
+            userNo = _nowUserNo;
+        }
         return _data[userNo].money;
     }
     /// <summary>
     /// 現在のプレイ時間
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
+    /// <param name="userNo">ユーザ番号 def:_nowUserNo</param>
     /// <returns>プレイ時間</returns>
-    public int GetTime(int userNo) 
+    public int GetTime(int userNo = -1) 
     {
+        if (userNo < 0)
+        {
+            userNo = _nowUserNo;
+        }
         return _data[userNo].time;
     }
     /// <summary>
     /// 現在の武器のレベル
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
     /// <param name="id">武器のID</param>
     /// <returns>レベル</returns>
-    public int GetWeaponLv(int userNo, string id)
+    public int GetWeaponLv(string id)
     {
-        return _data[userNo].weapon[id];
+        return _data[_nowUserNo].weapon[id];
     }
     /// <summary>
     /// 現在所持しているアイテムの数
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
     /// <param name="id">アイテムのID</param>
     /// <param name="lv">アイテムのレベル</param>
     /// <returns>所持数</returns>
-    public int GetHasItemNum(int userNo, string id, int lv)
+    public int GetHasItemNum(string id, int lv)
     {
-        return _data[userNo].item[id][lv];
+        return _data[_nowUserNo].item[id][lv];
+    }
+    public void SetBgmVolLv(int lv)
+    {
+        _bgmVolLv = lv;
+    }
+    public void SetSeVolLv(int lv)
+    {
+        _seVolLv = lv;
     }
     /// <summary>
     /// 所持金を増やす
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
     /// <param name="add">増やすお金の量</param>
-    public void AddMoney(int userNo, int add)
+    public void AddMoney(int add)
     {
-        _data[userNo].money += add;
+        _data[_nowUserNo].money += add;
     }
     /// <summary>
     /// 減らす金額で0未満にならない場合は所持金を減らす
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
     /// <param name="sub">減らすお金の量</param>
     /// <returns>true: 減らせる / false: 減らせない</returns>
-    public bool SubMoney(int userNo, int sub)
+    public bool SubMoney(int sub)
     {
-        int temp = _data[userNo].money;
+        int temp = _data[_nowUserNo].money;
         temp -= sub;
         if (temp < 0)
         {
@@ -221,47 +259,43 @@ public class UserData
         }
         else
         {
-            _data[userNo].money = temp;
+            _data[_nowUserNo].money = temp;
             return true;
         }
     }
     /// <summary>
     /// プレイ時間の増加
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
-    public void AddTime(int userNo)
+    public void AddTime()
     {
-        ++_data[userNo].time;
+        ++_data[_nowUserNo].time;
     }
     /// <summary>
     /// 武器のレベルを上げる
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
     /// <param name="id">武器のID</param>
-    public void LvUpWeapon(int userNo, string id)
+    public void LvUpWeapon(string id)
     {
-        ++_data[userNo].weapon[id];
+        ++_data[_nowUserNo].weapon[id];
     }
     /// <summary>
     /// 所持アイテム数を増やす
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
     /// <param name="id">アイテムのID</param>
     /// <param name="lv">アイテムのレベル</param>
-    public void AddHasItemNum(int userNo, string id, int lv)
+    public void AddHasItemNum(string id, int lv)
     {
-        ++_data[userNo].item[id][lv];
+        ++_data[_nowUserNo].item[id][lv];
     }
     /// <summary>
     /// 所持している場合アイテムを使用する
     /// </summary>
-    /// <param name="userNo">ユーザ番号</param>
     /// <param name="id">アイテムのID</param>
     /// <param name="lv">アイテムのレベル</param>
     /// <returns>true: 使用可能 / false: 使用不可能</returns>
-    public bool UseItem(int userNo, string id, int lv)
+    public bool UseItem(string id, int lv)
     {
-        int temp = _data[userNo].item[id][lv];
+        int temp = _data[_nowUserNo].item[id][lv];
         --temp;
         if (temp < 0)
         {
@@ -269,7 +303,7 @@ public class UserData
         }
         else
         {
-            _data[userNo].item[id][lv] = temp;
+            _data[_nowUserNo].item[id][lv] = temp;
             return true;
         }
     }
