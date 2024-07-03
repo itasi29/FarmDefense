@@ -18,93 +18,54 @@ public class StageSelectManager : SelectManager
     }
 
     /* íËêî */
-    private const string kStageSelectSceneName = "StageSelectScene";
+    private const string kStageSceneNameBase = "StageScene";
     private const string kTitleSceneName = "TitleScene";
-    private const float kBasePosX = -80;
+    private const string kShopSceneName = "ShopScene";
+    private const float kBasePosX = -192;
     private const float kBasePosY = 192;
-    private const float kIntervalX = 640;
+    private const float kIntervalX = 384;
     private const float kIntervalY = -320;
     private const float kCursorShakeWidth = 32;
-    private Vector2[] kCursorPos = new Vector2[]
+
+    protected override void Init()
     {
-        new Vector2(kBasePosX                   , kBasePosY             ),
-        new Vector2(kBasePosX + kIntervalX      , kBasePosY             ),
-        new Vector2(kBasePosX + kIntervalX * 2  , kBasePosY             ),
-        new Vector2(kBasePosX                   , kBasePosY + kIntervalY),
-        new Vector2(kBasePosX + kIntervalX      , kBasePosY + kIntervalY),
-        new Vector2(kBasePosX + kIntervalX * 2  , kBasePosY + kIntervalY)
-    };
-
-    private void Update()
-    {
-        if (_optionSys.IsOpenOption()) return;
-
-        CursorMove((int)Kind.kMax);
-
-        if (Input.GetButtonDown("A"))
+        _max = (int)Kind.kMax;
+        _valX = 1;
+        _valY = 3;
+        _isX = true;
+        _isY = true;
+        _isRot = true;
+        _valRot = 2;
+        _valDivRot = 3;
+        _cursorRot = Quaternion.AngleAxis(180, Vector3.up);
+        _cursorWidth = kCursorShakeWidth;
+        _cursorPos = new Vector2[]
         {
-            Select();
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (_optionSys.IsOpenOption()) return;
-
-        SetCursorPos();
-        CursorShake(kCursorPos[_index].x, kCursorShakeWidth);
-    }
-
-    private void SetCursorPos()
-    {
-        _cursor.transform.localPosition = kCursorPos[_index];
-    }
-
-    protected override bool CursorMove(int max)
-    {
-        float inputX = Input.GetAxis("DPADX");
-        float inputY = Input.GetAxis("DPADY");
-
-        if (!_isPrePush)
-        {
-            bool isPush = false;
-            if (inputY == 1)
-            {
-                _index = (max + _index - 3) % max;
-                isPush = true;
-            }
-            else if (inputY == -1)
-            {
-                _index = (_index + 3) % max;
-                isPush = true;
-            }
-            if (inputX == 1)
-            {
-                _index = (_index + 1) % max;
-                isPush = true;
-            }
-            else if (inputX == -1)
-            {
-                _index = (max + _index - 1) % max;
-                isPush = true;
-            }
-
-            if (isPush)
-            {
-                _isPrePush = true;
-                return true;
-            }
-        }
-        else if (inputY == 0 && inputX == 0)
-        {
-            _isPrePush = false;
-        }
-
-        return false;
+            new Vector2(kBasePosX                                  , kBasePosY             ),
+            new Vector2(kBasePosX + kIntervalX + kCursorShakeWidth , kBasePosY             ),
+            new Vector2(kBasePosX + kIntervalX                     , kBasePosY             ),
+            new Vector2(kBasePosX                                  , kBasePosY + kIntervalY),
+            new Vector2(kBasePosX + kIntervalX + kCursorShakeWidth , kBasePosY + kIntervalY),
+            new Vector2(kBasePosX + kIntervalX                     , kBasePosY + kIntervalY),
+            new Vector2(0 , 0)
+        };
     }
 
     protected override void Select()
     {
-        
+        // TODO: Ç”Ç•Å[Ç«ÇµÇƒÇ©ÇÁ
+        if (_index == (int)Kind.kShop)
+        {
+            SceneManager.LoadScene(kShopSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(kStageSceneNameBase + (_index + 1).ToString());
+        }
+    }
+
+    protected override void Cancel()
+    {
+        SceneManager.LoadScene(kTitleSceneName);
     }
 }

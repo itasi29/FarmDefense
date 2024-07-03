@@ -26,9 +26,9 @@ public class OptionManager : SelectManager
     private const string kReturnTitleName = "TitleScene";
     private const string kReturnStageSelectName = "StageSelect";
     private const float kSlidePosX = 64;
-    private const float kInitPosY = 128;
-    private const float kIntervalPosY = 128;
-    private const float kCursorPosx = -508;
+    private const float kBasePosX = -508;
+    private const float kBasePosY = 128;
+    private const float kIntervalY = 128;
     private const float kCursorShakeWidth = 48;
 
     /* ïœêî */
@@ -46,6 +46,23 @@ public class OptionManager : SelectManager
     private Image[] _gauge = new Image[SoundManager.kVolumeLvMax];
     [SerializeField] private Sprite _activImg;
     [SerializeField] private Sprite _inactivImg;
+
+    protected override void Init()
+    {
+        _max = (int)Kind.kMax;
+        _valX = 0;
+        _valY = 2;
+        _isX = false;
+        _isY = true;
+        _cursorWidth = kCursorShakeWidth;
+        _cursorPos = new Vector2[]
+        {
+            new Vector2(kBasePosX , kBasePosY                 ),
+            new Vector2(kBasePosX , kBasePosY + kIntervalY    ),
+            new Vector2(kBasePosX , kBasePosY + kIntervalY * 2),
+            new Vector2(kBasePosX , kBasePosY + kIntervalY * 3),
+        };
+    }
 
     public void Init(ReturnScene returnScene)
     {
@@ -71,14 +88,17 @@ public class OptionManager : SelectManager
         SetGauge(_seGauge);
         ChangeGaugeImage(_seVolLv);
 
+        _preIndex = _index;
         _isSoundChange = false;
 
         _returnScene = returnScene;
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
+        if (_optionSys.IsOpenOption()) return;
+
         if (_isSoundChange)
         {
             if (Input.GetButtonDown("B"))
@@ -97,9 +117,17 @@ public class OptionManager : SelectManager
             return;
         }
 
-        _preIndex = _index;
-        if (CursorMove((int)Kind.kMax))
+        base.Update();
+    }
+
+    protected override void FixedUpdate()
+    {
+        if (_optionSys.IsOpenOption()) return;
+
+        base.FixedUpdate();
+        if (_isChange)
         {
+            _isChange = false;
             // å≥ÇÃà íuÇ…ñﬂÇ∑
             var pos = _items[_preIndex].transform.localPosition;
             pos.x -= kSlidePosX;
@@ -109,17 +137,7 @@ public class OptionManager : SelectManager
             pos.x += kSlidePosX;
             _items[_index].transform.localPosition = pos;
         }
-
-        if (Input.GetButtonDown("A"))
-        {
-            Select();
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        SetCursorPos(kInitPosY, kIntervalPosY);
-        CursorShake(kCursorPosx, kCursorShakeWidth);
+        _preIndex = _index;
     }
 
     private void ChangeSoundVolume(ref int soundLv, Action<int> changeVol, Action<int> setVol)

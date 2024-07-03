@@ -150,7 +150,6 @@ public class UserData
                     // 武器のレベル書き込み
                     foreach (var weapon in user.Value.weapon)
                     {
-                        Debug.Log("weapon.Value : " + weapon.Value);
                         writer.Write((Int32)weapon.Value);
                     }
                     // アイテム所持数書き込み
