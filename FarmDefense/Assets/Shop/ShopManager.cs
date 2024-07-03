@@ -69,7 +69,7 @@ public class ShopManager : MonoBehaviour
         _weaponData = _dataManager.Weapon;
 
         //データの読み込み
-        InitUserData(userNo);
+        InitUserData();
 
         //IDの読み込み
         for (int i = 0; i < (int)CursorMove.UpgradeParts.kPartsNum; i++)
@@ -90,7 +90,7 @@ public class ShopManager : MonoBehaviour
         //所持ゴールドの表示
         Text goldUi = _hasGoldUi.GetComponent<Text>();
 
-        goldUi.text = _userData.GetMoney(userNo).ToString();
+        goldUi.text = _userData.GetMoney().ToString();
 
 
         //武器ショップを開いているとき
@@ -158,11 +158,11 @@ public class ShopManager : MonoBehaviour
                     //選んでいるパーツのコストを取得する
                     int cost = _shopData.GetCost(_partsId[selectPart], _stutasLevel[selectPart]);
                     //選んでいるパーツの値段よりも持っているお金が多かったらお金を減らす
-                    if (_userData.SubMoney(userNo,cost))
+                    if (_userData.SubMoney(cost))
                     {
                         //選択している武器パーツを強化する
                         _stutasLevel[selectPart]++;
-                        _userData.LvUpWeapon(userNo, _partsId[selectPart]);
+                        _userData.LvUpWeapon(_partsId[selectPart]);
                     }
 
                 }
@@ -178,11 +178,11 @@ public class ShopManager : MonoBehaviour
                 {
                     int cost = _shopData.GetCost(_itemId[selectItem], itemLevel);
                     //選んでいるパーツの値段よりも持っているお金が多かったらお金を減らす
-                    if (_userData.SubMoney(userNo,cost))
+                    if (_userData.SubMoney(cost))
                     {
                         //選択しているアイテムを購入する
                         _hasItem[(int)_cursorScript.GetSelectItem()]++;
-                        _userData.AddHasItemNum(userNo, _itemId[selectItem], itemLevel);
+                        _userData.AddHasItemNum(_itemId[selectItem], itemLevel);
                     }
 
                 }
@@ -190,23 +190,23 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    private void InitUserData(int userNo)
+    private void InitUserData()
     {
         //レベルの読み込み
-        _stutasLevel[(int)CursorMove.UpgradeParts.kNearAtk] = _userData.GetWeaponLv(userNo, "W_0");
-        _stutasLevel[(int)CursorMove.UpgradeParts.kNearSpd] = _userData.GetWeaponLv(userNo, "W_1");
-        _stutasLevel[(int)CursorMove.UpgradeParts.kNearRange] = _userData.GetWeaponLv(userNo, "W_2");
-        _stutasLevel[(int)CursorMove.UpgradeParts.kFarAtk] = _userData.GetWeaponLv(userNo, "W_3");
-        _stutasLevel[(int)CursorMove.UpgradeParts.kFarRate] = _userData.GetWeaponLv(userNo, "W_4");
-        _stutasLevel[(int)CursorMove.UpgradeParts.kFarSpd] = _userData.GetWeaponLv(userNo, "W_5");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kNearAtk] = _userData.GetWeaponLv("W_0");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kNearSpd] = _userData.GetWeaponLv("W_1");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kNearRange] = _userData.GetWeaponLv("W_2");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kFarAtk] = _userData.GetWeaponLv("W_3");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kFarRate] = _userData.GetWeaponLv("W_4");
+        _stutasLevel[(int)CursorMove.UpgradeParts.kFarSpd] = _userData.GetWeaponLv("W_5");
 
         //アイテムを持っている数の読み込み
-        _hasItem[(int)CursorMove.Item.kFarmHealLv1] = _userData.GetHasItemNum(userNo, "I_0", 0);
-        _hasItem[(int)CursorMove.Item.kFarmHealLv2] = _userData.GetHasItemNum(userNo, "I_1", 1);
-        _hasItem[(int)CursorMove.Item.kFarmHealLv3] = _userData.GetHasItemNum(userNo, "I_2", 2);
-        _hasItem[(int)CursorMove.Item.kPlayerHealLv1] = _userData.GetHasItemNum(userNo, "I_3", 0);
-        _hasItem[(int)CursorMove.Item.kPlayerHealLv2] = _userData.GetHasItemNum(userNo, "I_4", 1);
-        _hasItem[(int)CursorMove.Item.kPlayerHealLv3] = _userData.GetHasItemNum(userNo, "I_5", 2);
+        _hasItem[(int)CursorMove.Item.kFarmHealLv1] = _userData.GetHasItemNum("I_0", 0);
+        _hasItem[(int)CursorMove.Item.kFarmHealLv2] = _userData.GetHasItemNum("I_1", 1);
+        _hasItem[(int)CursorMove.Item.kFarmHealLv3] = _userData.GetHasItemNum("I_2", 2);
+        _hasItem[(int)CursorMove.Item.kPlayerHealLv1] = _userData.GetHasItemNum("I_3", 0);
+        _hasItem[(int)CursorMove.Item.kPlayerHealLv2] = _userData.GetHasItemNum("I_4", 1);
+        _hasItem[(int)CursorMove.Item.kPlayerHealLv3] = _userData.GetHasItemNum("I_5", 2);
     }
 
     public bool IsGetWeaponShop() { return _isWeaponShop; }

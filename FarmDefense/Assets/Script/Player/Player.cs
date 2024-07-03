@@ -122,12 +122,12 @@ public class Player : MonoBehaviour
         var weapon = dataMgr.Weapon;
         _swordStatus = new SwordStatus();
         _bulletStatus = new BulletStatus();
-        _swordStatus.attack    = weapon.GetStatus("W_0", user.GetWeaponLv(0, "W_0"));
-        _swordStatus.interval  = weapon.GetStatus("W_1", user.GetWeaponLv(0, "W_1"));
-        _swordStatus.range     = weapon.GetStatus("W_2", user.GetWeaponLv(0, "W_2"));
-        _bulletStatus.attack   = weapon.GetStatus("W_3", user.GetWeaponLv(0, "W_3"));
-        _bulletStatus.interval = weapon.GetStatus("W_4", user.GetWeaponLv(0, "W_4"));
-        _bulletStatus.speed    = weapon.GetStatus("W_5", user.GetWeaponLv(0, "W_5"));
+        _swordStatus.attack    = weapon.GetStatus("W_0", user.GetWeaponLv("W_0"));
+        _swordStatus.interval  = weapon.GetStatus("W_1", user.GetWeaponLv("W_1"));
+        _swordStatus.range     = weapon.GetStatus("W_2", user.GetWeaponLv("W_2"));
+        _bulletStatus.attack   = weapon.GetStatus("W_3", user.GetWeaponLv("W_3"));
+        _bulletStatus.interval = weapon.GetStatus("W_4", user.GetWeaponLv("W_4"));
+        _bulletStatus.speed    = weapon.GetStatus("W_5", user.GetWeaponLv("W_5"));
         _nowWeaponType = WeaponType.kNear;
         _weapon = Instantiate(_sword, _weaponArm.transform);
 
