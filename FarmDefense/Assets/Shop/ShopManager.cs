@@ -41,7 +41,6 @@ public class ShopManager : MonoBehaviour
     private WeaponData _weaponData;
 
     private DataManager _dataManager;
-    int userNo = 0;
     // Start is called before the first frame update
     void Start()
     {
