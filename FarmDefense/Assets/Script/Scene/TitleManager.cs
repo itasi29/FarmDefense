@@ -17,9 +17,9 @@ public class TitleManager : SelectManager
     /* íËêî */
     [SerializeField] private const int kCursorHeight = 300;
     private const string kNextSceneName = "UserSelectScene";
-    private const float kBasePosX = -80;
-    private const float kBasePosY = 192;
-    private const float kIntervalY = 232;
+    private const float kBasePosX = 64;
+    private const float kBasePosY = 232;
+    private const float kIntervalY = -232;
     private const float kCursorShakeWidth = 48;
     private Vector2[] kCursorPos = new Vector2[]
     {
@@ -31,7 +31,7 @@ public class TitleManager : SelectManager
     protected override void Init()
     {
         _maxX = _maxY = (int)Kind.kMax;
-        _valY = 2;
+        _valY = 1;
         _isY = true;
         _cursorWidth = kCursorShakeWidth;
         _cursorPos = new Vector2[]
