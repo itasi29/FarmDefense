@@ -41,6 +41,8 @@ public class SpawnerManager : MonoBehaviour
     // ‘Swave‚Ì“G‚ğ¶¬‚µ‚½‚©
     private bool _isAllCreate;
 
+    public int WaveEnemyNum { get { return _waveData[_nowWaveNo].createNum; } }
+
     void Awake()
     {
         _miniMap = GameObject.Find("MinimapManager").gameObject.GetComponent<Minimap>();
