@@ -17,32 +17,29 @@ public class TitleManager : SelectManager
     /* íËêî */
     [SerializeField] private const int kCursorHeight = 300;
     private const string kNextSceneName = "UserSelectScene";
-    private const float kInitPosY = 232;
-    private const float kIntervalPosY = 232;
-    private const float kCursorPosx = 64;
+    private const float kBasePosX = -80;
+    private const float kBasePosY = 192;
+    private const float kIntervalY = 232;
     private const float kCursorShakeWidth = 48;
-
-    /* ïœêî */
-    
-
-    private void Update()
+    private Vector2[] kCursorPos = new Vector2[]
     {
-        if (_optionSys.IsOpenOption()) return;
+        new Vector2(kBasePosX , kBasePosY                 ),
+        new Vector2(kBasePosX , kBasePosY + kIntervalY    ),
+        new Vector2(kBasePosX , kBasePosY + kIntervalY * 2),
+    };
 
-        CursorMove((int)Kind.kMax);
-
-        if (Input.GetButtonDown("A"))
+    protected override void Init()
+    {
+        _maxX = _maxY = (int)Kind.kMax;
+        _valY = 2;
+        _isY = true;
+        _cursorWidth = kCursorShakeWidth;
+        _cursorPos = new Vector2[]
         {
-            Select();
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (_optionSys.IsOpenOption()) return;
-
-        SetCursorPos(kInitPosY, kIntervalPosY);
-        CursorShake(kCursorPosx, kCursorShakeWidth);
+            new Vector2(kBasePosX , kBasePosY                 ),
+            new Vector2(kBasePosX , kBasePosY + kIntervalY    ),
+            new Vector2(kBasePosX , kBasePosY + kIntervalY * 2),
+        };
     }
 
     protected override void Select()

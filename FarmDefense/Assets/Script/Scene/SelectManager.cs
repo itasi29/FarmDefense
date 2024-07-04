@@ -1,71 +1,140 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public abstract class SelectManager : MonoBehaviour
 {
+    /* íËêî */
     private const float kCursorShakeSpeed = 0.05f;
 
+    /* ïœêî */
     protected int _index;
-    private float _cursorShakeFrame;
+    protected int _maxX = 0;
+    protected int _maxY = 0;
+    protected int _valX = 0;
+    protected int _valY = 0;
+    protected int _valRot = 0;
+    protected int _valDivRot = 0;
+    protected bool _isX = false;
+    protected bool _isY = false;
+    protected bool _isRot;
+    protected bool _isChange;
     protected bool _isPrePush;
-    [SerializeField] protected GameObject _cursor;
+    protected Quaternion _cursorRot;
+    protected float _cursorWidth;
+    protected Vector2[] _cursorPos;
     protected OptionSystem _optionSys;
+
+    private float _cursorShakeFrame;
+    [SerializeField] protected GameObject _cursor;
 
     protected virtual void Start()
     {
         _index = 0;
         _isPrePush = false;
+        _isChange  = false;
         _optionSys = new OptionSystem();
+        Init();
     }
 
-    protected virtual void SetCursorPos(float initY, float intervalY)
+    protected virtual void Update()
     {
-        var pos = _cursor.transform.localPosition;
-        pos.y = initY - (_index * intervalY);
-        _cursor.transform.localPosition = pos;
+        if (_optionSys.IsOpenOption()) return;
+
+        IndexUpdate();
+
+        if (Input.GetButtonDown("A"))
+        {
+            Select();
+        }
+        if (Input.GetButtonDown("B"))
+        {
+            Cancel();
+        }
     }
 
-    protected void CursorShake(float centerX, float width)
+    protected virtual void FixedUpdate()
+    {
+        if (_optionSys.IsOpenOption()) return;
+
+        CursorUpdate();
+    }
+
+    protected abstract void Init();
+    protected abstract void Select();
+    protected virtual void Cancel() {}
+
+    private void CursorUpdate()
     {
         _cursorShakeFrame += kCursorShakeSpeed;
 
-        var pos = _cursor.transform.localPosition;
-        pos.x = centerX + Mathf.Sin(_cursorShakeFrame) * width;
-        _cursor.transform.localPosition = pos;
+        CursorRot();
+
+        var shakePos = _cursorPos[_index];
+        shakePos.x += Mathf.Sin(_cursorShakeFrame) * _cursorWidth;
+        _cursor.transform.localPosition = shakePos;
     }
 
-    protected virtual bool CursorMove(int max)
+    protected virtual void CursorRot()
     {
-        float input = Input.GetAxis("DPADY");
+        if (!_isRot) return;
+
+        if (_index % _valDivRot == _valRot)
+        {
+            _cursor.transform.localRotation = _cursorRot;
+        }
+        else
+        {
+            _cursor.transform.localRotation = Quaternion.identity;
+        }
+    }
+
+    protected void IndexUpdate()
+    {
+        float x, y;
+        x = y = 0.0f;
+
+        if (_isX)
+        {
+            x = Move("DPADX", _valX, _maxX, -1);
+        }
+        if (_isY)
+        {
+            y = Move("DPADY", _valY, _maxY, 1);
+        }
+
+        if (y == 0.0f && x == 0.0f)
+        {
+            _isPrePush = false;
+        }
+    }
+
+    private float Move(string padName, int val, int max, float parm)
+    {
+        float input = Input.GetAxis(padName);
 
         if (!_isPrePush)
         {
             bool isPush = false;
-            if (input == 1)
+            if (input == parm)
             {
-                _index = (max + _index - 1) % max;
+                _index = (max + _index - val) % max;
                 isPush = true;
             }
-            else if (input == -1)
+            else if (input == -parm)
             {
-                _index = (_index + 1) % max;
+                _index = (_index + val) % max;
                 isPush = true;
             }
 
             if (isPush)
             {
                 _isPrePush = true;
-                return true;
+                _isChange = true;
             }
         }
-        else if (input == 0)
-        {
-            _isPrePush = false;
-        }
 
-        return false;
+        return input;
     }
-
-    protected abstract void Select();
 }
