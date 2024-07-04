@@ -2,15 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Item
-{
-    public string type;
-    public float effect1;
-}
-
 public class ItemData
 {
-    private Dictionary<string, Item> _data = new Dictionary<string, Item>();
+    private Dictionary<string, List<int>> _data = new Dictionary<string, List<int>>();
     private List<string> _idList = new List<string>();
 
     public void Load()
@@ -22,19 +16,26 @@ public class ItemData
 
         foreach (var item in items)
         {
-            Item temp = new Item();
-            temp.type = item.Type;
-            temp.effect1 = item.Effect1;
+            // Šù‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚éê‡
+            if (_data.ContainsKey(item.ID))
+            {
+                _data[item.ID].Add(item.Effect1);
+            }
+            // ‚Ü‚¾ŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢ê‡
+            else
+            {
+                var array = new List<int>();
+                array.Add(item.Effect1);
+                _data.Add(item.ID, array);
 
-            _data.Add(item.ID, temp);
-
-            _idList.Add(item.ID);
+                _idList.Add(item.ID);
+            }
         }
     }
 
-    public Item GetItem(string id)
+    public int GetEffect(string id, int lv)
     {
-        return _data[id];
+        return _data[id][lv];
     }
     
     public List<string> GetIdList()
