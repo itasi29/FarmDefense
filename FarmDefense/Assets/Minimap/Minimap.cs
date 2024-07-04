@@ -20,9 +20,14 @@ public class Minimap : MonoBehaviour
     [SerializeField] private Image PlayerImage;
     [SerializeField] private Image EnemyImage;
 
+    private const float kEnemyImageSize = 0.7f;
+    private const float kFarmImageSize = 0.9f;
+    private const float kPlayerImageSize = 0.8f;
     private const int kFarmNum = 6;
-    private const int kMapH = 100;
-    private const int kMapV = 150;
+    private const float kViewHeight = 0.8f;
+
+    private const int kMapH = (int)(100 * kViewHeight);
+    private const int kMapV = (int)(150 * kViewHeight);
 
     private const int kMiniMapScale = 256;
 
@@ -53,9 +58,12 @@ public class Minimap : MonoBehaviour
         {
             _farmImage[i] = Instantiate(FarmImage, new Vector3(1000, 1000, 1000), Quaternion.identity);
             _farmImage[i].transform.SetParent(_canvas.transform);
+            _farmImage[i].transform.localScale = new Vector2(kFarmImageSize,kFarmImageSize);
+
         }
         _playerImage = Instantiate(PlayerImage, new Vector3(1000, 1000, 1000), Quaternion.identity);
         _playerImage.transform.SetParent(_canvas.transform);
+        _playerImage.transform.localScale = new Vector2(kPlayerImageSize,kPlayerImageSize);
     }
 
     // Update is called once per frame
@@ -125,6 +133,7 @@ public class Minimap : MonoBehaviour
         {
             //¶‚«‚Ä‚¢‚é“GƒŠƒXƒg‚ğ‚·‚×‚Äíœ‚·‚é
             _enemyList.Clear();
+            Debug.Log("‘S•”íœ");
         }
 
     }
@@ -141,6 +150,8 @@ public class Minimap : MonoBehaviour
         addEnemy.image = Instantiate(addEnemy.image, addEnemy.showPos, Quaternion.identity);
 
         addEnemy.image.transform.SetParent(_canvas.transform);
+
+        addEnemy.image.transform.localScale = new Vector2(kEnemyImageSize,kEnemyImageSize);
 
         _enemyList.Add(addEnemy);
     }
