@@ -10,13 +10,14 @@ public abstract class SelectManager : MonoBehaviour
 
     /* ïœêî */
     protected int _index;
-    protected int _max;
-    protected int _valX;
-    protected int _valY;
-    protected int _valRot;
-    protected int _valDivRot;
-    protected bool _isX;
-    protected bool _isY;
+    protected int _maxX = 0;
+    protected int _maxY = 0;
+    protected int _valX = 0;
+    protected int _valY = 0;
+    protected int _valRot = 0;
+    protected int _valDivRot = 0;
+    protected bool _isX = false;
+    protected bool _isY = false;
     protected bool _isRot;
     protected bool _isChange;
     protected bool _isPrePush;
@@ -26,7 +27,7 @@ public abstract class SelectManager : MonoBehaviour
     protected OptionSystem _optionSys;
 
     private float _cursorShakeFrame;
-    [SerializeField] private GameObject _cursor;
+    [SerializeField] protected GameObject _cursor;
 
     protected virtual void Start()
     {
@@ -68,21 +69,25 @@ public abstract class SelectManager : MonoBehaviour
     {
         _cursorShakeFrame += kCursorShakeSpeed;
 
-        if (_isRot)
-        {
-            if (_index % _valDivRot == _valRot)
-            {
-                _cursor.transform.localRotation = _cursorRot;
-            }
-            else
-            {
-                _cursor.transform.localRotation = Quaternion.identity;
-            }
-        }
+        CursorRot();
 
         var shakePos = _cursorPos[_index];
         shakePos.x += Mathf.Sin(_cursorShakeFrame) * _cursorWidth;
         _cursor.transform.localPosition = shakePos;
+    }
+
+    protected virtual void CursorRot()
+    {
+        if (!_isRot) return;
+
+        if (_index % _valDivRot == _valRot)
+        {
+            _cursor.transform.localRotation = _cursorRot;
+        }
+        else
+        {
+            _cursor.transform.localRotation = Quaternion.identity;
+        }
     }
 
     protected void IndexUpdate()
@@ -92,11 +97,11 @@ public abstract class SelectManager : MonoBehaviour
 
         if (_isX)
         {
-            x = Move("DPADX", _valX, -1);
+            x = Move("DPADX", _valX, _maxX, -1);
         }
         if (_isY)
         {
-            y = Move("DPADY", _valY, 1);
+            y = Move("DPADY", _valY, _maxY, 1);
         }
 
         if (y == 0.0f && x == 0.0f)
@@ -105,7 +110,7 @@ public abstract class SelectManager : MonoBehaviour
         }
     }
 
-    private float Move(string padName, int val, float parm)
+    private float Move(string padName, int val, int max, float parm)
     {
         float input = Input.GetAxis(padName);
 
@@ -114,12 +119,12 @@ public abstract class SelectManager : MonoBehaviour
             bool isPush = false;
             if (input == parm)
             {
-                _index = (_max + _index - val) % _max;
+                _index = (max + _index - val) % max;
                 isPush = true;
             }
             else if (input == -parm)
             {
-                _index = (_index + val) % _max;
+                _index = (_index + val) % max;
                 isPush = true;
             }
 

@@ -33,7 +33,7 @@ public class DataSelectManager : SelectManager
 
     protected override void Init()
     {
-        _max = (int)Kind.kMax;
+        _maxX = _maxY = (int)Kind.kMax;
         _valX = 1;
         _valY = 2;
         _isX = true;

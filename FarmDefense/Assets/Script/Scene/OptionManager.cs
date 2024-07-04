@@ -49,10 +49,8 @@ public class OptionManager : SelectManager
 
     protected override void Init()
     {
-        _max = (int)Kind.kMax;
-        _valX = 0;
+        _maxY = (int)Kind.kMax;
         _valY = 2;
-        _isX = false;
         _isY = true;
         _cursorWidth = kCursorShakeWidth;
         _cursorPos = new Vector2[]
