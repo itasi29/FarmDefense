@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
         public int interval;
         public float speed;
     }
-    enum WeaponType
+    public enum WeaponType
     {
         kNear,
         kFar
@@ -110,6 +110,9 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _sword;
     [SerializeField] private GameObject _gun;
     [SerializeField] private GameObject _bullet;
+
+    /* プロパティ */
+    public WeaponType NowWeaponType { get { return _nowWeaponType; } }
     
     void Start()
     {
