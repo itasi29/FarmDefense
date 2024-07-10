@@ -52,7 +52,8 @@ public class SpawnerManager : MonoBehaviour
         GameObject parent = GameObject.Find("CreatePos");
 
         // ステージデータの取得
-        DataManager dataMgr = GameObject.Find("DataManager").GetComponent<DataManager>();
+        GameDirector director = GameObject.Find("GameDirector").GetComponent <GameDirector>();
+        DataManager dataMgr = director.DataMgr;
         _waveData = dataMgr.Spawner.GetWaveData(_stageNo);
         // 生成場所の取得
         for (int i = 0; i < kCreatePosNum; ++i)

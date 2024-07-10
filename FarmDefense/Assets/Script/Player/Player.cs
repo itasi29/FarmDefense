@@ -120,7 +120,8 @@ public class Player : MonoBehaviour
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
-        var dataMgr = GameObject.Find("DataManager").GetComponent<DataManager>();
+        var director = GameObject.Find("GameDirector").GetComponent<GameDirector>();
+        var dataMgr = director.DataMgr;
         var user = dataMgr.User;
         var weapon = dataMgr.Weapon;
         _swordStatus = new SwordStatus();

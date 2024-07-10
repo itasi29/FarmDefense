@@ -73,7 +73,8 @@ public class EnemyBase : MonoBehaviour
         _anim.SetBool(kAnimParmInfo[AnimParm.kMove], true);
 
         // ステータス取得
-        EnemyData data = GameObject.Find("DataManager").GetComponent<DataManager>().Enemy;
+        var director = GameObject.Find("GameDirector").GetComponent<GameDirector>();
+        EnemyData data = director.DataMgr.Enemy;
         _status = data.GetStatus(enemyID);
 
         // 各種初期化
