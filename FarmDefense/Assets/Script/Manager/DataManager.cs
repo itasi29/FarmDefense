@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DataManager : MonoBehaviour
+public class DataManager
 {
 
     /* 各データのファイルパス */
@@ -21,11 +21,8 @@ public class DataManager : MonoBehaviour
     private ShopData _shop;
     private UserData _user;
 
-    private void Awake()
+    public void Load()
     {
-        // 自信を非破壊オブジェクトにする
-        DontDestroyOnLoad(this.gameObject);
-
         // 各種データ系を生成
         _spawner = new SpawnerData();
         _enemy = new EnemyData();
@@ -43,9 +40,8 @@ public class DataManager : MonoBehaviour
         _user.Load(_weapon.GetIdList(), _item.GetIdList());
     }
 
-    private void OnApplicationQuit()
+    public void End()
     {
-        Debug.Log("呼ばれてる？");
         // データの保存
         _user.Save();
     }

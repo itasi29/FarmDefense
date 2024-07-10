@@ -73,8 +73,8 @@ public class WeaponCSV
 public class ItemCSV
 {
     public string ID;
-    public string Type;
-    public float Effect1;
+    public int Lv;
+    public int Effect1;
 }
 
 // ƒVƒ‡ƒbƒv

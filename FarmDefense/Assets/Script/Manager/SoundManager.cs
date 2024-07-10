@@ -10,15 +10,15 @@ struct SoundData
     public float volume;
 }
 
-public class SoundManager : MonoBehaviour
+public class SoundManager
 {
     /* 定数 */
     public const int kVolumeLvMax = 5;
     private const float kVolumeLvRate = 0.2f;
 
     /* サウンドリソース */
-    public AudioSource _seSource;
-    public AudioSource _bgmSource;
+    private AudioSource _seSource;
+    private AudioSource _bgmSource;
 
     /* サウンドデータ */
     private Dictionary<string, SoundData> _seData;
@@ -32,9 +32,10 @@ public class SoundManager : MonoBehaviour
     private string _nowPlayBgm;
 
     // Start is called before the first frame update
-    void Start()
+    public void Init(UserData user, AudioSource se, AudioSource bgm)
     {
-        var user = GetComponent<DataManager>().User;
+        _seSource = se;
+        _bgmSource = bgm;
         ChangeMasterVolumeBgm(user.GetBgmVolLv());
         ChangeMasterVolumeSe(user.GetSeVolLv());
     }

@@ -238,6 +238,17 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void OnRecover(int recover)
+    {
+        // Šù‚É”j‰ó‚³‚ê‚Ä‚¢‚½‚ç‰ñ•œ‚µ‚È‚¢
+        if (_isDash) return;
+
+        _hp += recover;
+
+        // HPãŒÀ‚ğ’´‚¦‚È‚¢‚æ‚¤‚É
+        _hp = Mathf.Min(_hp, kMaxHp);
+    }
+
     public void OnDamage(int damage)
     {
         // –³“Gó‘Ô‚È‚çUŒ‚ó‚¯‚È‚¢

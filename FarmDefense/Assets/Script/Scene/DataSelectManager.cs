@@ -28,7 +28,8 @@ public class DataSelectManager : SelectManager
 
     private new void Start()
     {
-        _user = GameObject.Find("GameManager").GetComponent<DataManager>().User;
+        base.Start();
+        _user = GameObject.Find("GameDirector").GetComponent<GameDirector>().DataMgr.User;
     }
 
     protected override void Init()
