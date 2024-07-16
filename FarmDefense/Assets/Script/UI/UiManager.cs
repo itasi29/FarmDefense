@@ -33,7 +33,7 @@ public class UiManager : MonoBehaviour
         _enemyPopNum.ones = GameObject.Find("MaxOnesPlace").GetComponent<Image>();
         _enemyKillNum.tens = GameObject.Find("KillTensPlace").GetComponent<Image>();
         _enemyKillNum.ones = GameObject.Find("KillOnesPlace").GetComponent<Image>();
-        _spawnerManager = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
+        _spawnerManager = GetComponent<SpawnerManager>();
         _hpBar = GameObject.Find("HpBar").GetComponent<Slider>();
         _staminaBar = GameObject.Find("StaminaBar").GetComponent<Slider>();
     }

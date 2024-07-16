@@ -66,8 +66,9 @@ public class EnemyBase : MonoBehaviour
         _farmBase = GameObject.Find("Farm").gameObject;
         _player = GameObject.Find("Player").gameObject;
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
-        _minimap = GameObject.Find("MinimapManager").GetComponent<Minimap>();
-        _spawnerMgr = GameObject.Find("SpawnerManager").GetComponent<SpawnerManager>();
+        var stageMgr = GameObject.Find("StageManager");
+        _minimap = stageMgr.GetComponent<Minimap>();
+        _spawnerMgr = stageMgr.GetComponent<SpawnerManager>();
         _anim = GetComponent<Animator>();
         _anim.speed = 0.2f;
         _anim.SetBool(kAnimParmInfo[AnimParm.kMove], true);

@@ -46,9 +46,7 @@ public class TitleManager : SelectManager
     {
         if (_index == (int)Kind.kStart)
         {
-            // TODO: Scene‚ÌØ‚è‘Ö‚¦(‘¦)
-            // TODO: fade‚ÌI—¹‚É’…‚©‚¦‚é‚æ‚¤‚É•ÏX
-            SceneManager.LoadScene(kNextSceneName);
+            _fade.StartFadeOut(kNextSceneName);
         }
         else if (_index == (int)Kind.kOption)
         {

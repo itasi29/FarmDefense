@@ -17,7 +17,7 @@ WaveNo,EnemyNo,CreateSec,CreatePosNo
 2,E_2,12,3
 2,E_3,12,5
 3,E_2,2,3
-3,E_1,4,22
+3,E_1,4,5
 3,E_0,4,5
 3,E_0,6,0
 3,E_3,7,1

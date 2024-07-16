@@ -111,6 +111,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _gun;
     [SerializeField] private GameObject _bullet;
 
+    bool _isStart = true;
+
     /* プロパティ */
     public WeaponType NowWeaponType { get { return _nowWeaponType; } }
     
@@ -207,9 +209,14 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.gameObject.name);
         if (collision.gameObject.tag == "Ground")
         {
+            if (_isStart)
+            {
+                _isStart = false;
+                return;
+            }
+
             _isJump = false;
             _anim.SetTrigger(kAnimParmInfo[AnimParm.kJumpEnd]);
             _anim.SetBool(kAnimParmInfo[AnimParm.kJumpAir], false);
@@ -291,6 +298,7 @@ public class Player : MonoBehaviour
         _isSafe = true;
         _jumpVelocity = Vector3.zero;
         _velocity = Vector3.zero;
+        _isStopMove = false;
     }
 
     /// <summary>

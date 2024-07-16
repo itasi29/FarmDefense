@@ -255,15 +255,22 @@ public class CameraControl : MonoBehaviour
 
             // 自身からオブジェクトまでのベクトルを生成
             Vector3 cameraToitemVec = item.transform.position - transform.position;
+            // XZ方向のみ取り出し
+            Vector2 cToIVec;
+            cToIVec.x = cameraToitemVec.x;
+            cToIVec.y = cameraToitemVec.z;
+            Vector2 front;
+            front.x = transform.forward.x;
+            front.y = transform.forward.z;
 
             // もし距離が離れすぎていたら次へ
-            float sqrDist = cameraToitemVec.sqrMagnitude;
+            float sqrDist = cToIVec.sqrMagnitude;
             if (sqrDist > kCursorLimitSqrDistance) continue;
 
             // 正規化
-            cameraToitemVec.Normalize();
+            cToIVec.Normalize();
             // 内積
-            float dot = Vector3.Dot(cameraToitemVec, transform.forward);
+            float dot = Vector2.Dot(cToIVec, front);
 
             // 設定範囲内かの判定
             if (dot > kRangeCursorDot)

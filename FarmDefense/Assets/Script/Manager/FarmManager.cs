@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class FarmManager : MonoBehaviour
 {
     /* 定数 */
     public const int kFarmNum = 6; // 農場の数
+    private string kResultSceneName = "ResultScene";
 
     /* 変数 */
     private GameObject[] _farmList = new GameObject[kFarmNum];   // 農場のオブジェクト情報
@@ -15,12 +16,18 @@ public class FarmManager : MonoBehaviour
     private int _totalHp;
     private int _totalMaxHp;
 
+    private Fade _fade;
+    private StageRusultData _resultData;
+
     public int Hp { get { return _totalHp; } }
     public int MaxHp {  get { return _totalMaxHp; } }
 
     private void Start()
     {
         _totalHp = 0;
+        _fade = GetComponent<Fade>();
+
+        _resultData = GameObject.Find("GameDirector").GetComponent<GameDirector>().ResultData;
 
         GameObject parent = GameObject.Find("Farm");
         for (int i = 0; i < kFarmNum; ++i)
@@ -40,12 +47,15 @@ public class FarmManager : MonoBehaviour
         foreach (var farm in _farmScript)
         {
             _totalHp += farm.Hp;
+            _resultData.TotalFarmHp = _totalHp;
         }
 
         // 総HPが0になったら終了
         if (_totalHp <= 0)
         {
-            // TODO: ゲームオーバーとして、リザルト画面を呼ぶ
+            _resultData.IsCrear = false;
+            _resultData.TotalFarmHp = 0;
+            _fade.StartFadeOut(kResultSceneName);
             return;
         }
     }
