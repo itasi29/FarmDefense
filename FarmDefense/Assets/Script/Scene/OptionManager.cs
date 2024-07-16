@@ -50,15 +50,15 @@ public class OptionManager : SelectManager
     protected override void Init()
     {
         _maxY = (int)Kind.kMax;
-        _valY = 2;
+        _valY = 1;
         _isY = true;
         _cursorWidth = kCursorShakeWidth;
         _cursorPos = new Vector2[]
         {
             new Vector2(kBasePosX , kBasePosY                 ),
-            new Vector2(kBasePosX , kBasePosY + kIntervalY    ),
-            new Vector2(kBasePosX , kBasePosY + kIntervalY * 2),
-            new Vector2(kBasePosX , kBasePosY + kIntervalY * 3),
+            new Vector2(kBasePosX , kBasePosY - kIntervalY    ),
+            new Vector2(kBasePosX , kBasePosY - kIntervalY * 2),
+            new Vector2(kBasePosX , kBasePosY - kIntervalY * 3),
         };
     }
 
@@ -70,9 +70,9 @@ public class OptionManager : SelectManager
             _items[i] = transform.GetChild(2 + i).gameObject;
         }
 
-        var gameMgr = GameObject.Find("GameManager");
-        var dataMgr = gameMgr.GetComponent<DataManager>();
-        _sndMgr = gameMgr.GetComponent<SoundManager>();
+        var gameMgr = GameObject.Find("GameDirector").GetComponent<GameDirector>();
+        var dataMgr = gameMgr.DataMgr;
+        _sndMgr = gameMgr.SoundMgr;
         _user = dataMgr.User;
 
         var pos = _items[0].transform.localPosition;

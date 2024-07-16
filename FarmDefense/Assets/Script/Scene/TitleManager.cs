@@ -16,7 +16,7 @@ public class TitleManager : SelectManager
 
     /* íËêî */
     [SerializeField] private const int kCursorHeight = 300;
-    private const string kNextSceneName = "UserSelectScene";
+    private const string kNextSceneName = "DataSelectScene";
     private const float kBasePosX = 64;
     private const float kBasePosY = 232;
     private const float kIntervalY = -232;
