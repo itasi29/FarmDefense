@@ -41,6 +41,9 @@ public class ShopManager : MonoBehaviour
     private WeaponData _weaponData;
 
     private DataManager _dataManager;
+
+    private Fade _fade;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,9 +61,11 @@ public class ShopManager : MonoBehaviour
         _cursor = GameObject.Find("cursor");
         _cursorScript = _cursor.GetComponent<CursorMove>();
 
+        _fade = GetComponent<Fade>();
+
         //TODO : 外部ファイルをここで読み込む
 
-        _dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
+        _dataManager = GameObject.Find("GameDirector").GetComponent<GameDirector>().DataMgr;
 
         _shopData = _dataManager.Shop;
         _userData = _dataManager.User;
@@ -142,6 +147,10 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
+        if (Input.GetButtonDown("B"))
+        {
+            _fade.StartFadeOut("StageSelectScene");
+        }
 
         //購入ボタンが押されたとき
         if (Input.GetButtonDown("A"))

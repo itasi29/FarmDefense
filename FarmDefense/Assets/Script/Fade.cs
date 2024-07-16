@@ -12,6 +12,9 @@ public class Fade : MonoBehaviour
     private bool _fadeOut;
     private string _nextSceneName;
 
+    private SoundManager _soundMgr;
+    [SerializeField] private string _bgmID;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,11 +23,17 @@ public class Fade : MonoBehaviour
         _image = GameObject.Find("FadePanel").gameObject.GetComponent<Image>();
         _color = _image.color;
         _color.a = 0.9999f;
+
+        var director = GameObject.Find("GameDirector").GetComponent<GameDirector>();
+        _soundMgr = director.SoundMgr;
+
+        _soundMgr.PlayBgm(_bgmID);
     }
 
     // Update is called once per frame
     void Update()
     {
+        _soundMgr.PlayBgm(_bgmID);
         FadeIn();
         FadeOut();
     }
@@ -47,6 +56,7 @@ public class Fade : MonoBehaviour
             _fadeIn = false;
         }
         _image.color = _color;
+        _soundMgr.FadeBgm(1.0f - _color.a);
     }
 
     void FadeOut()
@@ -57,8 +67,10 @@ public class Fade : MonoBehaviour
         if (_color.a > 1)
         {
             _color.a = 1;
+            _soundMgr.StopBgm();
             SceneManager.LoadScene(_nextSceneName);
         }
         _image.color = _color;
+        _soundMgr.FadeBgm(1.0f - _color.a);
     }
 }

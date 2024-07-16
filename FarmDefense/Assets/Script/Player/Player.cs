@@ -73,7 +73,7 @@ public class Player : MonoBehaviour
     private const int kRevivalSafeTime = 60;    // 復活時無敵
     /* その他 */
     private const int kRecoveryStaminaSpeed = 2;     // スタミナ回復速度
-    private const float kMaxFallSpeed = -0.1f;  // 最大落下速度
+    private const float kMaxFallSpeed = -2.2f;  // 最大落下速度
     private const int kAddStrongAttack = 10;    // 基礎強攻撃追加ダメージ量
     private const float kRateStrongAttackInterval = 1.25f;  // 強攻撃追加フレーム割合
 
@@ -112,6 +112,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _bullet;
 
     bool _isStart = true;
+    private SoundManager _soundMgr;
 
     /* プロパティ */
     public WeaponType NowWeaponType { get { return _nowWeaponType; } }
@@ -126,6 +127,7 @@ public class Player : MonoBehaviour
         var dataMgr = director.DataMgr;
         var user = dataMgr.User;
         var weapon = dataMgr.Weapon;
+        _soundMgr = director.SoundMgr;
         _swordStatus = new SwordStatus();
         _bulletStatus = new BulletStatus();
         _swordStatus.attack    = weapon.GetStatus("W_0", user.GetWeaponLv("W_0"));
@@ -493,6 +495,7 @@ public class Player : MonoBehaviour
         // ジャンプ中は無視
         if (_isJump) return;
 
+        _soundMgr.PlaySe("SE_2");
         _anim.SetTrigger(kAnimParmInfo[AnimParm.kJump]);
         _anim.SetBool(kAnimParmInfo[AnimParm.kJumpAir], true);
         _isJump = true;
