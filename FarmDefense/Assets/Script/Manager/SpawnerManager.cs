@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SpawnerManager : MonoBehaviour
 {
     /* 定数 */
     // 生成場所の数
     [SerializeField] private const int kCreatePosNum = 6;
+
+    private string kResultSceneName = "ResultScene";
 
     // 敵の数
     // FIXME: まだ敵の種類が完成しきっていないため、出来次第増やしていく
@@ -19,9 +22,9 @@ public class SpawnerManager : MonoBehaviour
     // カメラ
     private CameraControl _camera;
     // 生成場所の取得
-    [SerializeField] private GameObject[] createPos = new GameObject[kCreatePosNum];
+    private GameObject[] createPos = new GameObject[kCreatePosNum];
     // プレハブデータ
-    [SerializeField] private Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>();
+    private Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>();
     // ステージ名
     [SerializeField] private int _stageNo;
     //ミニマップ
@@ -41,19 +44,27 @@ public class SpawnerManager : MonoBehaviour
     // 全waveの敵を生成したか
     private bool _isAllCreate;
 
+    private Fade _fade;
+    private StageRusultData _resultData;
+
     public int WaveEnemyNum { get { return _waveData[_nowWaveNo].createNum; } }
 
     public int KillEnemyNum { get { return _killedEnemyNum; } }
-    void Awake()
+    void Start()
     {
-        _miniMap = GameObject.Find("MinimapManager").gameObject.GetComponent<Minimap>();
+        _miniMap = GetComponent<Minimap>();
+        _fade = GetComponent<Fade>();
 
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         GameObject parent = GameObject.Find("CreatePos");
 
         // ステージデータの取得
-        DataManager dataMgr = GameObject.Find("DataManager").GetComponent<DataManager>();
+        GameDirector director = GameObject.Find("GameDirector").GetComponent <GameDirector>();
+        DataManager dataMgr = director.DataMgr;
         _waveData = dataMgr.Spawner.GetWaveData(_stageNo);
+        _resultData = director.ResultData;
+        _resultData.StageNo = _stageNo;
+
         // 生成場所の取得
         for (int i = 0; i < kCreatePosNum; ++i)
         {
@@ -79,9 +90,9 @@ public class SpawnerManager : MonoBehaviour
     
     void FixedUpdate()
     {
+        IsKillAllEnemys();
         if (_isAllCreate) return;
 
-        IsKillAllEnemys();
         Create();
     }
 
@@ -164,12 +175,20 @@ public class SpawnerManager : MonoBehaviour
     {
         bool isAllKill = false;
 
-//        Debug.Log(Time.time + "現在:" + _killedEnemyNum + ", 必要:" + _waveData[_nowWaveNo].createNum);
         // そのwaveの全ての敵を倒したら
         if (_killedEnemyNum >= _waveData[_nowWaveNo].createNum)
         {
+            // 全ての敵生成した上での倒してであったらリザルトへ
+            if (_isAllCreate)
+            {
+                _resultData.IsCrear = true;
+                _fade.StartFadeOut(kResultSceneName);
+                return false;
+            }
+
             // 現在のwave数を増やす
             ++_nowWaveNo;
+
             // 各生成用変数の初期化
             _createNo = 0;
             _elapsFrame = 0;

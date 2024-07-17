@@ -112,4 +112,14 @@ public class SpawnerData
     {
         return _data[no].waveDatas;
     }
+
+    public int GetStaticMoney(int no)
+    {
+        return _data[no].staticMoney;
+    }
+
+    public int GetDynamicMoney(int no)
+    {
+        return _data[no].dynamicMoney;
+    }
 }

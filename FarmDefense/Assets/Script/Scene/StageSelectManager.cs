@@ -29,6 +29,8 @@ public class StageSelectManager : SelectManager
     private const float kShopPosY = -244;
     private const float kCursorShakeWidth = 32;
 
+    private UserData _user;
+
     protected override void Init()
     {
         _maxX = (int)Kind.kMax;
@@ -52,6 +54,8 @@ public class StageSelectManager : SelectManager
             new Vector2(kBasePosX + kIntervalX                     , kBasePosY + kIntervalY),
             new Vector2(kShopPosX , kShopPosY)
         };
+
+        _user = GameObject.Find("GameDirector").GetComponent<GameDirector>().DataMgr.User;
     }
 
     protected override void CursorRot()
@@ -70,19 +74,21 @@ public class StageSelectManager : SelectManager
 
     protected override void Select()
     {
-        // TODO: Ç”Ç•Å[Ç«ÇµÇƒÇ©ÇÁ
         if (_index == (int)Kind.kShop)
         {
-            SceneManager.LoadScene(kShopSceneName);
+            _fade.StartFadeOut(kShopSceneName);
         }
         else
         {
-            SceneManager.LoadScene(kStageSceneNameBase + (_index + 1).ToString());
+            if (_user.IsStageClear(_index))
+            {
+                _fade.StartFadeOut(kStageSceneNameBase + (_index + 1).ToString());
+            }
         }
     }
 
     protected override void Cancel()
     {
-        SceneManager.LoadScene(kTitleSceneName);
+        _fade.StartFadeOut(kTitleSceneName);
     }
 }

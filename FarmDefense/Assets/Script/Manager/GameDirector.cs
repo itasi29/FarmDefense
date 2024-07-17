@@ -9,6 +9,7 @@ public class GameDirector : MonoBehaviour
 {
     private DataManager _dataMgr;
     private SoundManager _soundMgr;
+    private StageRusultData _resultData;
 
     private void Awake()
     {
@@ -17,6 +18,7 @@ public class GameDirector : MonoBehaviour
 
         _dataMgr = new DataManager();
         _soundMgr = new SoundManager();
+        _resultData = new StageRusultData();
 
         _dataMgr.Load();
         var se = transform.AddComponent<AudioSource>();
@@ -31,4 +33,5 @@ public class GameDirector : MonoBehaviour
 
     public DataManager DataMgr { get { return _dataMgr; } }
     public SoundManager SoundMgr { get { return _soundMgr;} }
+    public StageRusultData ResultData { get { return _resultData; } }
 }

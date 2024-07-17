@@ -6,7 +6,7 @@ using UnityEngine;
 public class Farm : MonoBehaviour 
 {
     /* ’è” */
-    private const int kMaxHp = 100;    // Å‘åHP
+    public const int kMaxHp = 100;    // Å‘åHP
     private const int kDecreaseSpeed = 1;
 
     /* •Ï” */

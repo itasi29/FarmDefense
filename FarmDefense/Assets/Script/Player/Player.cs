@@ -73,7 +73,7 @@ public class Player : MonoBehaviour
     private const int kRevivalSafeTime = 60;    // 復活時無敵
     /* その他 */
     private const int kRecoveryStaminaSpeed = 2;     // スタミナ回復速度
-    private const float kMaxFallSpeed = -0.1f;  // 最大落下速度
+    private const float kMaxFallSpeed = -2.2f;  // 最大落下速度
     private const int kAddStrongAttack = 10;    // 基礎強攻撃追加ダメージ量
     private const float kRateStrongAttackInterval = 1.25f;  // 強攻撃追加フレーム割合
 
@@ -111,6 +111,9 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _gun;
     [SerializeField] private GameObject _bullet;
 
+    bool _isStart = true;
+    private SoundManager _soundMgr;
+
     /* プロパティ */
     public WeaponType NowWeaponType { get { return _nowWeaponType; } }
     
@@ -120,9 +123,11 @@ public class Player : MonoBehaviour
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _camera = GameObject.Find("Main Camera").GetComponent<CameraControl>();
-        var dataMgr = GameObject.Find("DataManager").GetComponent<DataManager>();
+        var director = GameObject.Find("GameDirector").GetComponent<GameDirector>();
+        var dataMgr = director.DataMgr;
         var user = dataMgr.User;
         var weapon = dataMgr.Weapon;
+        _soundMgr = director.SoundMgr;
         _swordStatus = new SwordStatus();
         _bulletStatus = new BulletStatus();
         _swordStatus.attack    = weapon.GetStatus("W_0", user.GetWeaponLv("W_0"));
@@ -206,9 +211,14 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.gameObject.name);
         if (collision.gameObject.tag == "Ground")
         {
+            if (_isStart)
+            {
+                _isStart = false;
+                return;
+            }
+
             _isJump = false;
             _anim.SetTrigger(kAnimParmInfo[AnimParm.kJumpEnd]);
             _anim.SetBool(kAnimParmInfo[AnimParm.kJumpAir], false);
@@ -290,6 +300,7 @@ public class Player : MonoBehaviour
         _isSafe = true;
         _jumpVelocity = Vector3.zero;
         _velocity = Vector3.zero;
+        _isStopMove = false;
     }
 
     /// <summary>
@@ -484,6 +495,7 @@ public class Player : MonoBehaviour
         // ジャンプ中は無視
         if (_isJump) return;
 
+        _soundMgr.PlaySe("SE_2");
         _anim.SetTrigger(kAnimParmInfo[AnimParm.kJump]);
         _anim.SetBool(kAnimParmInfo[AnimParm.kJumpAir], true);
         _isJump = true;

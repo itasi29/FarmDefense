@@ -25,6 +25,7 @@ public abstract class SelectManager : MonoBehaviour
     protected float _cursorWidth;
     protected Vector2[] _cursorPos;
     protected OptionSystem _optionSys;
+    protected Fade _fade;
 
     private float _cursorShakeFrame;
     [SerializeField] protected GameObject _cursor;
@@ -35,6 +36,7 @@ public abstract class SelectManager : MonoBehaviour
         _isPrePush = false;
         _isChange  = false;
         _optionSys = new OptionSystem();
+        _fade = GetComponent<Fade>();
         Init();
     }
 

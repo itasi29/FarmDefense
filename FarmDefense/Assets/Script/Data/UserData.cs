@@ -9,6 +9,7 @@ public class User
     public int time;    // プレイ時間
     public Dictionary<string, int> weapon;    // 武器のレベル
     public Dictionary<string, List<int>> item;        // アイテム所持数
+    public Dictionary<int, bool> clearInfo; // クリア情報
 }
 
 public class UserData
@@ -65,6 +66,13 @@ public class UserData
                         item.Add(itemIdList[j], lv);
                     }
                     user.item = item;
+                    // クリアデータ読み込み
+                    Dictionary<int, bool> clearInfo = new Dictionary<int, bool>();
+                    for (int j = 0; j < 6; ++j)
+                    {
+                        clearInfo.Add(j, reader.ReadBoolean());
+                    }
+                    user.clearInfo = clearInfo;
 
                     // データ挿入
                     _data.Add(i, user);
@@ -103,6 +111,20 @@ public class UserData
                     item.Add(itemIdList[j], lv);
                 }
                 user.item = item;
+                // クリアデータ読み込み
+                Dictionary<int, bool> clearInfo = new Dictionary<int, bool>();
+                for (int j = 0; j < 6; ++j)
+                {
+                    if (j == 0)
+                    {
+                        clearInfo.Add(j, true);
+                    }
+                    else
+                    {
+                        clearInfo.Add(j, false);
+                    }
+                }
+                user.clearInfo = clearInfo;
 
                 // データ挿入
                 _data.Add(i, user);
@@ -160,6 +182,11 @@ public class UserData
                             writer.Write((Int32)lv);
                         }
                     }
+                    // クリアデータ書き込み
+                    foreach (var clear in user.Value.clearInfo)
+                    {
+                        writer.Write((Boolean)clear.Value);
+                    }
                 }
             }
         }
@@ -181,6 +208,14 @@ public class UserData
     public void SetUserNo(int userNo)
     {
         _nowUserNo = userNo;
+    }
+    public bool IsStageClear(int no)
+    {
+        return _data[_nowUserNo].clearInfo[no];
+    }
+    public void ChangeStageClear(int no)
+    {
+        _data[_nowUserNo].clearInfo[no] = true;
     }
     /// <summary>
     /// 現在所持しているお金

@@ -52,12 +52,11 @@ public class DataSelectManager : SelectManager
     protected override void Select()
     {
         _user.SetUserNo(_index);
-        // TODO: フェードスタート
-        SceneManager.LoadScene(kStageSelectSceneName);
+        _fade.StartFadeOut(kStageSelectSceneName);
     }
 
     protected override void Cancel()
     {
-        SceneManager.LoadScene(kTitleSceneName);
+        _fade.StartFadeOut(kTitleSceneName);
     }
 }

@@ -93,3 +93,12 @@ public class ShopCSV
     public int Lv9;
     public int Lv10;
 }
+
+[System.Serializable]
+public class SoundCSV
+{
+    public string ID;
+    public float Volume;
+    public string Type;
+    public string Path;
+}

@@ -11,4 +11,31 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DataSelectScene.unity
     guid: a7e6e0d799a957e4495b3ab4a35d3083
+  - enabled: 1
+    path: Assets/Scenes/StageSelectScene.unity
+    guid: 2a366031489970b4ca00be19e097d4af
+  - enabled: 1
+    path: Assets/Scenes/ShopScene.unity
+    guid: 780802fb464c76144a14ff13d4e62715
+  - enabled: 1
+    path: Assets/Scenes/StageScene1.unity
+    guid: bb3b4c5a306f8e442819c47ccdd11ca6
+  - enabled: 1
+    path: Assets/Scenes/StageScene2.unity
+    guid: c25e428bb9ade074884dc5442577469b
+  - enabled: 1
+    path: Assets/Scenes/StageScene3.unity
+    guid: fc439f543e1ce584b9c7bebd37d5d70e
+  - enabled: 1
+    path: Assets/Scenes/StageScene4.unity
+    guid: e5f7119c592247a4c96a15743c8831e5
+  - enabled: 1
+    path: Assets/Scenes/StageScene5.unity
+    guid: 344d6bb910306874b90a0d10c0d00376
+  - enabled: 1
+    path: Assets/Scenes/StageScene6.unity
+    guid: 702733cd3c2ab744dbcb5d80b192a5b2
+  - enabled: 1
+    path: Assets/Scenes/ResultScene.unity
+    guid: a92f7529b2f60094eb13851fbb3fcead
   m_configObjects: {}

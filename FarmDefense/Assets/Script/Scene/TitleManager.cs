@@ -16,7 +16,7 @@ public class TitleManager : SelectManager
 
     /* ’è” */
     [SerializeField] private const int kCursorHeight = 300;
-    private const string kNextSceneName = "UserSelectScene";
+    private const string kNextSceneName = "DataSelectScene";
     private const float kBasePosX = 64;
     private const float kBasePosY = 232;
     private const float kIntervalY = -232;
@@ -46,9 +46,7 @@ public class TitleManager : SelectManager
     {
         if (_index == (int)Kind.kStart)
         {
-            // TODO: Scene‚ÌØ‚è‘Ö‚¦(‘¦)
-            // TODO: fade‚ÌI—¹‚É’…‚©‚¦‚é‚æ‚¤‚É•ÏX
-            SceneManager.LoadScene(kNextSceneName);
+            _fade.StartFadeOut(kNextSceneName);
         }
         else if (_index == (int)Kind.kOption)
         {
