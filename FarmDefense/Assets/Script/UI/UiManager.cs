@@ -17,6 +17,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] Sprite[] _sprites;
     private Player.WeaponType _weaponType;
     private GameObject _player;
+    private Player _playerScript;
     private Image _useWeapon;
     private Slider _hpBar;
     private Slider _staminaBar;
@@ -28,6 +29,7 @@ public class UiManager : MonoBehaviour
     void Start()
     {
         _player = GameObject.Find("Player").gameObject;
+        _playerScript = _player.GetComponent<Player>();
         _useWeapon = GameObject.Find("UseWeaponUI").GetComponent<Image>();
         _enemyPopNum.tens = GameObject.Find("MaxTensPlace").GetComponent<Image>();
         _enemyPopNum.ones = GameObject.Find("MaxOnesPlace").GetComponent<Image>();
@@ -60,6 +62,22 @@ public class UiManager : MonoBehaviour
         _enemyKillNum.tens.sprite = _sprites[(int)Math.Floor(enemyKillNum * 0.1)];
         _enemyKillNum.ones.sprite = _sprites[enemyKillNum % 10];
 
+
+        //プレイヤーの体力とスタミナの割合を取得
+        float hpRate = (float)_playerScript.NowHp / (float)Player.kMaxHp;
+        float staminaRate = (float)_playerScript.NowStamina / (float)Player.kMaxStamina;
+
+        if(hpRate < 0) 
+        {
+            hpRate = 0;
+        }
+        if(staminaRate < 0)
+        {
+            staminaRate = 0;
+        }
+
+        _hpBar.value = hpRate;
+        _staminaBar.value = staminaRate;
 
     }
 }
