@@ -20,16 +20,16 @@ public class Minimap : MonoBehaviour
     [SerializeField] private Image PlayerImage;
     [SerializeField] private Image EnemyImage;
 
-    private const float kEnemyImageSize = 0.35f;
-    private const float kFarmImageSize = 0.45f;
-    private const float kPlayerImageSize = 0.4f;
+    private const float kEnemyImageSize = 0.4f;
+    private const float kFarmImageSize = 0.75f;
+    private const float kPlayerImageSize = 0.5f;
     private const int kFarmNum = 6;
-    private const float kViewHeight = 0.7f;
+    private const float kViewHeight = 1.0f;
 
-    private const int kMapH = (int)(100 * kViewHeight);
+    private const int kMapH = (int)(110 * kViewHeight);
     private const int kMapV = (int)(150 * kViewHeight);
 
-    private const int kMiniMapScale = 128;
+    private const int kMiniMapScale = 768;
 
     private const int kMiniMapStartPosX = 480;
     private const int kMiniMapStartPosY = 200;
