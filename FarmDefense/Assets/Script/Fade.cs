@@ -45,6 +45,11 @@ public class Fade : MonoBehaviour
         _nextSceneName = nextSceneName;
     }
 
+    public void SetBgmID(string id)
+    {
+        _bgmID = id;
+    }
+
     void FadeIn()
     {
         if (!_fadeIn) return;

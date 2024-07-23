@@ -9,6 +9,9 @@ public class ResultManager : MonoBehaviour
     private const string kNextSceneName = "StageSelectScene";
 
     private Fade _fade;
+
+    [SerializeField] private string _victoryBgmID;
+    [SerializeField] private string _loseBgmID;
     
     void Start()
     {
@@ -63,6 +66,15 @@ public class ResultManager : MonoBehaviour
             {
                 user.ChangeStageClear(result.StageNo + 1);
             }
+
+            _fade.SetBgmID(_victoryBgmID);
+        }
+        else
+        {
+            rankTxt.text = "E";
+            moneyTxt.text = "";
+
+            _fade.SetBgmID(_loseBgmID);
         }
     }
 
