@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class StageSelectManager : SelectManager
+public class StageSelectManager : MonoBehaviour
 {
     enum Kind
     {
@@ -13,7 +15,6 @@ public class StageSelectManager : SelectManager
         kStage4,
         kStage5,
         kStage6,
-        kShop,
         kMax
     }
 
@@ -21,74 +22,159 @@ public class StageSelectManager : SelectManager
     private const string kStageSceneNameBase = "StageScene";
     private const string kTitleSceneName = "TitleScene";
     private const string kShopSceneName = "ShopScene";
-    private const float kBasePosX = -192;
-    private const float kBasePosY = 216;
-    private const float kIntervalX = 384;
-    private const float kIntervalY = -256;
-    private const float kShopPosX = 352;
-    private const float kShopPosY = -244;
-    private const float kCursorShakeWidth = 32;
 
+    private int _index;
+    private int _scaleCount;
+    private int _stopCount;
+    private bool _isStop;
+    private bool _isPrePush;
     private UserData _user;
+    private SpawnerData _stage;
+    private OptionSystem _optionSys;
+    private Fade _fade;
+    [SerializeField] Image _rightImg;
+    [SerializeField] Image _leftImg;
+    [SerializeField] Animator _bookAnim;
+    [SerializeField] GameObject _strs;
+    [SerializeField] Sprite _charengeOk;
+    [SerializeField] Sprite _charengeNg;
 
-    protected override void Init()
+    private void Start()
     {
-        _maxX = (int)Kind.kMax;
-        _maxY = _maxX - 1;
-        _valX = 1;
-        _valY = 3;
-        _isX = true;
-        _isY = true;
-        _isRot = true;
-        _valRot = 2;
-        _valDivRot = 3;
-        _cursorRot = Quaternion.AngleAxis(180, Vector3.up);
-        _cursorWidth = kCursorShakeWidth;
-        _cursorPos = new Vector2[]
-        {
-            new Vector2(kBasePosX                                  , kBasePosY             ),
-            new Vector2(kBasePosX + kIntervalX + kCursorShakeWidth , kBasePosY             ),
-            new Vector2(kBasePosX + kIntervalX                     , kBasePosY             ),
-            new Vector2(kBasePosX                                  , kBasePosY + kIntervalY),
-            new Vector2(kBasePosX + kIntervalX + kCursorShakeWidth , kBasePosY + kIntervalY),
-            new Vector2(kBasePosX + kIntervalX                     , kBasePosY + kIntervalY),
-            new Vector2(kShopPosX , kShopPosY)
-        };
+        _index = (int)Kind.kStage1;
+        _scaleCount = 0;
+        _stopCount = 0;
+        _isStop = false;
+        _isPrePush = false;
 
-        _user = GameObject.Find("GameDirector").GetComponent<GameDirector>().DataMgr.User;
+        var director = GameObject.Find("GameDirector").GetComponent<GameDirector>();
+        _user = director.DataMgr.User;
+        _stage = director.DataMgr.Spawner;
+        _optionSys = new OptionSystem();
+        _fade = GetComponent<Fade>();
+
+        SetStringData();
     }
 
-    protected override void CursorRot()
-    {
-        if (!_isRot) return;
 
-        if (_index % _valDivRot == _valRot || _index == (int)Kind.kShop)
-        {
-            _cursor.transform.localRotation = _cursorRot;
-        }
-        else
-        {
-            _cursor.transform.localRotation = Quaternion.identity;
-        }
-    }
-
-    protected override void Select()
+    private void Update()
     {
-        if (_index == (int)Kind.kShop)
+        if (_optionSys.IsOpenOption()) return;
+
+        if (_isStop) return;
+
+        IndexUpdate();
+
+        if (Input.GetButtonDown("A"))
+        {
+            Select();
+        }
+        if (Input.GetButtonDown("X"))
         {
             _fade.StartFadeOut(kShopSceneName);
         }
-        else
+        if (Input.GetButtonDown("B"))
         {
-            if (_user.IsStageClear(_index))
-            {
-                _fade.StartFadeOut(kStageSceneNameBase + (_index + 1).ToString());
-            }
+            Cancel();
         }
     }
 
-    protected override void Cancel()
+    private void FixedUpdate()
+    {
+        if (_isStop)
+        {
+            --_stopCount;
+
+            if (_stopCount < 0)
+            {
+                _isStop = false;
+
+                SetStringData();
+                _strs.SetActive(true);
+            }
+        }
+
+        if (_optionSys.IsOpenOption()) return;
+
+        ++_scaleCount;
+
+        float scale = 1.0f + Mathf.Sin(_scaleCount * Mathf.Deg2Rad) * 0.2f;
+        Vector3 vS = new Vector3(scale, scale, scale);
+        _rightImg.transform.localScale = vS;
+        _leftImg.transform.localScale = vS;
+        Debug.Log(_scaleCount);
+    }
+
+    private void IndexUpdate()
+    {
+        if (_isStop) return;
+
+        float input = Input.GetAxis("DPADX");
+
+        if (!_isPrePush)
+        {
+            int max = (int)Kind.kMax;
+            bool isPush = false;
+
+            if (input < 0)
+            {
+                _index = (max + _index - 1) % max;
+                isPush = true;
+                _bookAnim.SetTrigger("Right");
+            }
+            else if (input > 0)
+            {
+                _index = (_index + 1) % max;
+                isPush = true;
+                _bookAnim.SetTrigger("Left");
+            }
+
+            if (isPush)
+            {
+                _isPrePush = true;
+                _isStop = true;
+                _stopCount = 30;
+
+                _strs.SetActive(false);
+            }
+        }
+        else if (input == 0)
+        {
+            _isPrePush = false;
+        }
+
+    }
+
+    private void Select()
+    {
+        if (_user.IsStageClear(_index))
+        {
+            _fade.StartFadeOut(kStageSceneNameBase + (_index + 1).ToString());
+        }
+    }
+
+    private void Cancel()
     {
         _fade.StartFadeOut(kTitleSceneName);
+    }
+
+    private void SetStringData()
+    {
+        var data = _strs.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        var dMoney = _strs.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        var sMoney = _strs.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+        var cImg = _strs.transform.GetChild(3).GetComponent<Image>();
+
+        data.text = "ステージ" + (_index + 1).ToString();
+        dMoney.text = "へんどうちん：\n　" + _stage.GetDynamicMoney(_index).ToString("D4");
+        sMoney.text = "こていちん：\n　" + _stage.GetStaticMoney(_index).ToString("D4");
+        if (_user.IsStageClear(_index))
+        {
+            cImg.sprite = _charengeOk;
+        }
+        else
+        {
+            cImg.sprite = _charengeNg;
+        }
     }
 }
