@@ -248,8 +248,12 @@ public class UserData
     /// </summary>
     /// <param name="id">•Ší‚ÌID</param>
     /// <returns>ƒŒƒxƒ‹</returns>
-    public int GetWeaponLv(string id)
+    public int GetWeaponLv(string id, int userNo = -1)
     {
+        if (userNo < 0)
+        {
+            userNo = _nowUserNo;
+        }
         return _data[_nowUserNo].weapon[id];
     }
     /// <summary>
