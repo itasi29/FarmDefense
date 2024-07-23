@@ -57,8 +57,8 @@ public class Player : MonoBehaviour
         { AnimParm.kNowPlaying, "IsNowPlaying" },
     };
     /* ステータス系 */
-    private const int kMaxHp = 100;             // 最大HP
-    private const int kMaxStamina = 500;        // 最大スタミナ
+    public const int kMaxHp = 100;             // 最大HP
+    public const int kMaxStamina = 500;        // 最大スタミナ
     private const float kSpeed = 16.0f;         // 通常スピード
     private const float kDashSpeed = 30.0f;     // ダッシュスピード
     private const float kDownSpeed = 5.0f;      // 低速時スピード
@@ -116,6 +116,8 @@ public class Player : MonoBehaviour
 
     /* プロパティ */
     public WeaponType NowWeaponType { get { return _nowWeaponType; } }
+    public int NowHp { get { return _hp; } }
+    public int NowStamina { get { return _stamina; } }
     
     void Start()
     {
