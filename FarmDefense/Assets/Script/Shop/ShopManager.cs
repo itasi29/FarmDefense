@@ -4,20 +4,15 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class ShopManager : MonoBehaviour
 {
     private const int kMaxLevel = 10;
 
-    private const int kMaxItemNum = 5;
-
     private GameObject _cursor;
     private CursorMove _cursorScript;
 
     private GameObject _weaponCostUi;
-
-    private GameObject _weaponShop;
 
     private GameObject _hasGoldUi;
 
@@ -38,9 +33,6 @@ public class ShopManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-        _weaponShop = GameObject.Find("WeaponShop");
-
         _hasGoldUi = GameObject.Find("hasGold");
 
         _weaponCostUi = GameObject.Find("weaponCost");
@@ -74,7 +66,7 @@ public class ShopManager : MonoBehaviour
         //所持ゴールドの表示
         Text goldUi = _hasGoldUi.GetComponent<Text>();
 
-        goldUi.text = _userData.GetMoney().ToString();
+        goldUi.text = "しょじきん：" + _userData.GetMoney().ToString();
 
 
         for (int i = 0; i < (int)CursorMove.UpgradeParts.kPartsNum; i++)

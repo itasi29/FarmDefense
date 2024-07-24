@@ -57,46 +57,42 @@ public class CursorMove : MonoBehaviour
 
         Vector2 cursorPos = new Vector2(0, 0);
 
-        
-
-        
-            if (_cursorIndex.x == 0)
+        if (_cursorIndex.x == 0)
+        {
+            if (_cursorIndex.y == 0)
             {
-                if (_cursorIndex.y == 0)
-                {
-                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearAtk).gameObject;
-                    _selectPart = UpgradeParts.kNearAtk;
-                }
-                else if (_cursorIndex.y == 1)
-                {
-                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearRange).gameObject;
-                    _selectPart = UpgradeParts.kNearRange;
-                }
-                else if (_cursorIndex.y == 2)
-                {
-                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearSpd).gameObject;
-                    _selectPart = UpgradeParts.kNearSpd;
-                }
+                _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearAtk).gameObject;
+                _selectPart = UpgradeParts.kNearAtk;
             }
-            else
+            else if (_cursorIndex.y == 1)
             {
-                if (_cursorIndex.y == 0)
-                {
-                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarAtk).gameObject;
-                    _selectPart = UpgradeParts.kFarAtk;
-                }
-                else if (_cursorIndex.y == 1)
-                {
-                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarSpd).gameObject;
-                    _selectPart = UpgradeParts.kFarSpd;
-                }
-                else if (_cursorIndex.y == 2)
-                {
-                    _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarRate).gameObject;
-                    _selectPart = UpgradeParts.kFarRate;
-                }
+                _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearRange).gameObject;
+                _selectPart = UpgradeParts.kNearRange;
             }
-        
+            else if (_cursorIndex.y == 2)
+            {
+                _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kNearSpd).gameObject;
+                _selectPart = UpgradeParts.kNearSpd;
+            }
+        }
+        else
+        {
+            if (_cursorIndex.y == 0)
+            {
+                _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarAtk).gameObject;
+                _selectPart = UpgradeParts.kFarAtk;
+            }
+            else if (_cursorIndex.y == 1)
+            {
+                _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarSpd).gameObject;
+                _selectPart = UpgradeParts.kFarSpd;
+            }
+            else if (_cursorIndex.y == 2)
+            {
+                _selectImage = _weaponShop.transform.GetChild((int)UpgradeParts.kFarRate).gameObject;
+                _selectPart = UpgradeParts.kFarRate;
+            }
+        }
         
         //画像の位置にカーソルを移動
         cursorPos = _selectImage.transform.position;
