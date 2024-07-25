@@ -96,7 +96,7 @@ public class UserData
                 Dictionary<string, int> weapon = new Dictionary<string, int>();
                 for (int j = 0; j < weaponIdList.Count; ++j)
                 {
-                    weapon.Add(weaponIdList[j], 0);
+                    weapon.Add(weaponIdList[j], 1);
                 }
                 user.weapon = weapon;
                 // アイテム所持数
@@ -254,7 +254,7 @@ public class UserData
         {
             userNo = _nowUserNo;
         }
-        return _data[_nowUserNo].weapon[id];
+        return _data[userNo].weapon[id];
     }
     /// <summary>
     /// 現在所持しているアイテムの数

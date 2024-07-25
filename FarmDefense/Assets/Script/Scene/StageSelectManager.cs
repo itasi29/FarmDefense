@@ -34,6 +34,7 @@ public class StageSelectManager : MonoBehaviour
     private Fade _fade;
     [SerializeField] Image _rightImg;
     [SerializeField] Image _leftImg;
+    [SerializeField] Image _btImg;
     [SerializeField] Animator _bookAnim;
     [SerializeField] GameObject _strs;
     [SerializeField] Sprite _charengeOk;
@@ -99,9 +100,12 @@ public class StageSelectManager : MonoBehaviour
         ++_scaleCount;
 
         float scale = 1.0f + Mathf.Sin(_scaleCount * Mathf.Deg2Rad) * 0.2f;
+        float scale2 = 1.0f - Mathf.Sin(_scaleCount * 1.7f * Mathf.Deg2Rad) * 0.1f;
         Vector3 vS = new Vector3(scale, scale, scale);
+        Vector3 vS2 = new Vector3(scale2, scale2, scale2);
         _rightImg.transform.localScale = vS;
         _leftImg.transform.localScale = vS;
+        _btImg.transform.localScale = vS2;
         Debug.Log(_scaleCount);
     }
 
@@ -147,10 +151,7 @@ public class StageSelectManager : MonoBehaviour
 
     private void Select()
     {
-        if (_user.IsStageClear(_index))
-        {
-            _fade.StartFadeOut(kStageSceneNameBase + (_index + 1).ToString());
-        }
+        _fade.StartFadeOut(kStageSceneNameBase + (_index + 1).ToString());
     }
 
     private void Cancel()
