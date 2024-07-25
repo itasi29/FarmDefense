@@ -357,6 +357,7 @@ public class CameraControl : MonoBehaviour
         int deltaHp = 0;
         int maxHp = 100;
 
+        Text text = _hpBar.transform.GetChild(2).GetComponent<Text>();
         // 農場の場合
         if (_hpBarObj.tag == "Farm")
         {
@@ -364,6 +365,8 @@ public class CameraControl : MonoBehaviour
             nowHp = script.Hp;
             deltaHp = script.DeltaHp;
             maxHp = script.MaxHp;
+
+            text.text = "のうじょう：" + nowHp + " / " + maxHp;
         }
         // 敵の場合
         else if (_hpBarObj.tag == "Enemy")
@@ -373,13 +376,43 @@ public class CameraControl : MonoBehaviour
             nowHp = script.Hp;
             deltaHp = script.DeltaHp;
             maxHp = script.MaxHp;
-        }
 
-        // FIXME: 要素をenumで定義するように
-        /* テキストの変更 */
-        Text text = _hpBar.transform.GetChild(2).GetComponent<Text>();
-        // 描画時 → 情報名：●●●/▲▲▲
-        text.text = _hpBarObj.name + ":" + nowHp + " / " + maxHp;
+            var name = _hpBarObj.name;
+            if (name == "E_0(Clone)")
+            {
+                text.text = "さる";
+            }
+            else if (name == "E_1(Clone)")
+            {
+                text.text = "やもり";
+            }
+            else if (name == "E_2(Clone)")
+            {
+                text.text = "ねずみ";
+            }
+            else if (name == "E_3(Clone)")
+            {
+                text.text = "しか";
+            }
+            else if (name == "E_4(Clone)")
+            {
+                text.text = "へび";
+            }
+            else if (name == "E_5(Clone)")
+            {
+                text.text = "さかな";
+            }
+            else if (name == "E_6(Clone)")
+            {
+                text.text = "すずめ";
+            }
+            else if (name == "E_7(Clone)")
+            {
+                text.text = "いか";
+            }
+
+            text.text += "：" + nowHp + " / " + maxHp;;
+        }
 
         /* スライダーの変更 */
         Slider hpSlider = _hpBar.transform.GetChild(1).GetComponent<Slider>();

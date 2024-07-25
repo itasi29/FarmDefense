@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviour
 {
-    private const int kMaxLevel = 10;
+    private const int kMaxLevel = 9;
 
     private GameObject _cursor;
     private CursorMove _cursorScript;
@@ -77,7 +77,7 @@ public class ShopManager : MonoBehaviour
             else
             {
                 var cost = _shopData.GetCost(_partsId[i], _stutasLevel[i]);
-                var lv = _stutasLevel[i];
+                var lv = _stutasLevel[i] + 1;
                 weaponCost.text = "Lv：" + lv.ToString("D2") + "\nコスト：" + cost.ToString("D4");
             }
         }
