@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,9 +13,9 @@ public class ShopManager : MonoBehaviour
     private GameObject _cursor;
     private CursorMove _cursorScript;
 
-    private GameObject _weaponCostUi;
+    [SerializeField] private GameObject _weaponCostUi;
 
-    private GameObject _hasGoldUi;
+    [SerializeField] private GameObject _hasGoldUi;
 
     private int[] _stutasLevel = new int[(int)CursorMove.UpgradeParts.kPartsNum];
 
@@ -33,10 +34,6 @@ public class ShopManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _hasGoldUi = GameObject.Find("hasGold");
-
-        _weaponCostUi = GameObject.Find("weaponCost");
-
         _cursor = GameObject.Find("cursor");
         _cursorScript = _cursor.GetComponent<CursorMove>();
 
@@ -64,22 +61,24 @@ public class ShopManager : MonoBehaviour
     void Update()
     {
         //所持ゴールドの表示
-        Text goldUi = _hasGoldUi.GetComponent<Text>();
+        TextMeshProUGUI goldUi = _hasGoldUi.GetComponent<TextMeshProUGUI>();
 
         goldUi.text = "しょじきん：" + _userData.GetMoney().ToString();
 
 
         for (int i = 0; i < (int)CursorMove.UpgradeParts.kPartsNum; i++)
         {
-            Text weaponCost = _weaponCostUi.transform.GetChild(i).gameObject.GetComponentInChildren<Text>();
+            TextMeshProUGUI weaponCost = _weaponCostUi.transform.GetChild(i).gameObject.GetComponentInChildren<TextMeshProUGUI>();
 
             if (_stutasLevel[i] >= kMaxLevel)
             {
-                weaponCost.text = "MAX";
+                weaponCost.text = "Lv：MAX";
             }
             else
             {
-                weaponCost.text = _stutasLevel[i].ToString() + ":" + _shopData.GetCost(_partsId[i], _stutasLevel[i]).ToString();
+                var cost = _shopData.GetCost(_partsId[i], _stutasLevel[i]);
+                var lv = _stutasLevel[i];
+                weaponCost.text = "Lv：" + lv.ToString("D2") + "\nコスト：" + cost.ToString("D4");
             }
         }
 
@@ -92,7 +91,7 @@ public class ShopManager : MonoBehaviour
         if (Input.GetButtonDown("A"))
         {
             //選んでいるパーツを取得する
-            int selectPart = (int)_cursorScript.GetSelectPart();
+            int selectPart = _cursorScript.GetIndex();
             //選んでいるパーツのレベルがマックスじゃなければ
             if (_stutasLevel[selectPart] < kMaxLevel)
             {

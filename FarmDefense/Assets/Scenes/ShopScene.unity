@@ -5168,6 +5168,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bacfca6f6cd668a4da1baeb9c4e268d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _weaponCostUi: {fileID: 1058219947}
+  _hasGoldUi: {fileID: 827117472}
 --- !u!4 &2120881474
 Transform:
   m_ObjectHideFlags: 0
