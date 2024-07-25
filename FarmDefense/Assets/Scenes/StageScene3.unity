@@ -7954,7 +7954,7 @@ MonoBehaviour:
   _weaponArm: {fileID: 1579917717}
   _sword: {fileID: 5610884078883986163, guid: 9fbe61d1f4bc091439f25f985dd189a5, type: 3}
   _gun: {fileID: 3823321262691816068, guid: e191308afba47004e917a3d044d0c0b1, type: 3}
-  _bullet: {fileID: 2894747332855995222, guid: a59c0476f24685d41a9eab56d8b89541, type: 3}
+  _bullet: {fileID: 6963659339329157165, guid: 146e635ad6dff9f43aee5c3bb08879a2, type: 3}
 --- !u!1001 &1584894127
 PrefabInstance:
   m_ObjectHideFlags: 0
