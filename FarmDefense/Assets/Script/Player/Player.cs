@@ -59,10 +59,10 @@ public class Player : MonoBehaviour
     /* ステータス系 */
     public const int kMaxHp = 100;             // 最大HP
     public const int kMaxStamina = 500;        // 最大スタミナ
-    private const float kSpeed = 16.0f;         // 通常スピード
-    private const float kDashSpeed = 30.0f;     // ダッシュスピード
-    private const float kDownSpeed = 5.0f;      // 低速時スピード
-    private const float kJumpPower = 0.8f;      // ジャンプ力
+    private const float kSpeed = 8.0f;         // 通常スピード
+    private const float kDashSpeed = 16.0f;     // ダッシュスピード
+    private const float kDownSpeed = 2.0f;      // 低速時スピード
+    private const float kJumpPower = 0.4f;      // ジャンプ力
     private const float kFallSpeed = -0.04f;    // 落下スピード
     /* コスト系 */
     private const int kDashCost = 5;

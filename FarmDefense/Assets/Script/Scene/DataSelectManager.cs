@@ -164,7 +164,7 @@ public class DataSelectManager : MonoBehaviour
         int m = s / 60;
         time.text = "じかん：" + m.ToString("D2") + ":" + s.ToString("D2");
         money.text = "おかね：" + _user.GetMoney(_index).ToString("D4");
-        near.text = "きんせつ\n　こうげき：Lv" + _user.GetWeaponLv("W_0", _index) + "\n　そくど　：Lv" + _user.GetWeaponLv("W_1", _index) + "\n　はんい　：Lv" + _user.GetWeaponLv("W_2", _index);
-        far.text = "えんきょり\n　こうげき：Lv" + _user.GetWeaponLv("W_3", _index) + "\n　そくど　：Lv" + _user.GetWeaponLv("W_4", _index) + "\n　はんい　：Lv" + _user.GetWeaponLv("W_5", _index);
+        near.text = "きんせつ\n　こうげき：Lv" + (_user.GetWeaponLv("W_0", _index) + 1).ToString("D2") + "\n　そくど　：Lv" + (_user.GetWeaponLv("W_1", _index) + 1).ToString("D2") + "\n　はんい　：Lv" + (_user.GetWeaponLv("W_2", _index) + 1).ToString("D2");
+        far.text = "えんきょり\n　こうげき：Lv" + (_user.GetWeaponLv("W_3", _index) + 1).ToString("D2") + "\n　そくど　：Lv" + (_user.GetWeaponLv("W_4", _index) + 1).ToString("D2") + "\n　はんい　：Lv" + (_user.GetWeaponLv("W_5", _index) + 1).ToString("D2");
     }
 }

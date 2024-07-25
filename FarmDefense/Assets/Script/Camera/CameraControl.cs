@@ -10,8 +10,7 @@ public class CameraControl : MonoBehaviour
     private const float kShiftPosY = 1.2f;   // ターゲット中心から上にずらす量
     private const float kAxisMinThershold = 0.2f; // 入力情報の最小のしきい値:無視する割合
     private const float kAxisMaxThershold = 0.8f; // 入力情報の最大のしきい値:1.0とみなす割合
-    private const float kRotLimitUpdownSwing = 30.0f * Mathf.Deg2Rad;   // 上下の回転制限
-    private const float kRotSpeedUpdown = 0.5f * Mathf.Deg2Rad;  // 上下の回転スピード(ラジアン)
+    private const float kSpeed = 0.75f;
     // FIXME: 名前いい感じに変更
     private float kRangeCursorDot = Mathf.Cos(10 * Mathf.Deg2Rad);   // カーソル内とする内積の範囲
     private const float kCursorLimitDistance = 30.0f;
@@ -128,7 +127,7 @@ public class CameraControl : MonoBehaviour
         // 入力していることに
         _isLeftrightSwing = true;
 
-        _rotSide = _rotSide * Quaternion.AngleAxis(inputRate * 2, Vector3.up);
+        _rotSide = _rotSide * Quaternion.AngleAxis(inputRate * kSpeed, Vector3.up);
     }
 
     /// <summary>
@@ -153,7 +152,7 @@ public class CameraControl : MonoBehaviour
         // 入力したことに
         _isUpdownInput = true;
 
-        _angleVert += inputRate;
+        _angleVert += inputRate * kSpeed;
         _angleVert = Mathf.Max(Mathf.Min(_angleVert, 30), -30);
     }
 
@@ -357,6 +356,7 @@ public class CameraControl : MonoBehaviour
         int deltaHp = 0;
         int maxHp = 100;
 
+        Text text = _hpBar.transform.GetChild(2).GetComponent<Text>();
         // 農場の場合
         if (_hpBarObj.tag == "Farm")
         {
@@ -364,6 +364,8 @@ public class CameraControl : MonoBehaviour
             nowHp = script.Hp;
             deltaHp = script.DeltaHp;
             maxHp = script.MaxHp;
+
+            text.text = "のうじょう：" + nowHp + " / " + maxHp;
         }
         // 敵の場合
         else if (_hpBarObj.tag == "Enemy")
@@ -373,13 +375,43 @@ public class CameraControl : MonoBehaviour
             nowHp = script.Hp;
             deltaHp = script.DeltaHp;
             maxHp = script.MaxHp;
-        }
 
-        // FIXME: 要素をenumで定義するように
-        /* テキストの変更 */
-        Text text = _hpBar.transform.GetChild(2).GetComponent<Text>();
-        // 描画時 → 情報名：●●●/▲▲▲
-        text.text = _hpBarObj.name + ":" + nowHp + " / " + maxHp;
+            var name = _hpBarObj.name;
+            if (name == "E_0(Clone)")
+            {
+                text.text = "さる";
+            }
+            else if (name == "E_1(Clone)")
+            {
+                text.text = "やもり";
+            }
+            else if (name == "E_2(Clone)")
+            {
+                text.text = "ねずみ";
+            }
+            else if (name == "E_3(Clone)")
+            {
+                text.text = "しか";
+            }
+            else if (name == "E_4(Clone)")
+            {
+                text.text = "へび";
+            }
+            else if (name == "E_5(Clone)")
+            {
+                text.text = "さかな";
+            }
+            else if (name == "E_6(Clone)")
+            {
+                text.text = "すずめ";
+            }
+            else if (name == "E_7(Clone)")
+            {
+                text.text = "いか";
+            }
+
+            text.text += "：" + nowHp + " / " + maxHp;;
+        }
 
         /* スライダーの変更 */
         Slider hpSlider = _hpBar.transform.GetChild(1).GetComponent<Slider>();

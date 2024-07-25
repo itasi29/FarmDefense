@@ -96,7 +96,7 @@ public class UserData
                 Dictionary<string, int> weapon = new Dictionary<string, int>();
                 for (int j = 0; j < weaponIdList.Count; ++j)
                 {
-                    weapon.Add(weaponIdList[j], 1);
+                    weapon.Add(weaponIdList[j], 0);
                 }
                 user.weapon = weapon;
                 // ƒAƒCƒeƒ€ŠŽ”
