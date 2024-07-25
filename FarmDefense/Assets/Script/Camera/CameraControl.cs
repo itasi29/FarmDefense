@@ -10,8 +10,7 @@ public class CameraControl : MonoBehaviour
     private const float kShiftPosY = 1.2f;   // ターゲット中心から上にずらす量
     private const float kAxisMinThershold = 0.2f; // 入力情報の最小のしきい値:無視する割合
     private const float kAxisMaxThershold = 0.8f; // 入力情報の最大のしきい値:1.0とみなす割合
-    private const float kRotLimitUpdownSwing = 30.0f * Mathf.Deg2Rad;   // 上下の回転制限
-    private const float kRotSpeedUpdown = 0.5f * Mathf.Deg2Rad;  // 上下の回転スピード(ラジアン)
+    private const float kSpeed = 0.75f;
     // FIXME: 名前いい感じに変更
     private float kRangeCursorDot = Mathf.Cos(10 * Mathf.Deg2Rad);   // カーソル内とする内積の範囲
     private const float kCursorLimitDistance = 30.0f;
@@ -128,7 +127,7 @@ public class CameraControl : MonoBehaviour
         // 入力していることに
         _isLeftrightSwing = true;
 
-        _rotSide = _rotSide * Quaternion.AngleAxis(inputRate * 2, Vector3.up);
+        _rotSide = _rotSide * Quaternion.AngleAxis(inputRate * kSpeed, Vector3.up);
     }
 
     /// <summary>
@@ -153,7 +152,7 @@ public class CameraControl : MonoBehaviour
         // 入力したことに
         _isUpdownInput = true;
 
-        _angleVert += inputRate;
+        _angleVert += inputRate * kSpeed;
         _angleVert = Mathf.Max(Mathf.Min(_angleVert, 30), -30);
     }
 
