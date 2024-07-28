@@ -47,6 +47,8 @@ public class EnemyBase : MonoBehaviour
     private SpawnerManager _spawnerMgr; // スポナーマネージャー
     protected Animator _anim;
 
+    private SoundManager _soundMgr;
+
     /* プロパティ */
     public int Hp { get { return _hp; } }
     public int DeltaHp { get { return _deltaHp; } }
@@ -75,6 +77,7 @@ public class EnemyBase : MonoBehaviour
 
         // ステータス取得
         var director = GameObject.Find("GameDirector").GetComponent<GameDirector>();
+        _soundMgr = director.SoundMgr;
         EnemyData data = director.DataMgr.Enemy;
         _status = data.GetStatus(enemyID);
 
@@ -193,6 +196,8 @@ public class EnemyBase : MonoBehaviour
         _isDeltaHp = true;
         _anim.SetTrigger(kAnimParmInfo[AnimParm.kHit]);
 
+        _soundMgr.PlaySe("SE_10");
+
         // HPが0以下になったら死亡処理
         if (_hp <= 0)
         {
@@ -239,6 +244,7 @@ public class EnemyBase : MonoBehaviour
         // プレイヤー発見時なら農場を攻撃しない
         if (_isFindPlayer) return;
 
+        _soundMgr.PlaySe("SE_9");
         _farmScript.OnDamage(_status.attack);
         _isStopAttack = true;
         _watiAttackFrame = _status.attackInterval;
@@ -252,6 +258,7 @@ public class EnemyBase : MonoBehaviour
         // プレイヤー非発見時なら攻撃しない
         if (!_isFindPlayer) return;
 
+        _soundMgr.PlaySe("SE_9");
         _player.GetComponent<Player>().OnDamage(_status.attack);
         _isStopAttack = true;
         _watiAttackFrame = _status.attackInterval;

@@ -266,6 +266,7 @@ public class Player : MonoBehaviour
         // 無敵状態なら攻撃受けない
         if (_isSafe) return;
 
+        _soundMgr.PlaySe("SE_8");
         //体力を減らす
         _hp -= damage;
         _isDeltaHp = true;
@@ -392,6 +393,7 @@ public class Player : MonoBehaviour
         // TODO: 通常攻撃
         if (_nowWeaponType == WeaponType.kNear)
         {
+            _soundMgr.PlaySe("SE_6");
             // 待機時間適用
             _waitAttackTime = _swordStatus.interval;
             // 攻撃力適用
@@ -399,6 +401,7 @@ public class Player : MonoBehaviour
         }
         else if (_nowWeaponType == WeaponType.kFar)
         {
+            _soundMgr.PlaySe("SE_5");
             // 待機時間適用
             _waitAttackTime = _bulletStatus.interval;
             // 弾の生成
@@ -430,6 +433,7 @@ public class Player : MonoBehaviour
         // 実行
         if (isDo)
         {
+            _soundMgr.PlaySe("SE_7");
             // アニメ再生
             StopMove(kAnimParmInfo[AnimParm.kStAttack]);
             _anim.SetTrigger(kAnimParmInfo[AnimParm.kStAttack]);

@@ -3747,7 +3747,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _victoryBgmID: BGM_5
-  _loseBgmID: BGM_6
+  _loseBgmID: BGM_5
 --- !u!114 &1664923835
 MonoBehaviour:
   m_ObjectHideFlags: 0

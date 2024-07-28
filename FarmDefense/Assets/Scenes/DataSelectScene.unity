@@ -1381,7 +1381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c3f79a22dfb1434a8c7f0c71dea9d0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bgmID: BGM_0
+  _bgmID: BGM_3
 --- !u!4 &1184393584
 Transform:
   m_ObjectHideFlags: 0
