@@ -5,10 +5,6 @@ using UnityEngine;
 
 public class EnemyGround : EnemyBase
 {
-    private void Start()
-    {
-        Init(transform.position, "E_0");
-    }
     public override void Init(Vector3 pos, string enemyID)
     {
         base.Init(pos, enemyID);
