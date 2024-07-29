@@ -13,7 +13,7 @@ SE_10,1,SE,EnemyDamage
 BGM_0,1,BGM,TitleBgm
 BGM_1,1,BGM,ShopBgm
 BGM_2,1,BGM,Buttle1
-BGM_3,1,BGM,Buttle2
+BGM_3,1,BGM,SelectBgm
 BGM_4,1,BGM,Buttle3
 BGM_5,1,BGM,Victory
 BGM_6,1,BGM,Lose

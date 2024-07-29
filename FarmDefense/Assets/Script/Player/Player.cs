@@ -66,13 +66,13 @@ public class Player : MonoBehaviour
     private const float kFallSpeed = -0.04f;    // 落下スピード
     /* コスト系 */
     private const int kDashCost = 5;
-    private const int kStAttackCost = 50;
+    private const int kStAttackCost = 200;
     /* 時間系 */
     private const int kStanTime = 30;       // スタン
     private const int kHitSafeTime = 40;    // ヒット時無敵
     private const int kRevivalSafeTime = 60;    // 復活時無敵
     /* その他 */
-    private const int kRecoveryStaminaSpeed = 2;     // スタミナ回復速度
+    private const int kRecoveryStaminaSpeed = 1;     // スタミナ回復速度
     private const float kMaxFallSpeed = -2.2f;  // 最大落下速度
     private const int kAddStrongAttack = 10;    // 基礎強攻撃追加ダメージ量
     private const float kRateStrongAttackInterval = 1.25f;  // 強攻撃追加フレーム割合
@@ -266,6 +266,7 @@ public class Player : MonoBehaviour
         // 無敵状態なら攻撃受けない
         if (_isSafe) return;
 
+        _soundMgr.PlaySe("SE_8");
         //体力を減らす
         _hp -= damage;
         _isDeltaHp = true;
@@ -392,6 +393,7 @@ public class Player : MonoBehaviour
         // TODO: 通常攻撃
         if (_nowWeaponType == WeaponType.kNear)
         {
+            _soundMgr.PlaySe("SE_6");
             // 待機時間適用
             _waitAttackTime = _swordStatus.interval;
             // 攻撃力適用
@@ -399,10 +401,11 @@ public class Player : MonoBehaviour
         }
         else if (_nowWeaponType == WeaponType.kFar)
         {
+            _soundMgr.PlaySe("SE_5");
             // 待機時間適用
             _waitAttackTime = _bulletStatus.interval;
             // 弾の生成
-            var bullet = Instantiate(_bullet, _weapon.transform.position, Quaternion.identity);
+            var bullet = Instantiate(_bullet, _weapon.transform.position, Quaternion.LookRotation(transform.forward, transform.up));
             // 方向・速度適用
             Vector3 velocity = transform.forward;
             velocity.y = _camera.GetFront().y;
@@ -430,6 +433,7 @@ public class Player : MonoBehaviour
         // 実行
         if (isDo)
         {
+            _soundMgr.PlaySe("SE_7");
             // アニメ再生
             StopMove(kAnimParmInfo[AnimParm.kStAttack]);
             _anim.SetTrigger(kAnimParmInfo[AnimParm.kStAttack]);

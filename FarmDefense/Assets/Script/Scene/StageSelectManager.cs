@@ -106,7 +106,6 @@ public class StageSelectManager : MonoBehaviour
         _rightImg.transform.localScale = vS;
         _leftImg.transform.localScale = vS;
         _btImg.transform.localScale = vS2;
-        Debug.Log(_scaleCount);
     }
 
     private void IndexUpdate()

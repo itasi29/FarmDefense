@@ -1,7 +1,7 @@
 StageNo,StageName,EnemyBoostRate,StaticMoney,DynamicMoney
-0,Stage1,1,300,500
-1,Stage2,1,400,600
-2,Stage3,1,500,700
-3,Stage4,1,600,800
-4,Stage5,1,700,900
-5,Stage6,1,800,1000
+0,Stage1,1,100,200
+1,Stage2,1.2,115,230
+2,Stage3,1.4,150,270
+3,Stage4,1.6,190,310
+4,Stage5,1.8,230,370
+5,Stage6,2,375,450

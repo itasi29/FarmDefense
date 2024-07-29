@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -46,6 +47,7 @@ public class OptionManager : SelectManager
     private Image[] _gauge = new Image[SoundManager.kVolumeLvMax];
     [SerializeField] private Sprite _activImg;
     [SerializeField] private Sprite _inactivImg;
+    [SerializeField] private TextMeshProUGUI _returnTxt;
 
     protected override void Init()
     {
@@ -90,6 +92,14 @@ public class OptionManager : SelectManager
         _isSoundChange = false;
 
         _returnScene = returnScene;
+        if (returnScene == ReturnScene.kTitle)
+        {
+            _returnTxt.text = "タイトルへ";
+        }
+        else if (returnScene == ReturnScene.kStageSelect)
+        {
+            _returnTxt.text = "ステージせんたくへ";
+        }
     }
 
     // Update is called once per frame
