@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class _EnemyAir : _EnemyBase
 {
@@ -189,14 +188,9 @@ public class _EnemyAir : _EnemyBase
 
                 var circlepos = tr.position;  //‰~‰^“®‚ÌˆÊ’uŒvŽZ
 
-                Debug.Log("center" + _center);
-                Debug.Log("befor" + circlepos);
                 circlepos -= _center;
-                Debug.Log("-" + circlepos);
                 circlepos = angleAxis * circlepos;
-                Debug.Log("q" + circlepos);
                 circlepos += _center;
-                Debug.Log("+" + circlepos);
 
                 tr.position = circlepos;
 

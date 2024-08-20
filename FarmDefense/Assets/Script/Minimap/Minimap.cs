@@ -179,7 +179,6 @@ public class Minimap : MonoBehaviour
         {
             //¶‚«‚Ä‚¢‚é“GƒŠƒXƒg‚ğ‚·‚×‚Äíœ‚·‚é
             _enemyList.Clear();
-            Debug.Log("‘S•”íœ");
         }
 
     }

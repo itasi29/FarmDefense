@@ -220,16 +220,17 @@ public class Player_Koumoto : MonoBehaviour
             if (Input.GetButtonDown("B"))
             {
                 RecoveryHp(10);
-                Debug.Log(_hp);
             }
         }
+
+#if false
         //ダメージを食らったとき
         //if文はデバッグ用
         if (Input.GetButtonDown("StickPushRight") && !_isSafe)
         {
             OnDamage(10);
-            Debug.Log(_hp);
         }
+#endif
     }
     private void Move()
     {

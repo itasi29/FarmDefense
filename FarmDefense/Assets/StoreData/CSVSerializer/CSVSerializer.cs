@@ -139,7 +139,6 @@ public class CSVSerializer
             }
             else
             {
-                Debug.Log("Miss " + tmp.Name);
             }
         }
         return v;

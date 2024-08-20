@@ -597,7 +597,6 @@ public class Player : MonoBehaviour
         // ƒXƒ^ƒ“ó‘Ô‚Å‚È‚¢‚È‚ç–³‹
         if (!_isStan) return;
 
-        Debug.Log(_stanTime);
         --_stanTime;
 
         if (_stanTime < 0)

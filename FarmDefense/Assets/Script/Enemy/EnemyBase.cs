@@ -192,7 +192,6 @@ public class EnemyBase : MonoBehaviour
     public void OnDamage(int damage)
     {
         _hp -= damage;
-        Debug.Log("hp" + _hp);
         _isDeltaHp = true;
         _anim.SetTrigger(kAnimParmInfo[AnimParm.kHit]);
 

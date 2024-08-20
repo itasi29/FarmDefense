@@ -36,7 +36,6 @@ public class UserData
             // using(){}すると勝手にCloseしてくれる
             using (var reader = new BinaryReader(new FileStream(Application.dataPath + DataManager.kUserFileName, FileMode.Open)))
             {
-                Debug.Log("読み込み");
                 // ファイルが存在する場合
                 _bgmVolLv = reader.ReadInt32();
                 _seVolLv = reader.ReadInt32();
@@ -82,7 +81,6 @@ public class UserData
         }
         catch
         {
-            Debug.Log("生成");
             // ファイルが存在しない場合
             _bgmVolLv = SoundManager.kVolumeLvMax;
             _seVolLv = SoundManager.kVolumeLvMax;
@@ -162,7 +160,6 @@ public class UserData
             // ファイルを開く(ない場合は作成)
             using (var writer = new BinaryWriter(new FileStream(Application.dataPath + DataManager.kUserFileName, FileMode.OpenOrCreate)))
             {
-                Debug.Log("保存");
                 writer.Write((Int32)_bgmVolLv);
                 writer.Write((Int32)_seVolLv);
 
@@ -195,7 +192,6 @@ public class UserData
         }
         catch
         {
-            Debug.Log("何でぇ");
         }
     }
 

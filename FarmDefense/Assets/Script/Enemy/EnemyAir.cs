@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class EnemyAir : EnemyBase
 {
@@ -99,12 +97,10 @@ public class EnemyAir : EnemyBase
             {
                 if (IsNowPlayClipName("Attack"))
                 {
-                    Debug.Log("attack");
                     _isAttackAnim = true;
                 }
                 else if (_isAttackAnim)
                 {
-                    Debug.Log("Ç±Ç±ñﬂÇ∑ÅI");
                     _isAttackAnim = false;
                     _isNowAttack = false;
                     _isAirReturn = true;

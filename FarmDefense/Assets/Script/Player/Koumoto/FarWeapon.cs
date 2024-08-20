@@ -24,7 +24,6 @@ public class FarWeapon : Weapon
         //TODO:UŒ‚—Í‚ğæ“¾‚Å‚«‚é‚æ‚¤‚É‚·‚é
         script.SetMoveVec(dir, 0.5f);
 
-        Debug.Log("‰“‹——£UŒ‚");
     }
 
 }

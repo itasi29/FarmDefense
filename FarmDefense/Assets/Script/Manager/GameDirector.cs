@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class GameDirector : MonoBehaviour
@@ -18,11 +16,9 @@ public class GameDirector : MonoBehaviour
         if (_isCreate)
         {
             Destroy(this.gameObject);
-            Debug.Log("削除＆無生成");
             return;
         }
         _isCreate = true;
-        Debug.Log("生成");
 
         // 自信を非破壊オブジェクトにする
         DontDestroyOnLoad(this.gameObject);

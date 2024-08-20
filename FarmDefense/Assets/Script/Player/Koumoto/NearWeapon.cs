@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class NearWeapon : Weapon
@@ -34,7 +33,6 @@ public class NearWeapon : Weapon
         _attackTime++;
         if (_isAttack)
         {
-            Debug.Log("çUåÇ");
             _weaponCol.SetActive(true);
         }
         else

@@ -23,7 +23,6 @@ public class Sword : MonoBehaviour
 
         if (collider.gameObject.tag == "Enemy")
         {
-            Debug.Log("‚ ‚½‚Á‚½‚É‚å‚ñ");
             EnemyBase enemy = collider.gameObject.GetComponent<EnemyBase>();
             enemy.OnDamage(_attack);
         }

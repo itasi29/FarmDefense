@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 /// <summary>
@@ -194,9 +193,6 @@ public class _EnemyBase : MonoBehaviour
         if(collision.gameObject.tag == "Player")
         {
             _isFindPlayer = false; //m_playerÇfalseÇ…Ç∑ÇÈ
-
-            Debug.Log("deta");
-
         }
     }
 
@@ -209,7 +205,6 @@ public class _EnemyBase : MonoBehaviour
     /// <param name="damage">É_ÉÅÅ[ÉWó </param>
     public void OnDamage(int damage)
     {
-        Debug.Log(Time.time + "| damage" + damage);
         _hp -= damage;
         _isDelat = true;
 
