@@ -11,7 +11,7 @@ public class DataManager
     public const string kWeaponFileName = "Csv/WeaponMaster";
     public const string kImteFileName = "Csv/ItemMaster";
     public const string kShopFileName = "Csv/ShopMaster";
-    public const string kUserFileName = "/Bin/UserData.bin";
+    public const string kUserFileName = "/Save/UserData.bin";
 
     /* •Ûƒf[ƒ^ */
     private SpawnerData _spawner;
