@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class SpawnerManager : MonoBehaviour
 {
@@ -44,6 +45,7 @@ public class SpawnerManager : MonoBehaviour
     // 全waveの敵を生成したか
     private bool _isAllCreate;
 
+    private UserData _user;
     private Fade _fade;
     private StageRusultData _resultData;
 
@@ -61,6 +63,7 @@ public class SpawnerManager : MonoBehaviour
         // ステージデータの取得
         GameDirector director = GameObject.Find("GameDirector").GetComponent <GameDirector>();
         DataManager dataMgr = director.DataMgr;
+        _user = dataMgr.User;
         _waveData = dataMgr.Spawner.GetWaveData(_stageNo);
         _resultData = director.ResultData;
         _resultData.StageNo = _stageNo;
@@ -93,6 +96,7 @@ public class SpawnerManager : MonoBehaviour
         IsKillAllEnemys();
         if (_isAllCreate) return;
 
+        _user.AddTime();
         Create();
     }
 

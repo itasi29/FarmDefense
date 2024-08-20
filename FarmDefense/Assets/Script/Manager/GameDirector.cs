@@ -7,12 +7,23 @@ using UnityEngine;
 
 public class GameDirector : MonoBehaviour
 {
+    private static bool _isCreate = false;
+
     private DataManager _dataMgr;
     private SoundManager _soundMgr;
     private StageRusultData _resultData;
 
     private void Awake()
     {
+        if (_isCreate)
+        {
+            Destroy(this.gameObject);
+            Debug.Log("削除＆無生成");
+            return;
+        }
+        _isCreate = true;
+        Debug.Log("生成");
+
         // 自信を非破壊オブジェクトにする
         DontDestroyOnLoad(this.gameObject);
 

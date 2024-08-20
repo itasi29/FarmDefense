@@ -36,6 +36,7 @@ public class UserData
             // using(){}すると勝手にCloseしてくれる
             using (var reader = new BinaryReader(new FileStream(Application.dataPath + DataManager.kUserFileName, FileMode.Open)))
             {
+                Debug.Log("読み込み");
                 // ファイルが存在する場合
                 _bgmVolLv = reader.ReadInt32();
                 _seVolLv = reader.ReadInt32();
@@ -81,6 +82,7 @@ public class UserData
         }
         catch
         {
+            Debug.Log("生成");
             // ファイルが存在しない場合
             _bgmVolLv = SoundManager.kVolumeLvMax;
             _seVolLv = SoundManager.kVolumeLvMax;
@@ -89,7 +91,7 @@ public class UserData
             {
                 User user = new User();
                 // 所持金
-                user.money = 100000;
+                user.money = 0;
                 // プレイ時間
                 user.time = 0;
                 // 武器のレベル
@@ -160,6 +162,7 @@ public class UserData
             // ファイルを開く(ない場合は作成)
             using (var writer = new BinaryWriter(new FileStream(Application.dataPath + DataManager.kUserFileName, FileMode.OpenOrCreate)))
             {
+                Debug.Log("保存");
                 writer.Write((Int32)_bgmVolLv);
                 writer.Write((Int32)_seVolLv);
 

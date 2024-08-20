@@ -39,19 +39,19 @@ public class ResultManager : MonoBehaviour
 
             int money = stage.GetStaticMoney(result.StageNo) + (int)(par * stage.GetDynamicMoney(result.StageNo));
 
-            if (par > 0.79f)
+            if (par > 0.9f)
             {
                 rankTxt.text = "S";
             }
-            else if (par > 0.59f)
+            else if (par > 0.75f)
             {
                 rankTxt.text = "A";
             }
-            else if (par > 0.39f)
+            else if (par > 0.50f)
             {
                 rankTxt.text = "B";
             }
-            else if (par > 0.19f)
+            else if (par > 0.30f)
             {
                 rankTxt.text = "C";
             }
@@ -66,6 +66,7 @@ public class ResultManager : MonoBehaviour
             {
                 user.ChangeStageClear(result.StageNo + 1);
             }
+            user.AddMoney(money);
 
             _fade.SetBgmID(_victoryBgmID);
         }
